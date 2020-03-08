@@ -1,0 +1,22 @@
+<template>
+    <view class="login-container">
+        <image src="../images/login.png" class="top-banner" />
+
+        <view class="phone-wrap">
+            <view class="title">手机号登录</view>
+            <view>
+                
+            </view>
+        </view>
+    </view>
+</template>
+
+<style lang="less">
+  .login-container {
+    .top-banner {
+        width: 100%;
+        height: 333rpx;
+    }
+  }
+</style>
+
