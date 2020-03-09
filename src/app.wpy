@@ -23,14 +23,43 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/login',
-      'pages/index'
+      'pages/menu0',
+      'pages/menu1',
+      'pages/menu2',
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
+      navigationBarTitleText: '龙芯北斗',
       navigationBarTextStyle: 'black'
-    }
+    },
+    tabBar: {
+      "color": "#000000",
+      "selectedColor": "#1494eb",
+      "borderStyle": "black",
+      "backgroundColor": "#ffffff",
+      "list": [
+        {
+          "pagePath": "pages/menu0",
+          "text": '检测',
+          "iconPath": '/assets/images/icon/detection.png',
+          "selectedIconPath": '/assets/images/icon/detection_cur.png'
+        },
+        {
+          "pagePath": "pages/menu1",
+          "text": '预警',
+          "iconPath": '/assets/images/icon/warning.png',
+          "selectedIconPath": '/assets/images/icon/warning_cur.png'
+
+        }, 
+        {
+          "pagePath": "pages/menu2",
+          "text": '我的',
+          "iconPath": '/assets/images/icon/my.png',
+          "selectedIconPath": '/assets/images/icon/my_cur.png'
+        }
+      ]
+    },
   }
 
   globalData = {

@@ -1,21 +1,49 @@
 <template>
-    <view class="login-container">
-        <image src="../images/login.png" class="top-banner" />
-
-        <view class="phone-wrap">
-            <view class="title">手机号登录</view>
-            <view>
-                
-            </view>
-        </view>
+  <view class="login-container">
+    <image src="../assets/images/login.png" class="top-banner" />
+    <view class="phone-wrap">
+      <view class="title">手机号登录</view>
+      <van-cell-group>
+        <van-field label="+86" value="{{ value }}" placeholder="请输入手机号" bind:change="onChange" class="" />
+        <van-field label="验证码" value="{{ value }}" 
+          placeholder="请输入手机验证码" 
+          bind:change="onChange" 
+          clearable
+          use-button-slot>
+            <van-button slot="button" size="small" type="primary" class="get-code">获取验证码</van-button>
+        </van-field>
+      </van-cell-group>
     </view>
+  </view>
 </template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Login extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录',
+      usingComponents: {
+        "van-cell": "../components/vant/cell/index",
+        "van-field": "../components/vant/field/index",
+        "van-button": "../components/vant/button/index"
+      }
+    }
+  }
+</script>
 
 <style lang="less">
   .login-container {
     .top-banner {
-        width: 100%;
-        height: 333rpx;
+      width: 100%;
+      height: 333rpx;
+    }
+    .phone-wrap {
+      padding: 40rpx 30rpx;
+      .title {
+        margin-bottom: 50rpx;
+      }
+    }
+    .get-code {
     }
   }
 </style>

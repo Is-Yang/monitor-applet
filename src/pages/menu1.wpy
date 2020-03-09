@@ -1,0 +1,24 @@
+<template>
+  <router-view></router-view>
+    
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Menu1 extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录',
+      usingComponents: {
+        "van-cell": "../components/vant/cell/index",
+        "van-field": "../components/vant/field/index",
+        "van-button": "../components/vant/button/index"
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+
+</style>
+
