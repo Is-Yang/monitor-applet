@@ -4,15 +4,27 @@
     <view class="phone-wrap">
       <view class="title">手机号登录</view>
       <van-cell-group>
-        <van-field label="+86" value="{{ value }}" placeholder="请输入手机号" bind:change="onChange" class="" />
-        <van-field label="验证码" value="{{ value }}" 
+        <van-field label="+86" value="{{ phone }}" placeholder="请输入手机号" clearable maxlength="11" bind:change="onPhoneChange" class="" />
+        <van-field label="验证码" value="{{ code }}" 
           placeholder="请输入手机验证码" 
-          bind:change="onChange" 
+          bind:change="onCodeChange" 
           clearable
           use-button-slot>
-            <van-button slot="button" size="small" type="primary" class="get-code">获取验证码</van-button>
+            <van-button slot="button" size="small" class="get-code">获取验证码</van-button>
         </van-field>
       </van-cell-group>
+      <van-button round block class="login-btn {{phone == null && code == null ? '' : 'has'}}" @tap="tapLogin">同意协议并登录</van-button>
+    </view>
+
+    <view class="other-login">
+      <view class="sum">
+        <text>其他登录方式</text>
+      </view>
+      <image src="../assets/images/wechat.png" />
+    </view>
+
+    <view class="agree">
+      登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
     </view>
   </view>
 </template>
@@ -28,6 +40,25 @@
         "van-button": "../components/vant/button/index"
       }
     }
+
+    data() {
+      return {
+          phone: null,
+          code: null
+      }
+    }
+
+    methods = {
+      tapLogin() {
+        
+      },
+      onPhoneChange(e) {
+        this.phone = e.detail;
+      },
+      onCodeChange(e) {
+        this.code = e.detail;
+      } 
+    }
   }
 </script>
 
@@ -35,15 +66,94 @@
   .login-container {
     .top-banner {
       width: 100%;
-      height: 333rpx;
+      height: 330rpx;
     }
     .phone-wrap {
-      padding: 40rpx 30rpx;
+      padding: 43rpx 30rpx;
       .title {
         margin-bottom: 50rpx;
+        font-size: 42rpx;
+        line-height: 38rpx;
+      }
+      .num {
+        color: #999;
       }
     }
-    .get-code {
+    .get-code button {
+      width: 164rpx;
+	    height: 54rpx;
+      background-color: #e1e1e1;
+      border-radius: 2rpx;
+      color: #41c297;
+      font-size: 21rpx;
+    }
+    .login-btn button {
+      margin-top: 83rpx;
+      color: #ffffff;
+      pointer-events: none;
+      background-color: #e6e6e6;
+      font-size: 28rpx;
+      font-weight: bold;
+    }
+    .login-btn.has button{
+      background-image: linear-gradient(0deg, 
+        #38c099 0%, 
+        #59c89a 50%, 
+        #cfe49d 100%), 
+      linear-gradient(
+        #e6e6e6, 
+        #e6e6e6);
+        pointer-events: all;
+    }
+
+    .other-login{
+        margin-top: 50rpx;
+        text-align: center;
+        .sum {
+          position: relative;
+          height: 50rpx;
+          line-height: 50rpx;
+          margin: 0 auto;
+
+          &::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            border-bottom: 1px solid #eee;
+            left: 0;
+            top: 25rpx;
+            transform: scale(.5);
+            z-index: -1;
+          }
+          text {
+            display: block;
+            width: 150rpx;
+            font-size: 21rpx;
+            margin: 0 auto;
+            font-weight: bold;
+            color: #cccccc;
+            background-color: #fff;
+          }
+      }
+
+      image {
+        width: 83rpx;
+        height: 67rpx;
+        margin: 30rpx 20rpx;
+      }
+    }
+
+    .agree {
+      position: absolute;
+      bottom: 30rpx;
+      width: 100%;
+      text-align: center;
+      font-size: 21rpx;
+      color: #333;
+      text {
+        color: #0066ff;
+      }
     }
   }
 </style>

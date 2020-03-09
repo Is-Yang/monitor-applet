@@ -1,6 +1,29 @@
 <template>
-  <router-view></router-view>
-    
+  <view class="menu0-container">
+    <map id="map" longitude="113.324520" latitude="23.099994" scale="14" controls="{{controls}}"
+    bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" polyline="{{polyline}}"
+    bindregionchange="regionchange" show-location style="width: 100%; height: 588rpx;"></map>
+
+    <view class="monitor-list">
+      <view class="item">
+        <view class="head">
+          <text class="company">永定区抚市溪联南板</text>
+          <van-button round size="small" type="primary">上报预警</van-button>
+        </view>
+        <view class="content">
+
+        </view>
+      </view>
+      <view class="item">
+        <view class="head">
+          <text class="company">永定区抚市溪联南板</text>
+          <van-button round size="small" type="primary">上报预警</van-button>
+        </view>
+        <view class="content">
+          
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -8,17 +31,104 @@
   import wepy from 'wepy'
   export default class Menu0 extends wepy.page {
     config = {
-      navigationBarTitleText: '登录',
+      navigationBarTitleText: '龙芯北斗地灾监控系统',
       usingComponents: {
         "van-cell": "../components/vant/cell/index",
         "van-field": "../components/vant/field/index",
         "van-button": "../components/vant/button/index"
       }
     }
+
+    data() {
+      return {
+        markers: [{
+          id: 0,
+          latitude: 23.099994,
+          longitude: 113.324520,
+          width: 50,
+          height: 50
+        }],
+        polyline: [{
+          points: [{
+            longitude: 113.3245211,
+            latitude: 23.10229
+          }, {
+            longitude: 113.324520,
+            latitude: 23.21229
+          }],
+          color: "#FF0000DD",
+          width: 2,
+          dottedLine: true
+        }],
+        controls: [{
+          id: 1,
+          position: {
+            left: 0,
+            top: 300 - 50,
+            width: 50,
+            height: 50
+          },
+          clickable: true
+        }]
+      }
+    }
+
+    regionchange(e) {
+      console.log(e.type)
+    }
+    markertap(e) {
+      console.log(e.markerId)
+    }
+    controltap(e) {
+      console.log(e.controlId)
+    }
   }
+
 </script>
 
 <style lang="less">
+.menu0-container {
+  #map {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+  }
+  .monitor-list {
+    margin-top: 588rpx;
+    background-color: #f1f1f1;
+    padding: 23rpx;
+    .item {
+      margin-bottom: 40rpx;
+      .head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15rpx;
+        .company {
+          font-size: 28rpx;
+          color: #333;
+        }
+        button {
+          width: 105rpx;
+          height: 40rpx;
+          background-color: #52cc7a;
+          border-radius: 19rpx;
+          border: solid 1rpx #3dc66a;
+          font-size: 16rpx;
+        }
+      }
+      .content {
+        height: 368rpx;
+        background-color: #ffffff;
+        box-shadow: 0rpx 0rpx 11rpx 1rpx 
+          rgba(204, 204, 204, 0.2);
+        border-radius: 6rpx;
+      }
 
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+}
 </style>
-

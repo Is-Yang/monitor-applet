@@ -22,15 +22,15 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/login',
       'pages/menu0',
+      'pages/login',
       'pages/menu1',
       'pages/menu2',
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: '龙芯北斗',
+      navigationBarTitleText: '龙芯北斗地灾监控系统',
       navigationBarTextStyle: 'black'
     },
     tabBar: {
