@@ -17,9 +17,9 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/menu2',
       'pages/menu0',
       'pages/login',
+      'pages/menu2',
       'pages/menu1',
     ],
     window: {

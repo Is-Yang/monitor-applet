@@ -1,11 +1,15 @@
 <template>
   <view class="login-container">
-    <image src="../assets/images/login.png" class="top-banner" />
+    <view class="top-banner">
+      <image src="../assets/images/logo.png" class="logo" />
+      <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
+      <text>未注册的手机号码验证后自动创建账号"</text>
+    </view>
     <view class="phone-wrap">
       <view class="title">手机号登录</view>
       <van-cell-group>
-        <van-field label="+86" value="{{ phone }}" placeholder="请输入手机号" clearable maxlength="11" bind:change="onPhoneChange" class="" />
-        <van-field label="验证码" value="{{ code }}" 
+        <van-field label="+86" title-width="60px" value="{{ phone }}" placeholder="请输入手机号" clearable maxlength="11" bind:change="onPhoneChange" class="" />
+        <van-field label="验证码" title-width="60px" value="{{ code }}" 
           placeholder="请输入手机验证码" 
           bind:change="onCodeChange" 
           clearable
@@ -88,6 +92,27 @@
     .top-banner {
       width: 100%;
       height: 330rpx;
+      padding-top: 70rpx;
+      background-image: linear-gradient(0deg, 
+        #38c099 0%, 
+        #cfe49d 100%), 
+      linear-gradient(
+        #ffffff, 
+        #ffffff);
+        color: #fff;
+        line-height: 38rpx;
+        font-size: 21rpx;
+        text-align: center;
+
+        .logo {
+          width: 103rpx;
+          height: 103rpx;
+        }
+
+        .title {
+          margin: 30rpx 0;
+          font-size: 42rpx;
+        }
     }
     .phone-wrap {
       padding: 43rpx 30rpx;
@@ -105,11 +130,12 @@
     }
     .get-code button {
       width: 164rpx;
-	    height: 54rpx;
+      height: 54rpx;
       background-color: #e1e1e1;
       border-radius: 2rpx;
       color: #41c297;
       font-size: 21rpx;
+      border: none;
     }
     .login-btn button {
       margin-top: 83rpx;

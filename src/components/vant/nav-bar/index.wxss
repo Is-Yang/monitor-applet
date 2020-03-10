@@ -60,8 +60,7 @@
   color: var(--nav-bar-title-text-color, #ffffff);
   font-weight: 500;
   font-weight: var(--font-weight-bold, 500);
-  font-size: 16px;
-  font-size: var(--nav-bar-title-font-size, 16px)
+  font-size: 28rpx;
 }
 
 .van-nav-bar__left,

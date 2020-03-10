@@ -37,25 +37,40 @@
             </view>
             <view class="row">
               <view class="left">
-                <image src="../assets/images/rainfall.png" />
+                <image src="../assets/images/deep.png" />
                 <text>深部位移</text>
               </view>
               <view class="right">
                 <view class="data">
                   <view>温度</view>
-                  <view>{{item.rainfall.num1}}</view>
+                  <view>{{item.deep.num1}}</view>
                 </view>
                 <view class="data">
                   <view>倾斜度</view>
-                  <view>{{item.rainfall.num2}}</view>
+                  <view>{{item.deep.num2}}</view>
                 </view>
                 <view class="data">
                   <view>应变频率</view>
-                  <view>{{item.rainfall.num3}}</view>
+                  <view>{{item.deep.num3}}</view>
                 </view>
                 <view class="data">
                   <view>补偿频率</view>
-                  <view>{{item.rainfall.num4}}</view>
+                  <view>{{item.deep.num4}}</view>
+                </view>
+                <van-icon name="arrow" color="#ccc" />
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/rainfall.png" />
+                <text>降雨量</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>日均：</text>
+                  <text>{{item.rainfall.num1}}</text>ml / 
+                  <text>周均：</text>
+                  <text>{{item.rainfall.num2}}</text>ml
                 </view>
                 <van-icon name="arrow" color="#ccc" />
               </view>
@@ -63,13 +78,13 @@
             <view class="row">
               <view class="left">
                 <image src="../assets/images/humiture.png" />
-                <text>深部位移</text>
+                <text>温湿度</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <text>日均：</text>
-                  <text>{{item.humiture.num1}}</text> / 
-                  <text>周均：</text>
+                  <text>温度：</text>
+                  <text>{{item.humiture.num1}}℃</text> / 
+                  <text>湿度：</text>
                   <text>{{item.humiture.num2}}</text>
                 </view>
                 <van-icon name="arrow" color="#ccc" />
@@ -104,12 +119,16 @@
             y: 1,
             h: 2
           },
-          rainfall: {
+          deep: {
             num1: 0,
             num2: 1,
             num3: 2,
             num4: 3
           }, 
+          rainfall: {
+            num1: 0,
+            num2: 1,
+          },
           humiture: {
             num1: 0,
             num2: 1,
