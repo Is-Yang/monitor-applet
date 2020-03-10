@@ -10,10 +10,13 @@
           bind:change="onCodeChange" 
           clearable
           use-button-slot>
-            <van-button slot="button" size="small" class="get-code">获取验证码</van-button>
+            <van-button wx:if="{{ timer == 0 }}" slot="button" size="small" class="get-code" @tap="getSendCode">获取验证码</van-button>
+            <text wx:else slot="button" size="small" class="txtColor">{{timer}}s后重试</text>
         </van-field>
       </van-cell-group>
-      <van-button round block class="login-btn {{phone == null && code == null ? '' : 'has'}}" @tap="tapLogin">同意协议并登录</van-button>
+      
+      <van-button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</van-button>
+      <van-button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</van-button>
     </view>
 
     <view class="other-login">
@@ -41,16 +44,34 @@
       }
     }
 
-    data() {
-      return {
-          phone: null,
-          code: null
-      }
+    data = {
+      phone: '',
+      code: '',
+      timer: 0,
+      sendInterval: null,
     }
 
     methods = {
       tapLogin() {
-        
+        wx.navigateTo({
+            url: '/pages/menu0'
+        })
+      },
+      // 发送验证码
+      getSendCode() {
+        const count = 60;
+        this.timer = count;
+        if (!this.sendInterval) {
+            this.sendInterval = setInterval(() => {
+                if(this.timer > 0) {
+                    this.timer--;
+                    this.$apply();
+                }else {
+                    this.sendInterval && clearInterval(this.sendInterval);
+                    this.sendInterval = null;
+                }
+            }, 1000);
+        } 
       },
       onPhoneChange(e) {
         this.phone = e.detail;
@@ -78,6 +99,9 @@
       .num {
         color: #999;
       }
+    }
+    .txtColor {
+      font-size: 21rpx;
     }
     .get-code button {
       width: 164rpx;

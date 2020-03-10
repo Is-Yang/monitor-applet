@@ -1,28 +1,83 @@
 <template>
   <view class="menu0-container">
-    <map id="map" longitude="113.324520" latitude="23.099994" scale="14" controls="{{controls}}"
-    bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" polyline="{{polyline}}"
-    bindregionchange="regionchange" show-location style="width: 100%; height: 588rpx;"></map>
+    <van-nav-bar title="龙芯北斗地灾监控系统" fixed/>
+
+    <map id="map" longitude="113.324520" latitude="23.099994" scale="14"
+      bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap"
+      bindregionchange="regionchange" show-location style="width: 100%; height: 588rpx;"></map>
 
     <view class="monitor-list">
-      <view class="item">
-        <view class="head">
-          <text class="company">永定区抚市溪联南板</text>
-          <van-button round size="small" type="primary">上报预警</van-button>
+      <repeat wx:for="{{mointorList}}" wx:key="index" wx:index="index" wx:for-item="item">
+        <view class="item">
+          <view class="head">
+            <text class="company">{{item.company}}</text>
+            <van-button round size="small" type="primary">上报预警</van-button>
+          </view>
+          <view class="content">
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/surface.png" />
+                <text>表面位移</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <view>X位移</view>
+                  <view>{{item.surface.x}}</view>
+                </view>
+                <view class="data">
+                  <view>Y位移</view>
+                  <view>{{item.surface.y}}</view>
+                </view>
+                <view class="data">
+                  <view>H位移</view>
+                  <view>{{item.surface.h}}</view>
+                </view>
+                <van-icon name="arrow" color="#ccc" />
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/rainfall.png" />
+                <text>深部位移</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <view>温度</view>
+                  <view>{{item.rainfall.num1}}</view>
+                </view>
+                <view class="data">
+                  <view>倾斜度</view>
+                  <view>{{item.rainfall.num2}}</view>
+                </view>
+                <view class="data">
+                  <view>应变频率</view>
+                  <view>{{item.rainfall.num3}}</view>
+                </view>
+                <view class="data">
+                  <view>补偿频率</view>
+                  <view>{{item.rainfall.num4}}</view>
+                </view>
+                <van-icon name="arrow" color="#ccc" />
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/humiture.png" />
+                <text>深部位移</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>日均：</text>
+                  <text>{{item.humiture.num1}}</text> / 
+                  <text>周均：</text>
+                  <text>{{item.humiture.num2}}</text>
+                </view>
+                <van-icon name="arrow" color="#ccc" />
+              </view>
+            </view>
+          </view>
         </view>
-        <view class="content">
-
-        </view>
-      </view>
-      <view class="item">
-        <view class="head">
-          <text class="company">永定区抚市溪联南板</text>
-          <van-button round size="small" type="primary">上报预警</van-button>
-        </view>
-        <view class="content">
-          
-        </view>
-      </view>
+      </repeat>
     </view>
   </view>
 </template>
@@ -33,44 +88,80 @@
     config = {
       navigationBarTitleText: '龙芯北斗地灾监控系统',
       usingComponents: {
-        "van-cell": "../components/vant/cell/index",
-        "van-field": "../components/vant/field/index",
-        "van-button": "../components/vant/button/index"
+        "van-icon": "../components/vant/icon/index",
+        "van-button": "../components/vant/button/index",
+        "van-nav-bar": "../components/vant/nav-bar/index"
       }
     }
 
-    data() {
-      return {
-        markers: [{
+    data ={
+      mointorList: [
+        {
           id: 0,
-          latitude: 23.099994,
+          company: '永定区抚市溪联南板',
+          surface: {
+            x: 0,
+            y: 1,
+            h: 2
+          },
+          rainfall: {
+            num1: 0,
+            num2: 1,
+            num3: 2,
+            num4: 3
+          }, 
+          humiture: {
+            num1: 0,
+            num2: 1,
+            num3: 2,
+            num4: 3
+          }
+        },
+        {
+          id: 1,
+          company: '永定区抚市溪联南板',
+          surface: {
+            x: 0,
+            y: 1,
+            h: 2
+          },
+          rainfall: {
+            num1: 0,
+            num2: 1,
+            num3: 2,
+            num4: 3
+          }
+        }
+      ],
+      markers: [{
+        id: 0,
+        latitude: 23.099994,
+        longitude: 113.324520,
+        width: 50,
+        height: 50
+      }],
+      polyline: [{
+        points: [{
+          longitude: 113.3245211,
+          latitude: 23.10229
+        }, {
           longitude: 113.324520,
+          latitude: 23.21229
+        }],
+        color: "#FF0000DD",
+        width: 2,
+        dottedLine: true
+      }],
+      controls: [{
+        id: 1,
+        position: {
+          left: 0,
+          top: 300 - 50,
           width: 50,
           height: 50
-        }],
-        polyline: [{
-          points: [{
-            longitude: 113.3245211,
-            latitude: 23.10229
-          }, {
-            longitude: 113.324520,
-            latitude: 23.21229
-          }],
-          color: "#FF0000DD",
-          width: 2,
-          dottedLine: true
-        }],
-        controls: [{
-          id: 1,
-          position: {
-            left: 0,
-            top: 300 - 50,
-            width: 50,
-            height: 50
-          },
-          clickable: true
-        }]
-      }
+        },
+        clickable: true
+      }]
     }
 
     regionchange(e) {
@@ -88,9 +179,10 @@
 
 <style lang="less">
 .menu0-container {
+  padding-top: 64px;
   #map {
     position: fixed;
-    top: 0;
+    top: 64px;
     z-index: 1;
   }
   .monitor-list {
@@ -117,11 +209,49 @@
         }
       }
       .content {
-        height: 368rpx;
         background-color: #ffffff;
         box-shadow: 0rpx 0rpx 11rpx 1rpx 
           rgba(204, 204, 204, 0.2);
         border-radius: 6rpx;
+        .row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 94rpx;
+          padding: 0 20rpx;
+          border-bottom: 1px solid #f8f8fa;
+
+          &:last-child {
+            border-bottom: 0;
+          }
+        }
+
+        .left {
+          image {
+            width: 38rpx;
+            height: 38rpx;
+            vertical-align: middle;
+          }
+
+          text {
+            margin-left: 20rpx;
+            font-size: 28rpx;
+          }
+        }
+
+        .right {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+
+          .data {
+            margin: 0 20rpx;
+            font-size: 21rpx;
+            color: #333;
+            line-height: 38rpx;
+            text-align: center;
+          }
+        }
       }
 
       &:last-child {

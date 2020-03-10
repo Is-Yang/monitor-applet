@@ -1,11 +1,6 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
+.txtColor {
+    color: #41c297;
 }
 </style>
 
@@ -22,20 +17,21 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/menu2',
       'pages/menu0',
       'pages/login',
       'pages/menu1',
-      'pages/menu2',
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#41c297',
       navigationBarTitleText: '龙芯北斗地灾监控系统',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'white',
+      navigationStyle: "custom"
     },
     tabBar: {
-      "color": "#000000",
-      "selectedColor": "#1494eb",
+      "color": "#333",
+      "selectedColor": "#41c297",
       "borderStyle": "black",
       "backgroundColor": "#ffffff",
       "list": [

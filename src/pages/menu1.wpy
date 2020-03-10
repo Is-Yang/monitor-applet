@@ -1,12 +1,10 @@
 <template>
-  <router-view></router-view>
-    
-  </view>
+  
 </template>
 
 <script>
   import wepy from 'wepy'
-  export default class Menu1 extends wepy.page {
+  export default class Menu2 extends wepy.page {
     config = {
       navigationBarTitleText: '登录',
       usingComponents: {
