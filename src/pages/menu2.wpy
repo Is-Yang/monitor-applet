@@ -1,6 +1,6 @@
 <template>
   <view class="menu0-container">
-    <van-nav-bar title="我的" fixed/>
+    <van-nav-bar title="我的" fixed custom-class="nav-rest"/>
     <view class="head-wrap">
       <image src="../assets/images/my_bg.png" class="bg" />
     </view>
@@ -29,6 +29,12 @@
       width: 100%;
       height: 335rpx;
     }
+  }
+  .van-nav-bar {
+    background-image: none;
+  }
+  .van-hairline--bottom:after {
+    border: none;
   }
 }
 </style>
