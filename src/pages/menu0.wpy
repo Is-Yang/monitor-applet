@@ -11,7 +11,7 @@
         <view class="item">
           <view class="head">
             <text class="company">{{item.company}}</text>
-            <van-button round size="small" type="primary">上报预警</van-button>
+            <button>上报预警</button>
           </view>
           <view class="content">
             <view class="row">
@@ -104,7 +104,6 @@
       navigationBarTitleText: '龙芯北斗地灾监控系统',
       usingComponents: {
         "van-icon": "../components/vant/icon/index",
-        "van-button": "../components/vant/button/index",
         "van-nav-bar": "../components/vant/nav-bar/index"
       }
     }
@@ -221,10 +220,13 @@
         button {
           width: 105rpx;
           height: 40rpx;
+          line-height: 40rpx;
+          margin: 0;
           background-color: #52cc7a;
-          border-radius: 19rpx;
           border: solid 1rpx #3dc66a;
+          border-radius: 25px;
           font-size: 16rpx;
+          color: #fff;
         }
       }
       .content {
@@ -242,6 +244,10 @@
 
           &:last-child {
             border-bottom: 0;
+          }
+
+          &:active {
+            background-color: #f2f3f5;
           }
         }
 

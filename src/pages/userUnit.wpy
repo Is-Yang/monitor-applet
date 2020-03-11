@@ -1,0 +1,272 @@
+<template>
+    <view class="user-unit-container">
+        <van-nav-bar title="我的单位" left-arrow left-text="返回" fixed custom-class="nav-rest" bind:click-left="onClickLeft" />
+        <view class="head-wrap">
+            <image src="../assets/images/my_bg.png" class="bg" />
+            <view class="user-wrap">
+                <view class="mark">
+                    <view>龙岩地灾中心</view>
+                    <view class="flag">管理员</view>
+                </view>
+                <image src="" />
+            </view>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">用户列表</view>
+            <van-collapse value="{{ activeNames }}" @change="onChangeColl">
+                <repeat wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                    <van-collapse-item name="{{index}}">
+                        <view slot="title">
+                            <image src="../assets/images/location.png" class="icon" />
+                            <text class="nickname">{{ item.nickname}}</text>
+                            <text class="tel">{{ item.phone }}</text>
+                        </view>
+                        <view slot="value">
+                            <text class="num">监测点2/2</text>
+                        </view>
+                        <view class="operate-cell">
+                            <view class="cell">
+                                <view>
+                                    <image src="../assets/images/location.png" />
+                                    <text>手机号</text>
+                                </view>
+                                <text class="right-txt">{{ item.phone }}</text>
+                            </view>
+                            <view class="cell link">
+                                <view>
+                                    <image src="../assets/images/location.png" />
+                                    <text>角色</text>
+                                </view>
+                                <text class="right-txt">{{ item.role }}</text>
+                            </view>
+                            <repeat wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                                <view class="cell">
+                                    <view>
+                                        <image src="../assets/images/location.png" />
+                                        <text>{{site.name}}</text>
+                                    </view>
+                                    <switch checked="{{ site.check == 0 ? false : true }}" @change="onChangeSite" />
+                                </view>
+                            </repeat>
+                        </view>
+                    </van-collapse-item>
+                </repeat>
+            </van-collapse>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">上级单位</view>
+            <view class="operate-cell">
+                <view class="cell">
+                    <view>
+                        <image src="../assets/images/location.png" />
+                        <text>省级地灾中心单位名</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">检测点</view>
+            <view class="operate-cell">
+                <view class="cell link">
+                    <view>
+                        <image src="../assets/images/location.png" />
+                        <text>永定区抚市溪联南板</text>
+                    </view>
+                    <view class="right-txt font21">
+                        <view>龙岩地灾中心</view>
+                        <view>负责人：张三</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class UserUnit extends wepy.page {
+        config = {
+            navigationBarTitleText: '我的单位',
+            usingComponents: {
+                "van-nav-bar": "../components/vant/nav-bar/index",
+                "van-collapse": "../components/vant/collapse/index",
+                "van-collapse-item": "../components/vant/collapse-item/index",
+            }
+        }
+        data = {
+            activeNames: ['1'],
+            userList: [{
+                    nickname: '张三',
+                    phone: 13143715009,
+                    num: 1,
+                    role: '普通用户',
+                    site: [{
+                        name: '永定区抚市溪联南板',
+                        check: 1
+                    }, {
+                        name: '漳平市南洋利田',
+                        check: 0
+                    }]
+                },
+                {
+                    nickname: '李四',
+                    phone: 15896585654,
+                    num: 1,
+                    role: '普通用户',
+                    site: [{
+                        name: '永定区抚市溪联南板',
+                        check: 1
+                    }]
+                }
+            ]
+        }
+        methods = {
+            onChangeSite(e) {
+                console.log(e);
+            },
+            onChangeColl(e) {
+                this.activeNames = e.detail;
+            },
+            onClickLeft() {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        }
+    }
+</script>
+
+<style lang="less">
+    page {
+        background-color: #FAF7FA;
+    }
+    .user-unit-container {
+        .head-wrap {
+            position: relative;
+            .user-wrap {
+                position: absolute;
+                right: 27rpx;
+                bottom: -5rpx;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                image {
+                    width: 117rpx;
+                    height: 117rpx;
+                    background-color: #ffffff;
+                }
+                .mark {
+                    margin-right: 21rpx;
+                    font-size: 21rpx;
+                    color: #fff;
+                    text-align: right;
+                    .flag {
+                        display: inline-block;
+                        width: 82rpx;
+                        height: 30rpx;
+                        line-height: 30rpx;
+                        margin-top: 12rpx;
+                        background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
+                        border-radius: 25px;
+                        font-size: 16rpx;
+                        text-align: center;
+                    }
+                }
+            }
+            .bg {
+                width: 100%;
+                height: 260rpx;
+            }
+        }
+        .panel-wrap {
+            margin-top: 20rpx;
+            font-size: 26rpx;
+            border-bottom: 1px solid #f7f7f7;
+            .title {
+                font-size: 21rpx;
+                color: #666;
+                padding: 15rpx 23rpx;
+            }
+            .icon {
+                width: 28rpx;
+                height: 34rpx;
+                vertical-align: middle;
+            }
+            .nickname {
+                color: #333;
+                margin: 0 40rpx 0 20rpx;
+            }
+            .tel {
+                color: #999;
+            }
+            .num {
+                padding-right: 50rpx;
+            }
+            .van-collapse-item__content {
+                padding: 0 0 0 75rpx;
+            }
+        }
+        .operate-cell {
+            .cell {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 21rpx 26rpx;
+                height: 88rpx;
+                border-bottom: 1px solid #f7f7f7;
+                font-size: 26rpx;
+                color: #333;
+                box-sizing: border-box;
+                background-color: #fff;
+                &:last-child {
+                    border-bottom: none;
+                }
+                image {
+                    width: 28rpx;
+                    height: 34rpx;
+                    vertical-align: middle;
+                    margin-right: 15rpx;
+                }
+                input,
+                .right-txt {
+                    text-align: right;
+                    font-size: 26rpx;
+                    color: #999999;
+                    margin-right: 60rpx;
+                }
+                switch {
+                    transform: scale(0.8);
+                }
+                &.link {
+                    position: relative;
+                    &:after {
+                        content: '\F00A';
+                        position: absolute;
+                        top: 50%;
+                        right: 32rpx;
+                        transform: translateY(-50%);
+                        font-family: 'vant-icon';
+                        color: #969799;
+                        font-size: 30rpx;
+                    }
+                    &:active {
+                        background-color: #f2f3f5;
+                    }
+                }
+            }
+        }
+        .font21 {
+            font-size: 21rpx!important;
+        }
+        .van-nav-bar {
+            background-image: none;
+        }
+        .van-hairline--bottom:after {
+            border: none;
+        }
+        .van-cell__value {
+            flex: none;
+        }
+    }
+</style>
+

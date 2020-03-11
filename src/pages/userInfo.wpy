@@ -1,0 +1,83 @@
+<template>
+    <view class="user-info-container">
+        <van-nav-bar title="我的信息" left-arrow left-text="返回" fixed custom-class="nav-rest" bind:click-left="onClickLeft" />
+        <view class="operate-cell">
+            <view class="cell">
+                <view>
+                    <image src="../assets/images/location.png" />
+                    <text>昵称</text>
+                </view>
+                <input value="{{ nickname }}" />
+            </view>
+            <view class="cell">
+                <view>
+                    <image src="../assets/images/location.png" />
+                    <text>手机号</text>
+                </view>
+                <input type="number" value="{{ phone }}" />
+            </view>
+        </view>
+        <button class="complete">完成</button>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class UserInfo extends wepy.page {
+        config = {
+            navigationBarTitleText: '我的信息',
+            usingComponents: {
+                "van-nav-bar": "../components/vant/nav-bar/index"
+            }
+        }
+        data = {
+            nickname: 'isyang',
+            phone: '13143715009'
+        }
+        methods = {
+            onClickLeft() {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        }
+    }
+</script>
+
+<style lang="less">
+    .user-info-container {
+        .operate-cell {
+            margin-top: 64px;
+            .cell {
+                display: flex;
+                justify-content: space-between;
+                padding: 28rpx 32rpx;
+                border-bottom: 1px solid #f7f7f7;
+                font-size: 26rpx;
+                color: #333;
+                image {
+                    width: 28rpx;
+                    height: 34rpx;
+                    vertical-align: middle;
+                    margin-right: 30rpx;
+                }
+                input {
+                    text-align: right;
+                    font-size: 28rpx;
+                    color: #999999;
+                }
+            }
+        }
+        .complete {
+            margin: 62rpx auto 0;
+            width: 335rpx;
+            height: 76rpx;
+            line-height: 76rpx;
+            background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+            color: #fff;
+            border-radius: 38rpx;
+            font-size: 28rpx;
+        }
+    }
+</style>
+

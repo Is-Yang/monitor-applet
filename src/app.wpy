@@ -2,6 +2,12 @@
 .txtColor {
     color: #41c297;
 }
+button::after {
+  border: none;
+}
+button:active {
+  opacity: 0.8;
+}
 </style>
 
 <script>
@@ -17,10 +23,12 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/menu0',
-      'pages/login',
       'pages/menu2',
+      'pages/menu0',
       'pages/menu1',
+      'pages/login',
+      'pages/userInfo',
+      'pages/userUnit',
     ],
     window: {
       backgroundTextStyle: 'light',

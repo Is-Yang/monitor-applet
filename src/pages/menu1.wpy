@@ -10,7 +10,6 @@
       usingComponents: {
         "van-cell": "../components/vant/cell/index",
         "van-field": "../components/vant/field/index",
-        "van-button": "../components/vant/button/index"
       }
     }
   }
