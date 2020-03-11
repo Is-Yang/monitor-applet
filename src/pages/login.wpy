@@ -3,31 +3,31 @@
     <view class="top-banner">
       <image src="../assets/images/logo.png" class="logo" />
       <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
-      <text>未注册的手机号码验证后自动创建账号"</text>
+      <text>未注册的手机号码验证后自动创建账号</text>
     </view>
     <view class="phone-wrap">
       <view class="title">手机号登录</view>
       <van-cell-group>
-        <van-field label="+86" title-width="60px" value="{{ phone }}" placeholder="请输入手机号" clearable maxlength="11" bind:change="onPhoneChange" class="" />
+        <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable maxlength="11" bind:change="onPhoneChange" class="" />
         <van-field label="验证码" title-width="60px" value="{{ code }}" 
           placeholder="请输入手机验证码" 
           bind:change="onCodeChange" 
           clearable
           use-button-slot>
-            <van-button wx:if="{{ timer == 0 }}" slot="button" size="small" class="get-code" @tap="getSendCode">获取验证码</van-button>
-            <text wx:else slot="button" size="small" class="txtColor">{{timer}}s后重试</text>
+            <button wx:if="{{ timer == 0 }}" slot="button" class="get-code" @tap="getSendCode">获取验证码</button>
+            <text wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
         </van-field>
       </van-cell-group>
       
-      <van-button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</van-button>
-      <van-button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</van-button>
+      <button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</button>
+      <button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</button>
     </view>
 
     <view class="other-login">
       <view class="sum">
         <text>其他登录方式</text>
       </view>
-      <image src="../assets/images/wechat.png" />
+      <image src="../assets/images/wechat.png" @tap="wechatLogin" />
     </view>
 
     <view class="agree">
@@ -43,8 +43,7 @@
       navigationBarTitleText: '登录',
       usingComponents: {
         "van-cell": "../components/vant/cell/index",
-        "van-field": "../components/vant/field/index",
-        "van-button": "../components/vant/button/index"
+        "van-field": "../components/vant/field/index"
       }
     }
 
@@ -57,8 +56,16 @@
 
     methods = {
       tapLogin() {
-        wx.navigateTo({
+        wx.switchTab({
             url: '/pages/menu0'
+        })
+      },
+      // 微信授权登录
+      wechatLogin() {
+        wx.login({
+          success: ((res) => {
+            console.log(res);
+          })
         })
       },
       // 发送验证码
@@ -128,24 +135,33 @@
     .txtColor {
       font-size: 21rpx;
     }
-    .get-code button {
+    .van-field__button {
+      height: 54rpx;
+      line-height: 40rpx;
+    }
+    .get-code {
       width: 164rpx;
       height: 54rpx;
+      line-height: 54rpx;
       background-color: #e1e1e1;
       border-radius: 2rpx;
       color: #41c297;
       font-size: 21rpx;
       border: none;
     }
-    .login-btn button {
+    .login-btn {
+      width: 586rpx;
+      height: 76rpx;
+      line-height: 76rpx;
       margin-top: 83rpx;
       color: #ffffff;
       pointer-events: none;
       background-color: #e6e6e6;
       font-size: 28rpx;
       font-weight: bold;
+      border-radius: 38rpx;
     }
-    .login-btn.has button{
+    .login-btn.has{
       background-image: linear-gradient(0deg, 
         #38c099 0%, 
         #59c89a 50%, 

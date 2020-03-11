@@ -4,8 +4,11 @@
     <view class="head-wrap">
       <image src="../assets/images/my_bg.png" class="bg" />
       <view class="my-box">
-        <view class="user-info">
-          <image src="../assets/images/camera_w.png" class="photo" />
+        <view class="user-info" bindtap="toUserInfo">
+          <view class="photo" catchtap="uploadPhoto">
+            <image wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera" />
+            <image wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill" />
+          </view>
           <view>
             <view>昵称</view>
             <view>136****7815</view>
@@ -17,23 +20,21 @@
         </view>
       </view>
     </view>
-
     <view class="operate-cell">
       <view class="cell">
-          <image src="../assets/images/location.png" />
-          <text>操作记录</text>
+        <image src="../assets/images/location.png" />
+        <text>操作记录</text>
       </view>
       <view class="cell">
-          <image src="../assets/images/location.png" />
-          <text>监测点</text>
+        <image src="../assets/images/location.png" />
+        <text>监测点</text>
       </view>
       <view class="cell">
-          <image src="../assets/images/location.png" />
-          <text>设置</text>
+        <image src="../assets/images/location.png" />
+        <text>设置</text>
       </view>
     </view>
-
-    <van-button round class="logout">退出登录</van-button>
+    <button class="logout">退出登录</button>
   </view>
 </template>
 
@@ -43,9 +44,44 @@
     config = {
       navigationBarTitleText: '我的',
       usingComponents: {
-        "van-cell": "../components/vant/cell/index",
-        "van-button": "../components/vant/button/index",
         "van-nav-bar": "../components/vant/nav-bar/index"
+      }
+    }
+    data = {
+      userPhoto: ''
+    }
+
+    methods = {
+      toUserInfo() {
+        wx.navigateTo({
+          url: '/pages/userInfo'
+        })
+      },
+      // 上传头像
+      uploadPhoto() {
+        let that = this;
+        wx.chooseImage({
+          count: 1, // 默认1张
+          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            let tempFilePaths = res.tempFilePaths
+            that.userPhoto = tempFilePaths[0];
+            // wx.uploadFile({
+            //   url: 'http://localhost:8080/upload/fileUpload', //仅为示例，非真实的接口地址
+            //   filePath: tempFilePaths[0],
+            //   name: "file",
+            //   header: {
+            //     "Content-Type": "multipart/form-data"
+            //   },
+            //   formData: {
+            //   },
+            //   success: function(res) {
+            //     console.log(res);
+            //   }
+            // });
+          }
+        })
       }
     }
   }
@@ -54,7 +90,7 @@
 <style lang="less">
   .menu0-container {
     .head-wrap {
-      height: 480rpx;
+      padding-bottom: 60rpx;
       position: relative;
       background-color: #FAF7FA;
       .bg {
@@ -78,17 +114,26 @@
         align-items: center;
         position: relative;
         padding: 40rpx;
-        line-height: 40rpx;
+        line-height: 38rpx;
         border-bottom: 1px solid rgba(56, 192, 153, 0.3);
         color: #333;
         box-sizing: border-box;
+        font-size: 28rpx;
         .photo {
-          width: 75rpx;
-          height: 62rpx;
-          background-image: linear-gradient(#38c099, #38c099), linear-gradient(#f8f8fa, #f8f8fa);
-          padding: 28rpx 23rpx;
-          border-radius: 50%;
+          width: 118rpx;
+          height: 118rpx;
           margin-right: 39rpx;
+          image {
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+          }
+          .camera {
+            width: 75rpx;
+            height: 62rpx;
+            background-image: linear-gradient(#38c099, #38c099), linear-gradient(#f8f8fa, #f8f8fa);
+            padding: 28rpx 23rpx;
+          }
         }
         &:after {
           content: '\F00A';
@@ -111,12 +156,15 @@
           width: 105rpx;
           height: 40rpx;
           background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
-          background-blend-mode: normal, normal;
           border-radius: 19rpx;
         }
       }
     }
-
+    @media screen and (max-width: 320px) {
+      .head-wrap {
+        padding-bottom: 80rpx;
+      }
+    }
     .operate-cell {
       .cell {
         position: relative;
@@ -130,7 +178,6 @@
           vertical-align: middle;
           margin-right: 30rpx;
         }
-        
         &:after {
           content: '\F00A';
           position: absolute;
@@ -141,29 +188,21 @@
           color: #ccc;
           font-size: 30rpx;
         }
-
         &:active {
           background-color: #f2f3f5;
         }
       }
     }
     .logout {
-      display: block;
       margin: 62rpx auto 0;
-      text-align: center;
-      button{
-        width: 335rpx;
-        height: 76rpx;
-        background-image: linear-gradient(0deg, 
-          #38c099 0%, 
-          #59c89a 50%, 
-          #cfe49d 100%), 
-        linear-gradient(
-          #e6e6e6, 
-          #e6e6e6);
-          color: #fff;
-      }
-    } 
+      width: 335rpx;
+      height: 76rpx;
+      line-height: 76rpx;
+      background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+      color: #fff;
+      border-radius: 38rpx;
+      font-size: 28rpx;
+    }
     .van-nav-bar {
       background-image: none;
     }
