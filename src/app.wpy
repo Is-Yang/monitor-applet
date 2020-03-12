@@ -1,108 +1,82 @@
 <style lang="less">
-.txtColor {
+  .txtColor {
     color: #41c297;
-}
-button::after {
-  border: none;
-}
-button:active {
-  opacity: 0.8;
-}
+  }
+  button::after {
+    border: none;
+  }
+  button:active {
+    opacity: 0.8;
+  }
 </style>
 
 <script>
-import wepy from 'wepy'
-import 'wepy-async-function'
+  import wepy from 'wepy'
+  import 'wepy-async-function'
+  import {
+    setStore
+  } from 'wepy-redux'
+  import configStore from './store'
+  
+  const store = configStore()
+  setStore(store)
 
-import { setStore } from 'wepy-redux'
-import configStore from './store'
-
-const store = configStore()
-setStore(store)
-
-export default class extends wepy.app {
-  config = {
-    pages: [
-      'pages/menu2',
-      'pages/menu0',
-      'pages/menu1',
-      'pages/login',
-      'pages/userInfo',
-      'pages/userUnit',
-    ],
-    window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#41c297',
-      navigationBarTitleText: '龙芯北斗地灾监控系统',
-      navigationBarTextStyle: 'white',
-      navigationStyle: "custom"
-    },
-    tabBar: {
-      "color": "#333",
-      "selectedColor": "#41c297",
-      "borderStyle": "black",
-      "backgroundColor": "#ffffff",
-      "list": [
-        {
-          "pagePath": "pages/menu0",
-          "text": '检测',
-          "iconPath": '/assets/images/icon/detection.png',
-          "selectedIconPath": '/assets/images/icon/detection_cur.png'
-        },
-        {
-          "pagePath": "pages/menu1",
-          "text": '预警',
-          "iconPath": '/assets/images/icon/warning.png',
-          "selectedIconPath": '/assets/images/icon/warning_cur.png'
-
-        }, 
-        {
-          "pagePath": "pages/menu2",
-          "text": '我的',
-          "iconPath": '/assets/images/icon/my.png',
-          "selectedIconPath": '/assets/images/icon/my_cur.png'
-        }
-      ]
-    },
-  }
-
-  globalData = {
-    userInfo: null
-  }
-
-  constructor () {
-    super()
-    this.use('requestfix')
-  }
-
-  onLaunch() {
-    this.testAsync()
-  }
-
-  sleep (s) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve('promise resolved')
-      }, s * 1000)
-    })
-  }
-
-  async testAsync () {
-    const data = await this.sleep(3)
-    console.log(data)
-  }
-
-  getUserInfo(cb) {
-    const that = this
-    if (this.globalData.userInfo) {
-      return this.globalData.userInfo
+  export default class extends wepy.app {
+    config = {
+      pages: [
+        'pages/login',
+        'pages/menu2',
+        'pages/menu0',
+        'pages/menu1',
+        'pages/userInfo',
+        'pages/userUnit',
+      ],
+      window: {
+        backgroundTextStyle: 'light',
+        navigationBarBackgroundColor: '#41c297',
+        navigationBarTitleText: '龙芯北斗地灾监控系统',
+        navigationBarTextStyle: 'white',
+        navigationStyle: "custom"
+      },
+      tabBar: {
+        "color": "#333",
+        "selectedColor": "#41c297",
+        "borderStyle": "black",
+        "backgroundColor": "#ffffff",
+        "list": [{
+            "pagePath": "pages/menu0",
+            "text": '检测',
+            "iconPath": '/assets/images/icon/detection.png',
+            "selectedIconPath": '/assets/images/icon/detection_cur.png'
+          },
+          {
+            "pagePath": "pages/menu1",
+            "text": '预警',
+            "iconPath": '/assets/images/icon/warning.png',
+            "selectedIconPath": '/assets/images/icon/warning_cur.png'
+          },
+          {
+            "pagePath": "pages/menu2",
+            "text": '我的',
+            "iconPath": '/assets/images/icon/my.png',
+            "selectedIconPath": '/assets/images/icon/my_cur.png'
+          }
+        ]
+      },
     }
-    wepy.getUserInfo({
-      success (res) {
-        that.globalData.userInfo = res.userInfo
-        cb && cb(res.userInfo)
-      }
-    })
+
+    constructor() {
+      super()
+      // 开启promise await async等功能的必需代码
+      this.use('promisify');
+      // 解决同时发起多个request时候的异常修复
+      this.use('requestfix');
+    }
+
+    // 静态资源 调用wepy.$instance.STATICDATA.
+    STATICDATA = {
+      defaultImg: '', // 默认图
+    }
+
   }
-}
 </script>

@@ -14,7 +14,7 @@
             <view>136****7815</view>
           </view>
         </view>
-        <view class="mark">
+        <view class="mark" bindtap="toUserUnit">
           <text>龙岩地灾中心</text>
           <text class="flag"/>
         </view>
@@ -22,15 +22,15 @@
     </view>
     <view class="operate-cell">
       <view class="cell">
-        <image src="../assets/images/location.png"/>
+        <image src="../assets/images/option.png" mode="aspectFit"/>
         <text>操作记录</text>
       </view>
       <view class="cell">
-        <image src="../assets/images/location.png"/>
+        <image src="../assets/images/location.png" mode="aspectFit"/>
         <text>监测点</text>
       </view>
       <view class="cell">
-        <image src="../assets/images/location.png"/>
+        <image src="../assets/images/location.png" mode="aspectFit"/>
         <text>设置</text>
       </view>
     </view>

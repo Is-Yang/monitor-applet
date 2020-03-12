@@ -218,10 +218,9 @@
           color: #333;
         }
         button {
-          width: 105rpx;
-          height: 40rpx;
-          line-height: 40rpx;
+          padding: 12rpx 20rpx;
           margin: 0;
+          line-height: 1.2;
           background-color: #52cc7a;
           border: solid 1rpx #3dc66a;
           border-radius: 25px;

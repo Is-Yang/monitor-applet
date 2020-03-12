@@ -14,7 +14,7 @@
             <view>136****7815</view>
           </view>
         </view>
-        <view class="mark">
+        <view class="mark" bindtap="toUserUnit">
           <text>龙岩地灾中心</text>
           <text class="flag"></text>
         </view>
@@ -22,15 +22,15 @@
     </view>
     <view class="operate-cell">
       <view class="cell">
-        <image src="../assets/images/location.png" />
+        <image src="../assets/images/option.png" mode="aspectFit" />
         <text>操作记录</text>
       </view>
       <view class="cell">
-        <image src="../assets/images/location.png" />
+        <image src="../assets/images/location.png" mode="aspectFit" />
         <text>监测点</text>
       </view>
       <view class="cell">
-        <image src="../assets/images/location.png" />
+        <image src="../assets/images/location.png" mode="aspectFit" />
         <text>设置</text>
       </view>
     </view>
@@ -55,6 +55,11 @@
       toUserInfo() {
         wx.navigateTo({
           url: '/pages/userInfo'
+        })
+      },
+      toUserUnit() {
+        wx.navigateTo({
+          url: '/pages/userUnit'
         })
       },
       // 上传头像
@@ -147,7 +152,7 @@
       .mark {
         display: flex;
         justify-content: space-between;
-        padding: 20rpx 32rpx 20rpx 59rpx;
+        padding: 20rpx 32rpx 50rpx 59rpx;
         color: #333333;
         font-size: 21rpx;
         line-height: 38rpx;
@@ -173,7 +178,7 @@
         border-bottom: 1px solid #f7f7f7;
         font-size: 26rpx;
         image {
-          width: 28rpx;
+          width: 34rpx;
           height: 34rpx;
           vertical-align: middle;
           margin-right: 30rpx;

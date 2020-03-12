@@ -17,7 +17,7 @@
                 <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
                     <van-collapse-item name="{{index}}">
                         <view slot="title">
-                            <image src="../assets/images/location.png" class="icon"/>
+                            <image src="../assets/images/user.png" mode="aspectFit" class="icon"/>
                             <text class="nickname">{{ item.nickname}}</text>
                             <text class="tel">{{ item.phone }}</text>
                         </view>
@@ -27,14 +27,14 @@
                         <view class="operate-cell">
                             <view class="cell">
                                 <view>
-                                    <image src="../assets/images/location.png"/>
+                                    <image src="../assets/images/phone.png" mode="aspectFit"/>
                                     <text>手机号</text>
                                 </view>
                                 <text class="right-txt">{{ item.phone }}</text>
                             </view>
                             <view class="cell link">
                                 <view>
-                                    <image src="../assets/images/location.png"/>
+                                    <image src="../assets/images/role.png" mode="aspectFit"/>
                                     <text>角色</text>
                                 </view>
                                 <text class="right-txt">{{ item.role }}</text>
@@ -42,7 +42,7 @@
                             <block wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
                                 <view class="cell">
                                     <view>
-                                        <image src="../assets/images/location.png"/>
+                                        <image src="../assets/images/location.png" mode="aspectFit"/>
                                         <text>{{site.name}}</text>
                                     </view>
                                     <switch checked="{{ site.check == 0 ? false : true }}" bindchange="onChangeSite"/>
@@ -58,7 +58,7 @@
             <view class="operate-cell">
                 <view class="cell">
                     <view>
-                        <image src="../assets/images/location.png"/>
+                        <image src="../assets/images/write.png" mode="aspectFit"/>
                         <text>省级地灾中心单位名</text>
                     </view>
                 </view>
@@ -69,7 +69,7 @@
             <view class="operate-cell">
                 <view class="cell link">
                     <view>
-                        <image src="../assets/images/location.png"/>
+                        <image src="../assets/images/location.png" mode="aspectFit"/>
                         <text>永定区抚市溪联南板</text>
                     </view>
                     <view class="right-txt font21">

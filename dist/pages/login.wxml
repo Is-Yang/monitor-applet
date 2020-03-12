@@ -8,8 +8,8 @@
     <view class="phone-wrap">
       <view class="title">手机号登录</view>
       <van-cell-group>
-        <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable="clearable" maxlength="11"  bind:change="onPhoneChange" class=""/>
-        <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码"  bind:change="onCodeChange" clearable="clearable" use-button-slot="use-button-slot">
+        <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable="clearable" maxlength="11" bindinput="onPhoneInput" class=""/>
+        <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" bindinput="onCodeInput" clearable="clearable" use-button-slot="use-button-slot">
             <button  wx:if="{{ timer == 0 }}" slot="button" class="get-code" bindtap="getSendCode">获取验证码</button>
             <text  wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
         </van-field>
