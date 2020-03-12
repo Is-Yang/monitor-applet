@@ -1,0 +1,82 @@
+
+    <view class="user-unit-container">
+        <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-rest"  bind:click-left="onClickLeft"/>
+        <view class="head-wrap">
+            <image src="../assets/images/my_bg.png" class="bg"/>
+            <view class="user-wrap">
+                <view class="mark">
+                    <view>龙岩地灾中心</view>
+                    <view class="flag">管理员</view>
+                </view>
+                <image src=""/>
+            </view>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">用户列表</view>
+            <van-collapse value="{{ activeNames }}" bindchange="onChangeColl">
+                <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                    <van-collapse-item name="{{index}}">
+                        <view slot="title">
+                            <image src="../assets/images/location.png" class="icon"/>
+                            <text class="nickname">{{ item.nickname}}</text>
+                            <text class="tel">{{ item.phone }}</text>
+                        </view>
+                        <view slot="value">
+                            <text class="num">监测点2/2</text>
+                        </view>
+                        <view class="operate-cell">
+                            <view class="cell">
+                                <view>
+                                    <image src="../assets/images/location.png"/>
+                                    <text>手机号</text>
+                                </view>
+                                <text class="right-txt">{{ item.phone }}</text>
+                            </view>
+                            <view class="cell link">
+                                <view>
+                                    <image src="../assets/images/location.png"/>
+                                    <text>角色</text>
+                                </view>
+                                <text class="right-txt">{{ item.role }}</text>
+                            </view>
+                            <block wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                                <view class="cell">
+                                    <view>
+                                        <image src="../assets/images/location.png"/>
+                                        <text>{{site.name}}</text>
+                                    </view>
+                                    <switch checked="{{ site.check == 0 ? false : true }}" bindchange="onChangeSite"/>
+                                </view>
+                            </block>
+                        </view>
+                    </van-collapse-item>
+                </block>
+            </van-collapse>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">上级单位</view>
+            <view class="operate-cell">
+                <view class="cell">
+                    <view>
+                        <image src="../assets/images/location.png"/>
+                        <text>省级地灾中心单位名</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="panel-wrap">
+            <view class="title">检测点</view>
+            <view class="operate-cell">
+                <view class="cell link">
+                    <view>
+                        <image src="../assets/images/location.png"/>
+                        <text>永定区抚市溪联南板</text>
+                    </view>
+                    <view class="right-txt font21">
+                        <view>龙岩地灾中心</view>
+                        <view>负责人：张三</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>

@@ -1,0 +1,38 @@
+
+  <view class="menu0-container">
+    <van-nav-bar title="我的" fixed="fixed" custom-class="nav-rest"/>
+    <view class="head-wrap">
+      <image src="../assets/images/my_bg.png" class="bg"/>
+      <view class="my-box">
+        <view class="user-info" bindtap="toUserInfo">
+          <view class="photo" catchtap="uploadPhoto">
+            <image  wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera"/>
+            <image  wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill"/>
+          </view>
+          <view>
+            <view>昵称</view>
+            <view>136****7815</view>
+          </view>
+        </view>
+        <view class="mark">
+          <text>龙岩地灾中心</text>
+          <text class="flag"/>
+        </view>
+      </view>
+    </view>
+    <view class="operate-cell">
+      <view class="cell">
+        <image src="../assets/images/location.png"/>
+        <text>操作记录</text>
+      </view>
+      <view class="cell">
+        <image src="../assets/images/location.png"/>
+        <text>监测点</text>
+      </view>
+      <view class="cell">
+        <image src="../assets/images/location.png"/>
+        <text>设置</text>
+      </view>
+    </view>
+    <button class="logout">退出登录</button>
+  </view>

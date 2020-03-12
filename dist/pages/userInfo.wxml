@@ -1,0 +1,21 @@
+
+    <view class="user-info-container">
+        <van-nav-bar title="我的信息" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-rest"  bind:click-left="onClickLeft"/>
+        <view class="operate-cell">
+            <view class="cell">
+                <view>
+                    <image src="../assets/images/location.png"/>
+                    <text>昵称</text>
+                </view>
+                <input value="{{ nickname }}"/>
+            </view>
+            <view class="cell">
+                <view>
+                    <image src="../assets/images/location.png"/>
+                    <text>手机号</text>
+                </view>
+                <input type="number" value="{{ phone }}"/>
+            </view>
+        </view>
+        <button class="complete">完成</button>
+    </view>

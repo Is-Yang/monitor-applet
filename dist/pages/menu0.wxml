@@ -1,0 +1,95 @@
+
+  <view class="menu0-container">
+    <van-nav-bar title="龙芯北斗地灾监控系统" fixed="fixed"/>
+
+    <map id="map" longitude="113.324520" latitude="23.099994" scale="14" bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location="show-location" style="width: 100%; height: 588rpx;"/>
+
+    <view class="monitor-list">
+      <block  wx:for="{{mointorList}}" wx:key="index" wx:index="index" wx:for-item="item">
+        <view class="item">
+          <view class="head">
+            <text class="company">{{item.company}}</text>
+            <button>上报预警</button>
+          </view>
+          <view class="content">
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/surface.png"/>
+                <text>表面位移</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <view>X位移</view>
+                  <view>{{item.surface.x}}</view>
+                </view>
+                <view class="data">
+                  <view>Y位移</view>
+                  <view>{{item.surface.y}}</view>
+                </view>
+                <view class="data">
+                  <view>H位移</view>
+                  <view>{{item.surface.h}}</view>
+                </view>
+                <van-icon name="arrow" color="#ccc"/>
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/deep.png"/>
+                <text>深部位移</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <view>温度</view>
+                  <view>{{item.deep.num1}}</view>
+                </view>
+                <view class="data">
+                  <view>倾斜度</view>
+                  <view>{{item.deep.num2}}</view>
+                </view>
+                <view class="data">
+                  <view>应变频率</view>
+                  <view>{{item.deep.num3}}</view>
+                </view>
+                <view class="data">
+                  <view>补偿频率</view>
+                  <view>{{item.deep.num4}}</view>
+                </view>
+                <van-icon name="arrow" color="#ccc"/>
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/rainfall.png"/>
+                <text>降雨量</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>日均：</text>
+                  <text>{{item.rainfall.num1}}</text>ml / 
+                  <text>周均：</text>
+                  <text>{{item.rainfall.num2}}</text>ml
+                </view>
+                <van-icon name="arrow" color="#ccc"/>
+              </view>
+            </view>
+            <view class="row">
+              <view class="left">
+                <image src="../assets/images/humiture.png"/>
+                <text>温湿度</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>温度：</text>
+                  <text>{{item.humiture.num1}}℃</text> / 
+                  <text>湿度：</text>
+                  <text>{{item.humiture.num2}}</text>
+                </view>
+                <van-icon name="arrow" color="#ccc"/>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>

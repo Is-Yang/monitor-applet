@@ -1,0 +1,14 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require('./../common/component.js');
+component_1.VantComponent({
+    classes: ['header-class', 'footer-class'],
+    props: {
+        desc: String,
+        title: String,
+        status: String,
+        useFooterSlot: Boolean
+    }
+});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbIk9iamVjdCIsImRlZmluZVByb3BlcnR5IiwiZXhwb3J0cyIsInZhbHVlIiwiY29tcG9uZW50XzEiLCJyZXF1aXJlIiwiVmFudENvbXBvbmVudCIsImNsYXNzZXMiLCJwcm9wcyIsImRlc2MiLCJTdHJpbmciLCJ0aXRsZSIsInN0YXR1cyIsInVzZUZvb3RlclNsb3QiLCJCb29sZWFuIl0sIm1hcHBpbmdzIjoiQUFBQTs7QUFDQUEsT0FBT0MsY0FBUCxDQUFzQkMsT0FBdEIsRUFBK0IsWUFBL0IsRUFBNkMsRUFBRUMsT0FBTyxJQUFULEVBQTdDO0FBQ0EsSUFBSUMsY0FBY0MsUUFBUSxxQkFBUixDQUFsQjtBQUNBRCxZQUFZRSxhQUFaLENBQTBCO0FBQ3RCQyxhQUFTLENBQUMsY0FBRCxFQUFpQixjQUFqQixDQURhO0FBRXRCQyxXQUFPO0FBQ0hDLGNBQU1DLE1BREg7QUFFSEMsZUFBT0QsTUFGSjtBQUdIRSxnQkFBUUYsTUFITDtBQUlIRyx1QkFBZUM7QUFKWjtBQUZlLENBQTFCIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlc0NvbnRlbnQiOlsiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG52YXIgY29tcG9uZW50XzEgPSByZXF1aXJlKFwiLi4vY29tbW9uL2NvbXBvbmVudFwiKTtcbmNvbXBvbmVudF8xLlZhbnRDb21wb25lbnQoe1xuICAgIGNsYXNzZXM6IFsnaGVhZGVyLWNsYXNzJywgJ2Zvb3Rlci1jbGFzcyddLFxuICAgIHByb3BzOiB7XG4gICAgICAgIGRlc2M6IFN0cmluZyxcbiAgICAgICAgdGl0bGU6IFN0cmluZyxcbiAgICAgICAgc3RhdHVzOiBTdHJpbmcsXG4gICAgICAgIHVzZUZvb3RlclNsb3Q6IEJvb2xlYW5cbiAgICB9XG59KTtcbiJdfQ==
