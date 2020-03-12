@@ -6,7 +6,7 @@ import tip from '../utils/tip'
 
 import qs from 'qs';
 
-const wxRequest = async (params = {}, url, showLoding = true) => {
+const wxRequest = async(params = {}, url, showLoding = true) => {
     showLoding && tip.loading();
 
     let header = {

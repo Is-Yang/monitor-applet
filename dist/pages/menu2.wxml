@@ -15,8 +15,11 @@
           </view>
         </view>
         <view class="mark" bindtap="toUserUnit">
-          <text>龙岩地灾中心</text>
-          <text class="flag"/>
+          <text wx:if="{{company != ''}}" class="company">{{company}}</text>
+          <text wx:else class="no">未加入任何单位</text>
+
+          <text wx:if="{{role != ''}}" class="role">{{role}}</text>
+          <text wx:else class="flag">扫码加入</text>
         </view>
       </view>
     </view>

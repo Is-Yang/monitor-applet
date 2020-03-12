@@ -1,1 +1,9 @@
-.txtColor{color:#41c297}button::after{border:none}button:active{opacity:.8}
+.txtColor {
+  color: #41c297;
+}
+button::after {
+  border: none;
+}
+button:active {
+  opacity: 0.8;
+}
