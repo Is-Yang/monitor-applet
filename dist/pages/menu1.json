@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"登录","usingComponents":{"van-cell":"../components/vant/cell/index","van-field":"../components/vant/field/index"}}
+{"navigationBarTitleText":"监测预警","usingComponents":{"van-icon":"../components/vant/icon/index","van-nav-bar":"../components/vant/nav-bar/index"}}

@@ -1,0 +1,53 @@
+.menu1-container .nav-reset.van-nav-bar {
+  background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient(#ededed, #ededed);
+}
+.menu1-container .nav-reset .van-nav-bar__left {
+  padding: 12rpx 15rpx 12rpx 20rpx;
+  border-radius: 25px;
+  border: solid 1rpx #ffffff;
+  background-color: transparent;
+  color: #fff;
+  line-height: 1;
+  font-size: 16rpx;
+  bottom: 10px;
+}
+.menu1-container .nav-reset .van-nav-bar__left::after {
+  content: "\F00A";
+  display: inline-block;
+  font-family: 'vant-icon';
+  font-size: 21rpx;
+  padding-left: 5rpx;
+  vertical-align: middle;
+}
+.menu1-container .nav-reset .van-nav-bar__left:active {
+  opacity: 0.8;
+}
+.menu1-container .screen-page-wrap {
+  position: fixed;
+  top: 64px;
+  z-index: 1;
+  width: 100%;
+  height: 80rpx;
+  background-color: #FAF7FA;
+}
+.menu1-container .screen-page-wrap .box-view {
+  padding: 0 20rpx 0 15rpx;
+  height: 70rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  font-size: 21rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+.menu1-container .screen-page-wrap .box-view .left-screen {
+  display: flex;
+}
+.menu1-container .screen-page-wrap .box-view .left-screen .opt {
+  padding: 0 30rpx;
+}
+.menu1-container .screen-page-wrap .box-view .right-page .split {
+  color: #ccc;
+  padding: 0 10rpx;
+}

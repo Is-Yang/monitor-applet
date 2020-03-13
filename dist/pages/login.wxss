@@ -90,10 +90,17 @@
   color: #cccccc;
   background-color: #fff;
 }
+.login-container .other-login .reset-button {
+  background-color: transparent;
+  margin: 30rpx 20rpx;
+  display: inline-block;
+  padding: 0;
+  line-height: 1;
+  border: none;
+}
 .login-container .other-login image {
   width: 83rpx;
   height: 67rpx;
-  margin: 30rpx 20rpx;
 }
 .login-container .agree {
   position: absolute;

@@ -27,7 +27,7 @@
       <view class="sum">
         <text>其他登录方式</text>
       </view>
-      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
         <image src="../assets/images/wechat.png" />
       </button>
     </view>
@@ -253,10 +253,18 @@
           }
       }
 
+      .reset-button {
+        background-color: transparent;
+        margin: 30rpx 20rpx;
+        display: inline-block;
+        padding: 0;
+        line-height: 1;
+        border: none;
+      }
+
       image {
         width: 83rpx;
         height: 67rpx;
-        margin: 30rpx 20rpx;
       }
     }
 

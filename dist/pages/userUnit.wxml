@@ -1,6 +1,6 @@
 
     <view class="user-unit-container">
-        <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-rest"  bind:click-left="onClickLeft"/>
+        <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
         <view class="head-wrap">
             <image src="../assets/images/my_bg.png" class="bg"/>
             <view class="user-wrap">

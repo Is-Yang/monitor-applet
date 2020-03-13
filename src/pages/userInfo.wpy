@@ -1,6 +1,6 @@
 <template>
     <view class="user-info-container">
-        <van-nav-bar title="我的信息" left-arrow left-text="返回" fixed custom-class="nav-rest" bind:click-left="onClickLeft" />
+        <van-nav-bar title="我的信息" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view class="operate-cell">
             <view class="cell">
                 <view>

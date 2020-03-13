@@ -23,7 +23,7 @@
       <view class="sum">
         <text>其他登录方式</text>
       </view>
-      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
         <image src="../assets/images/wechat.png"/>
       </button>
     </view>

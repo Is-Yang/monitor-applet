@@ -1,6 +1,6 @@
 
   <view class="menu0-container">
-    <van-nav-bar title="我的" fixed="fixed" custom-class="nav-rest"/>
+    <van-nav-bar title="我的" fixed="fixed" custom-class="nav-reset"/>
     <view class="head-wrap">
       <image src="../assets/images/my_bg.png" class="bg"/>
       <view class="my-box">
