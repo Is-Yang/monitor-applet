@@ -27,7 +27,9 @@
       <view class="sum">
         <text>其他登录方式</text>
       </view>
-      <image src="../assets/images/wechat.png" @tap="wechatLogin" />
+      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+        <image src="../assets/images/wechat.png" />
+      </button>
     </view>
 
     <view class="agree">
@@ -63,7 +65,9 @@
         })
       },
       // 微信授权登录
-      wechatLogin() {
+      bindGetUserInfo(event) {
+        console.log(event)
+
         wx.login({
           success: ((res) => {
             console.log(res);

@@ -23,7 +23,9 @@
       <view class="sum">
         <text>其他登录方式</text>
       </view>
-      <image src="../assets/images/wechat.png" bindtap="wechatLogin"/>
+      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">
+        <image src="../assets/images/wechat.png"/>
+      </button>
     </view>
 
     <view class="agree">
