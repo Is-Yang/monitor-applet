@@ -1,0 +1,150 @@
+<template>
+    <view class="report-info-container">
+        <van-nav-bar title="预警上报" left-arrow left-text="返回" fixed custom-class="nav-reset" />
+        <view class="report-form" style="padding-top: {{statusBarHeight}}px">
+            <view class="cell link">
+                <text>地点</text>
+                <view class="right-txt">永定区抚市溪联南板</view>
+            </view>
+            <view class="cell link">
+                <text>等级</text>
+                <view class="right-txt">一级预警</view>
+            </view>
+            <view class="cell">
+                <text>说明</text>
+                <view>
+                    <textarea maxlength="200" />
+                    <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
+                </view>
+            </view>
+            <view class="cell">
+                <text>时间</text>
+                <view class="right-txt">2019年11月20日 17:23:12</view>
+            </view>
+            <view class="cell link">
+                <text>相关人员</text>
+                <view class="right-txt"></view>
+            </view>
+            <view class="cell link">
+                <text>拍照</text>
+                <view class="right-txt">
+                    <text>可拍3张</text>
+                    <image src="../assets/images/camera.png" class="icon-camera" mode="aspectFit" />
+                </view>
+            </view>
+
+            <view class="show-picture">
+                
+            </view>
+        </view>
+        <button class="submit">提交</button>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class ReportInfo extends wepy.page {
+        config = {
+            navigationBarTitleText: '预警上报',
+            usingComponents: {
+                "van-nav-bar": "../components/vant/nav-bar/index"
+            }
+        }
+
+        data = {
+            statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+        }
+    }
+</script>
+
+<style lang="less">
+    .report-info-container {
+        .nav-reset {
+            &.van-nav-bar {
+                background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient( #ededed, #ededed);
+            }
+        }
+        .report-form {
+            margin-top: 44px;
+            .cell {
+                display: flex;
+                justify-content: space-between;
+                padding: 28rpx 32rpx;
+                border-bottom: 1px solid #f7f7f7;
+                font-size: 26rpx;
+                color: #333;
+                box-sizing: border-box;
+                background-color: #fff;
+                .right-txt {
+                    text-align: right;
+                    font-size: 26rpx;
+                    color: #999999;
+                    margin-right: 45rpx;
+                }
+                &.link {
+                    position: relative;
+                    &:after {
+                        content: '\F00A';
+                        position: absolute;
+                        top: 50%;
+                        right: 32rpx;
+                        transform: translateY(-50%);
+                        font-family: 'vant-icon';
+                        color: #969799;
+                        font-size: 30rpx;
+                    }
+                    &:active {
+                        background-color: #f2f3f5;
+                    }
+                }
+                textarea {
+                    width: 589rpx;
+                    height: 255rpx;
+                    padding: 12rpx;
+                    background-color: #ffffff;
+                    border:1rpx solid #eeeeee;
+                    color: #999999;
+                    box-sizing: border-box;
+                    font-size: 26rpx;
+                }
+                .tips {
+                    margin-top: 15rpx;
+                    color: #999;
+                    font-size: 19rpx;
+                    text-align: right;
+                }
+                .icon-camera {
+                    width: 32rpx;
+                    height: 32rpx;
+                    margin-left: 15rpx;
+                    vertical-align: text-bottom;
+                }
+            }
+
+            .show-picture {
+                padding: 28rpx 60rpx 28rpx 32rpx;
+                display: flex;
+                justify-content: space-between;
+                height: 150rpx;
+
+                image {
+                    width: 211rpx;
+                    height: 141rpx;
+                    background-color: #cccccc;
+                }
+            }
+        }
+        .submit {
+            margin: 50rpx auto 0;
+            width: 335rpx;
+            height: 76rpx;
+            line-height: 76rpx;
+            background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient( #e6e6e6, #e6e6e6);
+            color: #fff;
+            border-radius: 25px;
+            font-size: 28rpx;
+        }
+    }
+</style>
+
+

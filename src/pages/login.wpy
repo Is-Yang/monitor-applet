@@ -1,284 +1,252 @@
 <template>
-  <view class="login-container">
-    <view class="top-banner">
-      <image src="../assets/images/logo.png" class="logo" />
-      <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
-      <text>未注册的手机号码验证后自动创建账号</text>
+    <view class="login-container">
+        <view class="top-banner" style="padding-top: {{ statusBarHeight}}px">
+            <image src="../assets/images/logo.png" class="logo" />
+            <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
+            <text>未注册的手机号码验证后自动创建账号</text>
+        </view>
+        <view class="phone-wrap">
+            <view class="title">手机号登录</view>
+            <van-cell-group>
+                <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable maxlength="11" @input="onPhoneInput" class="" />
+                <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" @input="onCodeInput" clearable use-button-slot>
+                    <button wx:if="{{ timer == 0 }}" slot="button" class="get-code" @tap="getSendCode">获取验证码</button>
+                    <text wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
+                </van-field>
+            </van-cell-group>
+            <button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</button>
+            <button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</button>
+        </view>
+        <view class="other-login">
+            <view class="sum">
+                <text>其他登录方式</text>
+            </view>
+            <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
+            <image src="../assets/images/wechat.png" />
+          </button>
+        </view>
+        <view class="agree">
+            登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
+        </view>
     </view>
-    <view class="phone-wrap">
-      <view class="title">手机号登录</view>
-      <van-cell-group>
-        <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable maxlength="11" @input="onPhoneInput" class="" />
-        <van-field label="验证码" title-width="60px" value="{{ code }}" 
-          placeholder="请输入手机验证码" 
-          @input="onCodeInput" 
-          clearable
-          use-button-slot>
-            <button wx:if="{{ timer == 0 }}" slot="button" class="get-code" @tap="getSendCode">获取验证码</button>
-            <text wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
-        </van-field>
-      </van-cell-group>
-      
-      <button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</button>
-      <button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</button>
-    </view>
-
-    <view class="other-login">
-      <view class="sum">
-        <text>其他登录方式</text>
-      </view>
-      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
-        <image src="../assets/images/wechat.png" />
-      </button>
-    </view>
-
-    <view class="agree">
-      登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
-    </view>
-  </view>
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import tip from "../utils/tip"
-  import * as api from '../api/api'
-  export default class Login extends wepy.page {
-    config = {
-      navigationBarTitleText: '登录',
-      usingComponents: {
-        "van-cell": "../components/vant/cell/index",
-        "van-field": "../components/vant/field/index"
-      }
-    }
-
-    data = {
-      phone: '',
-      code: '',
-      timer: 0,
-      sendInterval: null,
-    }
-
-    methods = {
-      tapLogin() {
-        wx.switchTab({
-            url: '/pages/menu0'
-        })
-      },
-      // 微信授权登录
-      bindGetUserInfo(event) {
-        console.log(event)
-
-        wx.login({
-          success: ((res) => {
-            console.log(res);
-          })
-        })
-      },
-      // 发送验证码
-      getSendCode() {
-        if (this.phone == '') {
-            tip.showToast('请输入手机号获取验证码');
-            return;
-        }
-        if (typeof this.phone !== 'number' && isNaN(this.phone)) {
-            tip.showToast('您输入的手机号格式有误');
-            return;
-        }
-        if (this.phone) {
-          if (!(/^1[3456789]\d{9}$/.test(this.phone))) {
-            tip.showToast("手机号码有误，请重填");
-            return;
-          }
-        }
-        
-        const that = this;
-        wx.showModal({
-          title: '确认手机号码',
-          content: `我们将发送验证码短信到这个号码： +86 ${this.phone}`,
-          success(res) {
-            if (res.confirm) {
-              that.getCode();
-              wx.showToast({
-                title: '发送成功',
-                icon: 'success',
-                duration: 2000
-              })
-              that.timeChange();
+    import wepy from 'wepy'
+    import tip from "../utils/tip"
+    import * as api from '../api/api'
+    export default class Login extends wepy.page {
+        config = {
+            navigationBarTitleText: '登录',
+            usingComponents: {
+                "van-cell": "../components/vant/cell/index",
+                "van-field": "../components/vant/field/index"
             }
-          }
-        })
-        
-      },
-      onPhoneInput(e) {
-        this.phone = e.detail;
-      },
-      onCodeInput(e) {
-        this.code = e.detail;
-      } 
-    }
-
-    async getCode() {
-      let res = await api.getCode(
-        {
-          phone: this.phone
         }
-      )
-      console.log(res);
-    }
+        data = {
+            phone: '',
+            code: '',
+            timer: 0,
+            sendInterval: null,
+            statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+        }
 
-    timeChange() {
-      const count = 60;
-        this.timer = count;
-        if (!this.sendInterval) {
-            this.sendInterval = setInterval(() => {
-                if(this.timer > 0) {
-                    this.timer--;
-                    this.$apply();
-                }else {
-                    this.sendInterval && clearInterval(this.sendInterval);
-                    this.sendInterval = null;
+        methods = {
+            tapLogin() {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            },
+            // 微信授权登录
+            bindGetUserInfo(event) {
+                console.log(event)
+                wx.login({
+                    success: ((res) => {
+                        console.log(res);
+                    })
+                })
+            },
+            // 发送验证码
+            getSendCode() {
+                if (this.phone == '') {
+                    tip.showToast('请输入手机号获取验证码');
+                    return;
                 }
-            }, 1000);
-        } 
+                if (typeof this.phone !== 'number' && isNaN(this.phone)) {
+                    tip.showToast('您输入的手机号格式有误');
+                    return;
+                }
+                if (this.phone) {
+                    if (!(/^1[3456789]\d{9}$/.test(this.phone))) {
+                        tip.showToast("手机号码有误，请重填");
+                        return;
+                    }
+                }
+                const that = this;
+                wx.showModal({
+                    title: '确认手机号码',
+                    content: `我们将发送验证码短信到这个号码： +86 ${this.phone}`,
+                    success(res) {
+                        if (res.confirm) {
+                            that.getCode();
+                            wx.showToast({
+                                title: '发送成功',
+                                icon: 'success',
+                                duration: 2000
+                            })
+                            that.timeChange();
+                        }
+                    }
+                })
+            },
+            onPhoneInput(e) {
+                this.phone = e.detail;
+            },
+            onCodeInput(e) {
+                this.code = e.detail;
+            }
+        }
+        async getCode() {
+            let res = await api.getCode({
+                phone: this.phone
+            })
+            console.log(res);
+        }
+        timeChange() {
+            const count = 60;
+            this.timer = count;
+            if (!this.sendInterval) {
+                this.sendInterval = setInterval(() => {
+                    if (this.timer > 0) {
+                        this.timer--;
+                        this.$apply();
+                    } else {
+                        this.sendInterval && clearInterval(this.sendInterval);
+                        this.sendInterval = null;
+                    }
+                }, 1000);
+            }
+        }
     }
-  }
 </script>
 
 <style lang="less">
-  .login-container {
-    .top-banner {
-      width: 100%;
-      height: 330rpx;
-      padding-top: 70rpx;
-      background-image: linear-gradient(0deg, 
-        #38c099 0%, 
-        #cfe49d 100%), 
-      linear-gradient(
-        #ffffff, 
-        #ffffff);
-        color: #fff;
-        line-height: 38rpx;
-        font-size: 21rpx;
-        text-align: center;
-
-        .logo {
-          width: 103rpx;
-          height: 103rpx;
-        }
-
-        .title {
-          margin: 30rpx 0;
-          font-size: 42rpx;
-        }
-    }
-    .phone-wrap {
-      padding: 43rpx 30rpx;
-      .title {
-        margin-bottom: 50rpx;
-        font-size: 42rpx;
-        line-height: 38rpx;
-      }
-      .num {
-        color: #999;
-      }
-    }
-    .txtColor {
-      font-size: 21rpx;
-    }
-    .van-field__button {
-      height: 54rpx;
-      line-height: 40rpx;
-    }
-    .get-code {
-      width: 164rpx;
-      height: 54rpx;
-      line-height: 54rpx;
-      background-color: #e1e1e1;
-      border-radius: 2rpx;
-      color: #41c297;
-      font-size: 21rpx;
-      border: none;
-    }
-    .login-btn {
-      width: 586rpx;
-      height: 76rpx;
-      line-height: 76rpx;
-      margin-top: 83rpx;
-      color: #ffffff;
-      pointer-events: none;
-      background-color: #e6e6e6;
-      font-size: 28rpx;
-      font-weight: bold;
-      border-radius: 38rpx;
-    }
-    .login-btn.has{
-      background-image: linear-gradient(0deg, 
-        #38c099 0%, 
-        #59c89a 50%, 
-        #cfe49d 100%), 
-      linear-gradient(
-        #e6e6e6, 
-        #e6e6e6);
-        pointer-events: all;
-    }
-
-    .other-login{
-        margin-top: 50rpx;
-        text-align: center;
-        .sum {
-          position: relative;
-          height: 50rpx;
-          line-height: 50rpx;
-          margin: 0 auto;
-
-          &::after {
-            content: "";
-            position: absolute;
+    .login-container {
+        .top-banner {
             width: 100%;
-            height: 1px;
-            border-bottom: 1px solid #eee;
-            left: 0;
-            top: 25rpx;
-            transform: scale(.5);
-            z-index: -1;
-          }
-          text {
-            display: block;
-            width: 150rpx;
+            height: 330rpx;
+            background-image: linear-gradient(0deg, #38c099 0%, #cfe49d 100%), linear-gradient( #ffffff, #ffffff);
+            color: #fff;
+            line-height: 38rpx;
             font-size: 21rpx;
-            margin: 0 auto;
+            text-align: center;
+            .logo {
+                width: 103rpx;
+                height: 103rpx;
+                margin-top: 30rpx;
+            }
+            .title {
+                margin: 30rpx 0;
+                font-size: 42rpx;
+            }
+        }
+        .phone-wrap {
+            padding: 43rpx 30rpx;
+            .title {
+                margin-bottom: 50rpx;
+                font-size: 42rpx;
+                line-height: 38rpx;
+            }
+            .num {
+                color: #999;
+            }
+        }
+        .txtColor {
+            font-size: 21rpx;
+        }
+        .van-field__button {
+            height: 54rpx;
+            line-height: 40rpx;
+        }
+        .get-code {
+            width: 164rpx;
+            height: 54rpx;
+            line-height: 54rpx;
+            background-color: #e1e1e1;
+            border-radius: 2px;
+            color: #41c297;
+            font-size: 21rpx;
+            border: none;
+        }
+        .login-btn {
+            width: 586rpx;
+            height: 76rpx;
+            line-height: 76rpx;
+            margin-top: 83rpx;
+            color: #ffffff;
+            pointer-events: none;
+            background-color: #e6e6e6;
+            font-size: 28rpx;
             font-weight: bold;
-            color: #cccccc;
-            background-color: #fff;
-          }
-      }
-
-      .reset-button {
-        background-color: transparent;
-        margin: 30rpx 20rpx;
-        display: inline-block;
-        padding: 0;
-        line-height: 1;
-        border: none;
-      }
-
-      image {
-        width: 83rpx;
-        height: 67rpx;
-      }
+            border-radius: 25px;
+        }
+        .login-btn.has {
+            background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+            pointer-events: all;
+        }
+        .other-login {
+            margin-top: 50rpx;
+            text-align: center;
+            .sum {
+                position: relative;
+                height: 50rpx;
+                line-height: 50rpx;
+                margin: 0 auto;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 100%;
+                    height: 1px;
+                    border-bottom: 1px solid #eee;
+                    left: 0;
+                    top: 25rpx;
+                    transform: scale(.5);
+                    z-index: -1;
+                }
+                text {
+                    display: block;
+                    width: 150rpx;
+                    font-size: 21rpx;
+                    margin: 0 auto;
+                    font-weight: bold;
+                    color: #cccccc;
+                    background-color: #fff;
+                }
+            }
+            .reset-button {
+                background-color: transparent;
+                margin: 30rpx 20rpx;
+                display: inline-block;
+                padding: 0;
+                line-height: 1;
+                border: none;
+            }
+            image {
+                width: 83rpx;
+                height: 67rpx;
+            }
+        }
+        .agree {
+            position: absolute;
+            bottom: 30rpx;
+            width: 100%;
+            text-align: center;
+            font-size: 21rpx;
+            color: #333;
+            text {
+                color: #0066ff;
+            }
+        }
     }
-
-    .agree {
-      position: absolute;
-      bottom: 30rpx;
-      width: 100%;
-      text-align: center;
-      font-size: 21rpx;
-      color: #333;
-      text {
-        color: #0066ff;
-      }
-    }
-  }
 </style>
 

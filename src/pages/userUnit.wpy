@@ -2,7 +2,7 @@
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view class="head-wrap">
-            <image src="../assets/images/my_bg.png" class="bg" />
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '304rpx' : '260rpx'}}" />
             <view class="user-wrap">
                 <view class="mark">
                     <view>龙岩地灾中心</view>
@@ -94,6 +94,7 @@
             }
         }
         data = {
+            statusBarHeight: wepy.$instance.globalData.statusBarHeight,
             activeNames: ['1'],
             userList: [{
                     nickname: '张三',

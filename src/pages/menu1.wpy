@@ -1,125 +1,204 @@
 <template>
-  <view class="menu1-container">
-    <van-nav-bar title="监测预警" fixed custom-class="nav-reset">
-      <view slot="left">
-        上报预警
-      </view>
-    </van-nav-bar>
-    <view class="screen-page-wrap">
-      <view class="box-view">
-        <view class="left-screen">
-          <view class="opt">筛选
-            <van-icon name="arrow-down" />
-          </view>
-          <view class="opt">分类
-            <van-icon name="arrow-down" />
-          </view>
+    <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
+        <van-nav-bar title="监测预警" fixed custom-class="nav-reset">
+            <view slot="left">
+                上报预警
+            </view>
+        </van-nav-bar>
+        <view class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
+            <view class="box-view">
+                <view class="left-screen">
+                    <view class="opt">筛选
+                        <van-icon name="arrow-down" />
+                    </view>
+                    <view class="opt">分类
+                        <van-icon name="arrow-down" />
+                    </view>
+                </view>
+                <view class="right-page">
+                    <text>本月：{{page.count}} 条</text>
+                    <text class="split"> | </text>
+                    <text>总共{{page.total}}条</text>
+                </view>
+            </view>
         </view>
-        <view class="right-page">
-          <text>本月：{{page.count}} 条</text>
-          <text class="split"> | </text>
-          <text>总共{{page.total}}条</text>
+        <view class="list-wrap">
+            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}">
+                <view class="content">
+                    <image src="{{item.picture}}" class="picture" />
+                    <view class="full">
+                        <view class="desc">{{item.desc}}</view>
+                        <text class="time"> {{item.time}}</text>
+                    </view>
+                </view>
+                <view class="user-info">
+                    <view class="name">{{item.user}}</view>
+                    <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
+                </view>
+            </view>
         </view>
-      </view>
     </view>
-    <!-- <view class="list-wrap">
-      <image src="" class="picture" />
-      <view class="content">
-        <view class="desc">
-          永定男板溪联村预警说明文字永定男板溪联 村预警说明文字永定男板溪联村预警说明文
-        </view>
-        <text>2019年11月20日 17:23:12</text>
-      </view>
-      <view>
-        <view class="name">张三</view>
-        <text class="state">未处理</text>
-      </view>
-    </view> -->
-  </view>
 </template>
 
 <script>
-  import wepy from 'wepy'
-  export default class Menu1 extends wepy.page {
-    config = {
-      navigationBarTitleText: '监测预警',
-      usingComponents: {
-        "van-icon": "../components/vant/icon/index",
-        "van-nav-bar": "../components/vant/nav-bar/index"
-      }
+    import wepy from 'wepy'
+    export default class Menu1 extends wepy.page {
+        config = {
+            navigationBarTitleText: '监测预警',
+            usingComponents: {
+                "van-icon": "../components/vant/icon/index",
+                "van-nav-bar": "../components/vant/nav-bar/index"
+            }
+        }
+        data = {
+            statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            listData: [{
+                id: 1,
+                picture: '',
+                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
+                time: '2019年11月20日 17:23:12',
+                user: '张三',
+                state: 0 // 0: 未处理 1： 处理
+            }, {
+                id: 2,
+                picture: '',
+                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
+                time: '2019年11月20日 17:23:12',
+                user: '李四',
+                state: 1 // 0: 未处理 1： 处理
+            }, {
+                id: 3,
+                picture: '',
+                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
+                time: '2019年11月20日 17:23:12',
+                user: '王五',
+                state: 1 // 0: 未处理 1： 处理
+            }],
+            page: {
+                count: 0,
+                total: 0
+            }
+        }
     }
-    data = {
-      page: {
-        count: 0,
-        total: 0
-      }
-    }
-  }
 </script>
 
 <style lang="less">
-  .menu1-container {
-    .nav-reset {
-      &.van-nav-bar {
-        background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient( #ededed, #ededed);
-      }
-      .van-nav-bar__left {
-        padding: 12rpx 15rpx 12rpx 20rpx;
-        border-radius: 25px;
-        border: solid 1rpx #ffffff;
-        background-color: transparent;
-        color: #fff;
-        line-height: 1;
-        font-size: 16rpx;
-        bottom: 10px;
-        &::after {
-          content: "\F00A";
-          display: inline-block;
-          font-family: 'vant-icon';
-          font-size: 21rpx;
-          padding-left: 5rpx;
-          vertical-align: middle;
+    .menu1-container {
+        .nav-reset {
+            &.van-nav-bar {
+                background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient( #ededed, #ededed);
+            }
+            .van-nav-bar__left {
+                padding: 12rpx 15rpx 12rpx 20rpx;
+                border-radius: 25px;
+                border: solid 1rpx #ffffff;
+                background-color: transparent;
+                color: #fff;
+                line-height: 1;
+                font-size: 16rpx;
+                bottom: 10px;
+                &::after {
+                    content: "\F00A";
+                    display: inline-block;
+                    font-family: 'vant-icon';
+                    font-size: 21rpx;
+                    padding-left: 5rpx;
+                    vertical-align: middle;
+                }
+                &:active {
+                    opacity: 0.8;
+                }
+            }
         }
-        &:active {
-          opacity: 0.8;
+        .screen-page-wrap {
+            position: fixed;
+            top:44px;
+            z-index: 1;
+            width: 100%;
+            height: 80rpx;
+            background-color: #FAF7FA;
+            .box-view {
+                padding: 0 20rpx 0 15rpx;
+                height: 70rpx;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #fff;
+                font-size: 21rpx;
+                color: #333;
+                box-sizing: border-box;
+                .left-screen {
+                    display: flex;
+                    .opt {
+                        padding: 0 30rpx;
+                    }
+                }
+                .right-page {
+                    .split {
+                        color: #ccc;
+                        padding: 0 10rpx;
+                    }
+                }
+            }
         }
-      }
+        .list-wrap {
+            padding-top: 80rpx;
+            .item {
+                display: flex;
+                padding: 30rpx 20rpx 30rpx 30rpx;
+                border-bottom: 1px solid #e5e5e5;
+                font-size: 21rpx;
+                color: #333333;
+                .content {
+                    display: flex;
+                    flex: 1;
+                    .full {
+                        flex: 1;
+                    }
+                    .picture {
+                        width: 85rpx;
+                        height: 85rpx;
+                        margin-right: 23rpx;
+                        background-color: #eee;
+                    }
+                    .desc {
+                        margin-bottom: 5rpx;
+                        line-height: 28rpx;
+                        display: -webkit-box;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        word-break: break-all;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 2;
+
+                    }
+                    .time {
+                        color: #999;
+                    }
+                }
+                .user-info {
+                    text-align: center;
+                    margin-left: 50rpx;
+                    .name {
+                        margin-bottom: 8rpx;
+                    }
+                    .state {
+                        display: inline-block;
+                        padding: 8rpx 20rpx;
+                        background-image: linear-gradient( #999999, #999999), linear-gradient( #52cc7a, #52cc7a);
+                        border-radius: 25px;
+                        color: #fff;
+                        font-size: 16rpx;
+                    }
+                }
+                &.not {
+                    background-color: #ffffcc;
+                    .state {
+                        background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient( #52cc7a, #52cc7a);
+                    }
+                }
+            }
+        }
     }
-    .screen-page-wrap {
-      position: fixed;
-      top: 64px;
-      z-index: 1;
-      width: 100%;
-      height: 80rpx;
-      background-color: #FAF7FA;
-
-      .box-view {
-        padding: 0 20rpx 0 15rpx;
-        height: 70rpx;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #fff;
-        font-size: 21rpx;
-        color: #333;
-        box-sizing: border-box;
-
-        .left-screen {
-          display: flex;
-          .opt {
-            padding: 0 30rpx;
-          }
-        }
-        .right-page {
-          .split {
-            color: #ccc;
-            padding: 0 10rpx;
-          }
-        }
-      }
-
-    }
-    .list-wrap {}
-  }
 </style>
 

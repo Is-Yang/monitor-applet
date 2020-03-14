@@ -1,7 +1,7 @@
 
     <view class="user-info-container">
         <van-nav-bar title="我的信息" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
-        <view class="operate-cell">
+        <view class="operate-cell" style="padding-top: {{statusBarHeight}}px">
             <view class="cell">
                 <view>
                     <image src="../assets/images/nickname.png" mode="aspectFit"/>

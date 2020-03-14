@@ -1,248 +1,249 @@
 <template>
-  <view class="menu0-container">
-    <van-nav-bar title="我的" fixed custom-class="nav-reset" />
-    <view class="head-wrap">
-      <image src="../assets/images/my_bg.png" class="bg" />
-      <view class="my-box">
-        <view class="user-info" bindtap="toUserInfo">
-          <view class="photo" catchtap="uploadPhoto">
-            <image wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera" />
-            <image wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill" />
-          </view>
-          <view>
-            <view>昵称</view>
-            <view>136****7815</view>
-          </view>
+    <view class="menu2-container">
+        <van-nav-bar title="我的" fixed custom-class="nav-reset" />
+        <view class="head-wrap">
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '454rpx' : '410rpx'}}" />
+            <view class="my-box" style="margin-top: {{statusBarHeight}}px">
+                <view class="user-info" bindtap="toUserInfo">
+                    <view class="photo" catchtap="uploadPhoto">
+                        <image wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera" />
+                        <image wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill" />
+                    </view>
+                    <view>
+                        <view>昵称</view>
+                        <view>136****7815</view>
+                    </view>
+                </view>
+                <view class="mark" bindtap="toUserUnit">
+                    <text wx:if="{{company != ''}}" class="company">{{company}}</text>
+                    <text wx:else class="no">未加入任何单位</text>
+                    <text wx:if="{{role != ''}}" class="role">{{role}}</text>
+                    <text wx:else class="flag">扫码加入</text>
+                </view>
+            </view>
         </view>
-        <view class="mark" bindtap="toUserUnit">
-          <text wx:if="{{company != ''}}" class="company">{{company}}</text>
-          <text wx:else class="no">未加入任何单位</text>
-
-          <text wx:if="{{role != ''}}" class="role">{{role}}</text>
-          <text wx:else class="flag">扫码加入</text>
+        <view class="operate-cell">
+            <view class="cell">
+                <image src="../assets/images/option.png" mode="aspectFit" />
+                <text>操作记录</text>
+            </view>
+            <view class="cell">
+                <image src="../assets/images/location.png" mode="aspectFit" />
+                <text>监测点</text>
+            </view>
+            <view class="cell">
+                <image src="../assets/images/location.png" mode="aspectFit" />
+                <text>设置</text>
+            </view>
         </view>
-      </view>
+        <button class="logout">退出登录</button>
     </view>
-    <view class="operate-cell">
-      <view class="cell">
-        <image src="../assets/images/option.png" mode="aspectFit" />
-        <text>操作记录</text>
-      </view>
-      <view class="cell">
-        <image src="../assets/images/location.png" mode="aspectFit" />
-        <text>监测点</text>
-      </view>
-      <view class="cell">
-        <image src="../assets/images/location.png" mode="aspectFit" />
-        <text>设置</text>
-      </view>
-    </view>
-    <button class="logout">退出登录</button>
-  </view>
 </template>
 
 <script>
-  import wepy from 'wepy'
-  export default class Menu2 extends wepy.page {
-    config = {
-      navigationBarTitleText: '我的',
-      usingComponents: {
-        "van-nav-bar": "../components/vant/nav-bar/index"
-      }
+    import wepy from 'wepy'
+    export default class Menu2 extends wepy.page {
+        config = {
+            navigationBarTitleText: '我的',
+            usingComponents: {
+                "van-nav-bar": "../components/vant/nav-bar/index"
+            }
+        }
+        data = {
+            statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            userPhoto: '',
+            company: '',
+            role: ''
+        }
+        methods = {
+            toUserInfo() {
+                wx.navigateTo({
+                    url: '/pages/userInfo'
+                })
+            },
+            toUserUnit() {
+                wx.navigateTo({
+                    url: '/pages/userUnit'
+                })
+            },
+            // 上传头像
+            uploadPhoto() {
+                let that = this;
+                wx.chooseImage({
+                    count: 1, // 默认1张
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function(res) {
+                        let tempFilePaths = res.tempFilePaths
+                        that.userPhoto = tempFilePaths[0];
+                        // wx.uploadFile({
+                        //   url: 'http://localhost:8080/upload/fileUpload', //仅为示例，非真实的接口地址
+                        //   filePath: tempFilePaths[0],
+                        //   name: "file",
+                        //   header: {
+                        //     "Content-Type": "multipart/form-data"
+                        //   },
+                        //   formData: {
+                        //   },
+                        //   success: function(res) {
+                        //     console.log(res);
+                        //   }
+                        // });
+                    }
+                })
+            }
+        }
     }
-    data = {
-      userPhoto: '',
-      company: '',
-      role: ''
-    }
-
-    methods = {
-      toUserInfo() {
-        wx.navigateTo({
-          url: '/pages/userInfo'
-        })
-      },
-      toUserUnit() {
-        wx.navigateTo({
-          url: '/pages/userUnit'
-        })
-      },
-      // 上传头像
-      uploadPhoto() {
-        let that = this;
-        wx.chooseImage({
-          count: 1, // 默认1张
-          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-          success: function(res) {
-            let tempFilePaths = res.tempFilePaths
-            that.userPhoto = tempFilePaths[0];
-            // wx.uploadFile({
-            //   url: 'http://localhost:8080/upload/fileUpload', //仅为示例，非真实的接口地址
-            //   filePath: tempFilePaths[0],
-            //   name: "file",
-            //   header: {
-            //     "Content-Type": "multipart/form-data"
-            //   },
-            //   formData: {
-            //   },
-            //   success: function(res) {
-            //     console.log(res);
-            //   }
-            // });
-          }
-        })
-      }
-    }
-  }
 </script>
 
 <style lang="less">
-  .menu0-container {
-    .head-wrap {
-      padding-bottom: 60rpx;
-      position: relative;
-      background-color: #FAF7FA;
-      .bg {
-        width: 100%;
-        height: 410rpx;
-      }
-      .my-box {
-        position: absolute;
-        top: 64px;
-        left: 23rpx;
-        right: 23rpx;
-        z-index: 1;
-        height: 326rpx;
-        background-color: #ffffff;
-        box-shadow: 0rpx 0rpx 11rpx 1rpx rgba(204, 204, 204, 0.2);
-        border-radius: 6rpx;
-        opacity: 0.9;
-      }
-      .user-info {
-        display: flex;
-        align-items: center;
-        position: relative;
-        padding: 40rpx;
-        line-height: 38rpx;
-        border-bottom: 1px solid rgba(56, 192, 153, 0.3);
-        color: #333;
-        box-sizing: border-box;
-        font-size: 28rpx;
-        .photo {
-          width: 118rpx;
-          height: 118rpx;
-          margin-right: 39rpx;
-          image {
-            border-radius: 50%;
-            width: 100%;
-            height: 100%;
-          }
-          .camera {
-            width: 75rpx;
-            height: 62rpx;
-            background-image: linear-gradient(#38c099, #38c099), linear-gradient(#f8f8fa, #f8f8fa);
-            padding: 28rpx 23rpx;
-          }
+    .menu2-container {
+        .head-wrap {
+            padding-bottom: 60rpx;
+            position: relative;
+            background-color: #FAF7FA;
+            .bg {
+                width: 100%;
+                height: 410rpx;
+            }
+            .my-box {
+                position: absolute;
+                top: 44px;
+                left: 23rpx;
+                right: 23rpx;
+                z-index: 1;
+                height: 326rpx;
+                background-color: #ffffff;
+                box-shadow: 0rpx 0rpx 11rpx 1rpx rgba(204, 204, 204, 0.2);
+                border-radius: 6rpx;
+                opacity: 0.9;
+            }
+            .user-info {
+                display: flex;
+                align-items: center;
+                position: relative;
+                padding: 40rpx;
+                line-height: 38rpx;
+                border-bottom: 1px solid rgba(56, 192, 153, 0.3);
+                color: #333;
+                box-sizing: border-box;
+                font-size: 28rpx;
+                .photo {
+                    width: 118rpx;
+                    height: 118rpx;
+                    margin-right: 39rpx;
+                    image {
+                        border-radius: 50%;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .camera {
+                        width: 75rpx;
+                        height: 62rpx;
+                        background-image: linear-gradient(#38c099, #38c099), linear-gradient(#f8f8fa, #f8f8fa);
+                        padding: 28rpx 23rpx;
+                    }
+                }
+                &:after {
+                    content: '\F00A';
+                    position: absolute;
+                    right: 40rpx;
+                    font-family: 'vant-icon';
+                    color: #ccc;
+                    font-size: 30rpx;
+                }
+            }
+            .mark {
+                display: flex;
+                justify-content: space-between;
+                padding: 20rpx 32rpx 50rpx 59rpx;
+                font-size: 18rpx;
+                color: #666;
+                line-height: 38rpx;
+                box-sizing: border-box;
+                .company {
+                    color: #333333;
+                    font-size: 21rpx;
+                }
+                .flag,
+                .role {
+                    width: 105rpx;
+                    height: 40rpx;
+                    line-height: 40rpx;
+                    border-radius: 25px;
+                    color: #fff;
+                    text-align: center;
+                }
+                .flag {
+                    background-color: #52cc7a;
+                }
+                .role {
+                    background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
+                }
+                .no {
+                    position: relative;
+                    &::before {
+                        position: absolute;
+                        content: "&lt;";
+                        left: -12rpx;
+                    }
+                    &::after {
+                        position: absolute;
+                        content: "&gt;";
+                        right: -12rpx;
+                    }
+                }
+            }
         }
-        &:after {
-          content: '\F00A';
-          position: absolute;
-          right: 40rpx;
-          font-family: 'vant-icon';
-          color: #ccc;
-          font-size: 30rpx;
+        @media screen and (max-width: 320px) {
+            .head-wrap {
+                padding-bottom: 80rpx;
+            }
         }
-      }
-      .mark {
-        display: flex;
-        justify-content: space-between;
-        padding: 20rpx 32rpx 50rpx 59rpx;
-        font-size: 18rpx;
-        color: #666;
-        line-height: 38rpx;
-        box-sizing: border-box;
-        .company {
-          color: #333333;
-          font-size: 21rpx;
+        .operate-cell {
+            .cell {
+                position: relative;
+                color: #333;
+                padding: 28rpx 32rpx;
+                border-bottom: 1px solid #f7f7f7;
+                font-size: 26rpx;
+                image {
+                    width: 34rpx;
+                    height: 34rpx;
+                    vertical-align: middle;
+                    margin-right: 30rpx;
+                }
+                &:after {
+                    content: '\F00A';
+                    position: absolute;
+                    top: 50%;
+                    right: 32rpx;
+                    transform: translateY(-50%);
+                    font-family: 'vant-icon';
+                    color: #ccc;
+                    font-size: 30rpx;
+                }
+                &:active {
+                    background-color: #f2f3f5;
+                }
+            }
         }
-        .flag, .role {
-          width: 105rpx;
-	        height: 40rpx;
-          border-radius: 19rpx;
-          color: #fff;
-          text-align: center;
+        .logout {
+            margin: 62rpx auto 0;
+            width: 335rpx;
+            height: 76rpx;
+            line-height: 76rpx;
+            background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+            color: #fff;
+            border-radius: 38rpx;
+            font-size: 28rpx;
         }
-        .flag {
-          background-color: #52cc7a;
+        .van-nav-bar {
+            background-image: none;
         }
-        .role {
-          background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
+        .van-hairline--bottom:after {
+            border: none;
         }
-        .no {
-          position: relative;
-          &::before {
-            position: absolute;
-            content: "&lt;";
-            left: -12rpx;
-          }
-          &::after {
-            position: absolute;
-            content: "&gt;";
-            right: -12rpx;
-          }
-        }
-      }
     }
-    @media screen and (max-width: 320px) {
-      .head-wrap {
-        padding-bottom: 80rpx;
-      }
-    }
-    .operate-cell {
-      .cell {
-        position: relative;
-        color: #333;
-        padding: 28rpx 32rpx;
-        border-bottom: 1px solid #f7f7f7;
-        font-size: 26rpx;
-        image {
-          width: 34rpx;
-          height: 34rpx;
-          vertical-align: middle;
-          margin-right: 30rpx;
-        }
-        &:after {
-          content: '\F00A';
-          position: absolute;
-          top: 50%;
-          right: 32rpx;
-          transform: translateY(-50%);
-          font-family: 'vant-icon';
-          color: #ccc;
-          font-size: 30rpx;
-        }
-        &:active {
-          background-color: #f2f3f5;
-        }
-      }
-    }
-    .logout {
-      margin: 62rpx auto 0;
-      width: 335rpx;
-      height: 76rpx;
-      line-height: 76rpx;
-      background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
-      color: #fff;
-      border-radius: 38rpx;
-      font-size: 28rpx;
-    }
-    .van-nav-bar {
-      background-image: none;
-    }
-    .van-hairline--bottom:after {
-      border: none;
-    }
-  }
 </style>
 

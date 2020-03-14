@@ -1,41 +1,40 @@
 
-  <view class="menu0-container">
-    <van-nav-bar title="我的" fixed="fixed" custom-class="nav-reset"/>
-    <view class="head-wrap">
-      <image src="../assets/images/my_bg.png" class="bg"/>
-      <view class="my-box">
-        <view class="user-info" bindtap="toUserInfo">
-          <view class="photo" catchtap="uploadPhoto">
-            <image  wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera"/>
-            <image  wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill"/>
-          </view>
-          <view>
-            <view>昵称</view>
-            <view>136****7815</view>
-          </view>
+    <view class="menu2-container">
+        <van-nav-bar title="我的" fixed="fixed" custom-class="nav-reset"/>
+        <view class="head-wrap">
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '454rpx' : '410rpx'}}"/>
+            <view class="my-box" style="margin-top: {{statusBarHeight}}px">
+                <view class="user-info" bindtap="toUserInfo">
+                    <view class="photo" catchtap="uploadPhoto">
+                        <image  wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera"/>
+                        <image  wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill"/>
+                    </view>
+                    <view>
+                        <view>昵称</view>
+                        <view>136****7815</view>
+                    </view>
+                </view>
+                <view class="mark" bindtap="toUserUnit">
+                    <text wx:if="{{company != ''}}" class="company">{{company}}</text>
+                    <text wx:else class="no">未加入任何单位</text>
+                    <text wx:if="{{role != ''}}" class="role">{{role}}</text>
+                    <text wx:else class="flag">扫码加入</text>
+                </view>
+            </view>
         </view>
-        <view class="mark" bindtap="toUserUnit">
-          <text wx:if="{{company != ''}}" class="company">{{company}}</text>
-          <text wx:else class="no">未加入任何单位</text>
-
-          <text wx:if="{{role != ''}}" class="role">{{role}}</text>
-          <text wx:else class="flag">扫码加入</text>
+        <view class="operate-cell">
+            <view class="cell">
+                <image src="../assets/images/option.png" mode="aspectFit"/>
+                <text>操作记录</text>
+            </view>
+            <view class="cell">
+                <image src="../assets/images/location.png" mode="aspectFit"/>
+                <text>监测点</text>
+            </view>
+            <view class="cell">
+                <image src="../assets/images/location.png" mode="aspectFit"/>
+                <text>设置</text>
+            </view>
         </view>
-      </view>
+        <button class="logout">退出登录</button>
     </view>
-    <view class="operate-cell">
-      <view class="cell">
-        <image src="../assets/images/option.png" mode="aspectFit"/>
-        <text>操作记录</text>
-      </view>
-      <view class="cell">
-        <image src="../assets/images/location.png" mode="aspectFit"/>
-        <text>监测点</text>
-      </view>
-      <view class="cell">
-        <image src="../assets/images/location.png" mode="aspectFit"/>
-        <text>设置</text>
-      </view>
-    </view>
-    <button class="logout">退出登录</button>
-  </view>

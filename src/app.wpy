@@ -24,12 +24,13 @@
   export default class extends wepy.app {
     config = {
       pages: [
-        'pages/menu1',
         'pages/login',
+        'pages/userUnit',
+        'pages/reportInfo',
+        'pages/userInfo',
         'pages/menu2',
         'pages/menu0',
-        'pages/userInfo',
-        'pages/userUnit',
+        'pages/menu1',
       ],
       window: {
         backgroundTextStyle: 'light',
@@ -77,6 +78,9 @@
     STATICDATA = {
       defaultImg: '', // 默认图
     }
-
+    globalData = {
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    }
   }
+
 </script>

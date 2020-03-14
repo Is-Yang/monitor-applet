@@ -1,5 +1,5 @@
 .user-info-container .operate-cell {
-  margin-top: 64px;
+  margin-top: 44px;
 }
 .user-info-container .operate-cell .cell {
   display: flex;
@@ -27,6 +27,6 @@
   line-height: 76rpx;
   background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient(#e6e6e6, #e6e6e6);
   color: #fff;
-  border-radius: 38rpx;
+  border-radius: 25px;
   font-size: 28rpx;
 }

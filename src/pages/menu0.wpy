@@ -1,10 +1,9 @@
 <template>
-  <view class="menu0-container">
-    <van-nav-bar title="龙芯北斗地灾监控系统" fixed/>
-
-    <map id="map" longitude="113.324520" latitude="23.099994" scale="14"
-      bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap"
-      bindregionchange="regionchange" show-location style="width: 100%; height: 588rpx;"></map>
+  <view class="menu0-container" style="padding-top: {{statusBarHeight + 44}}px">
+    <van-nav-bar title="龙芯北斗地灾监控系统" fixed />
+    <map id="map" longitude="113.324520" latitude="23.099994" scale="14" bindcontroltap="controltap"
+      markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location
+      style="width: 100%; height: 588rpx; margin-top: {{statusBarHeight}}px"></map>
 
     <view class="monitor-list">
       <repeat wx:for="{{mointorList}}" wx:key="index" wx:index="index" wx:for-item="item">
@@ -68,7 +67,7 @@
               <view class="right">
                 <view class="data">
                   <text>日均：</text>
-                  <text>{{item.rainfall.num1}}</text>ml / 
+                  <text>{{item.rainfall.num1}}</text>ml /
                   <text>周均：</text>
                   <text>{{item.rainfall.num2}}</text>ml
                 </view>
@@ -83,7 +82,7 @@
               <view class="right">
                 <view class="data">
                   <text>温度：</text>
-                  <text>{{item.humiture.num1}}℃</text> / 
+                  <text>{{item.humiture.num1}}℃</text> /
                   <text>湿度：</text>
                   <text>{{item.humiture.num2}}</text>
                 </view>
@@ -107,10 +106,9 @@
         "van-nav-bar": "../components/vant/nav-bar/index"
       }
     }
-
-    data ={
-      mointorList: [
-        {
+    data = {
+      statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+      mointorList: [{
           id: 0,
           company: '永定区抚市溪联南板',
           surface: {
@@ -123,7 +121,7 @@
             num2: 1,
             num3: 2,
             num4: 3
-          }, 
+          },
           rainfall: {
             num1: 0,
             num2: 1,
@@ -181,7 +179,6 @@
         clickable: true
       }]
     }
-
     regionchange(e) {
       console.log(e.type)
     }
@@ -196,93 +193,98 @@
 </script>
 
 <style lang="less">
-.menu0-container {
-  padding-top: 64px;
-  #map {
-    position: fixed;
-    top: 64px;
-    z-index: 1;
-  }
-  .monitor-list {
-    margin-top: 588rpx;
-    background-color: #f1f1f1;
-    padding: 23rpx;
-    .item {
-      margin-bottom: 40rpx;
-      .head {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15rpx;
-        .company {
-          font-size: 28rpx;
-          color: #333;
-        }
-        button {
-          padding: 12rpx 20rpx;
-          margin: 0;
-          line-height: 1.2;
-          background-color: #52cc7a;
-          border: solid 1rpx #3dc66a;
-          border-radius: 25px;
-          font-size: 16rpx;
-          color: #fff;
-        }
-      }
-      .content {
-        background-color: #ffffff;
-        box-shadow: 0rpx 0rpx 11rpx 1rpx 
-          rgba(204, 204, 204, 0.2);
-        border-radius: 6rpx;
-        .row {
+  .menu0-container {
+    #map {
+      position: fixed;
+      top: 44px;
+      z-index: 1;
+    }
+
+    .monitor-list {
+      margin-top: 588rpx;
+      background-color: #f1f1f1;
+      padding: 23rpx;
+
+      .item {
+        margin-bottom: 40rpx;
+
+        .head {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          height: 94rpx;
-          padding: 0 20rpx;
-          border-bottom: 1px solid #f8f8fa;
+          margin-bottom: 15rpx;
 
-          &:last-child {
-            border-bottom: 0;
-          }
-
-          &:active {
-            background-color: #f2f3f5;
-          }
-        }
-
-        .left {
-          image {
-            width: 38rpx;
-            height: 38rpx;
-            vertical-align: middle;
-          }
-
-          text {
-            margin-left: 20rpx;
+          .company {
             font-size: 28rpx;
-          }
-        }
-
-        .right {
-          flex: 1;
-          display: flex;
-          justify-content: flex-end;
-
-          .data {
-            margin: 0 20rpx;
-            font-size: 21rpx;
             color: #333;
-            line-height: 38rpx;
-            text-align: center;
+          }
+
+          button {
+            padding: 12rpx 20rpx;
+            margin: 0;
+            line-height: 1.2;
+            background-color: #52cc7a;
+            border: solid 1rpx #3dc66a;
+            border-radius: 25px;
+            font-size: 16rpx;
+            color: #fff;
           }
         }
-      }
 
-      &:last-child {
-        margin-bottom: 0;
+        .content {
+          background-color: #ffffff;
+          box-shadow: 0rpx 0rpx 11rpx 1rpx rgba(204, 204, 204, 0.2);
+          border-radius: 6rpx;
+
+          .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 94rpx;
+            padding: 0 20rpx;
+            border-bottom: 1px solid #f8f8fa;
+
+            &:last-child {
+              border-bottom: 0;
+            }
+
+            &:active {
+              background-color: #f2f3f5;
+            }
+          }
+
+          .left {
+            image {
+              width: 38rpx;
+              height: 38rpx;
+              vertical-align: middle;
+            }
+
+            text {
+              margin-left: 20rpx;
+              font-size: 28rpx;
+            }
+          }
+
+          .right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+
+            .data {
+              margin: 0 20rpx;
+              font-size: 21rpx;
+              color: #333;
+              line-height: 38rpx;
+              text-align: center;
+            }
+          }
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
     }
   }
-  
-}
+
 </style>

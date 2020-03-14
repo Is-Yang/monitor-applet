@@ -1,38 +1,40 @@
 
-  <view class="menu1-container">
-    <van-nav-bar title="监测预警" fixed="fixed" custom-class="nav-reset">
-      <view slot="left">
-        上报预警
-      </view>
-    </van-nav-bar>
-    <view class="screen-page-wrap">
-      <view class="box-view">
-        <view class="left-screen">
-          <view class="opt">筛选
-            <van-icon name="arrow-down"/>
-          </view>
-          <view class="opt">分类
-            <van-icon name="arrow-down"/>
-          </view>
+    <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
+        <van-nav-bar title="监测预警" fixed="fixed" custom-class="nav-reset">
+            <view slot="left">
+                上报预警
+            </view>
+        </van-nav-bar>
+        <view class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
+            <view class="box-view">
+                <view class="left-screen">
+                    <view class="opt">筛选
+                        <van-icon name="arrow-down"/>
+                    </view>
+                    <view class="opt">分类
+                        <van-icon name="arrow-down"/>
+                    </view>
+                </view>
+                <view class="right-page">
+                    <text>本月：{{page.count}} 条</text>
+                    <text class="split"> | </text>
+                    <text>总共{{page.total}}条</text>
+                </view>
+            </view>
         </view>
-        <view class="right-page">
-          <text>本月：{{page.count}} 条</text>
-          <text class="split"> | </text>
-          <text>总共{{page.total}}条</text>
+        <view class="list-wrap">
+            <view  wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}">
+                <view class="content">
+                    <image src="{{item.picture}}" class="picture"/>
+                    <view class="full">
+                        <view class="desc">{{item.desc}}</view>
+                        <text class="time"> {{item.time}}</text>
+                    </view>
+                </view>
+                <view class="user-info">
+                    <view class="name">{{item.user}}</view>
+                    <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
+                </view>
+            </view>
         </view>
-      </view>
     </view>
-    <!-- <view class="list-wrap">
-      <image src="" class="picture" />
-      <view class="content">
-        <view class="desc">
-          永定男板溪联村预警说明文字永定男板溪联 村预警说明文字永定男板溪联村预警说明文
-        </view>
-        <text>2019年11月20日 17:23:12</text>
-      </view>
-      <view>
-        <view class="name">张三</view>
-        <text class="state">未处理</text>
-      </view>
-    </view> -->
-  </view>

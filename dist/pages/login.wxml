@@ -1,34 +1,31 @@
 
-  <view class="login-container">
-    <view class="top-banner">
-      <image src="../assets/images/logo.png" class="logo"/>
-      <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
-      <text>未注册的手机号码验证后自动创建账号</text>
+    <view class="login-container">
+        <view class="top-banner" style="padding-top: {{ statusBarHeight}}px">
+            <image src="../assets/images/logo.png" class="logo"/>
+            <view class="title">欢迎登录龙芯北斗地灾监控系统</view>
+            <text>未注册的手机号码验证后自动创建账号</text>
+        </view>
+        <view class="phone-wrap">
+            <view class="title">手机号登录</view>
+            <van-cell-group>
+                <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable="clearable" maxlength="11" bindinput="onPhoneInput" class=""/>
+                <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" bindinput="onCodeInput" clearable="clearable" use-button-slot="use-button-slot">
+                    <button  wx:if="{{ timer == 0 }}" slot="button" class="get-code" bindtap="getSendCode">获取验证码</button>
+                    <text  wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
+                </van-field>
+            </van-cell-group>
+            <button wx:if="{{phone == '' || code == ''}}" round="round" block="block" class="login-btn">同意协议并登录</button>
+            <button wx:if="{{phone != '' && code != ''}}" round="round" block="block" class="login-btn has" bindtap="tapLogin">同意协议并登录</button>
+        </view>
+        <view class="other-login">
+            <view class="sum">
+                <text>其他登录方式</text>
+            </view>
+            <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
+            <image src="../assets/images/wechat.png"/>
+          </button>
+        </view>
+        <view class="agree">
+            登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
+        </view>
     </view>
-    <view class="phone-wrap">
-      <view class="title">手机号登录</view>
-      <van-cell-group>
-        <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable="clearable" maxlength="11" bindinput="onPhoneInput" class=""/>
-        <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" bindinput="onCodeInput" clearable="clearable" use-button-slot="use-button-slot">
-            <button  wx:if="{{ timer == 0 }}" slot="button" class="get-code" bindtap="getSendCode">获取验证码</button>
-            <text  wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
-        </van-field>
-      </van-cell-group>
-      
-      <button wx:if="{{phone == '' || code == ''}}" round="round" block="block" class="login-btn">同意协议并登录</button>
-      <button wx:if="{{phone != '' && code != ''}}" round="round" block="block" class="login-btn has" bindtap="tapLogin">同意协议并登录</button>
-    </view>
-
-    <view class="other-login">
-      <view class="sum">
-        <text>其他登录方式</text>
-      </view>
-      <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
-        <image src="../assets/images/wechat.png"/>
-      </button>
-    </view>
-
-    <view class="agree">
-      登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
-    </view>
-  </view>

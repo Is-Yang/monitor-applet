@@ -1,9 +1,6 @@
-.menu0-container {
-  padding-top: 64px;
-}
 .menu0-container #map {
   position: fixed;
-  top: 64px;
+  top: 44px;
   z-index: 1;
 }
 .menu0-container .monitor-list {
