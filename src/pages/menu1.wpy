@@ -1,14 +1,14 @@
 <template>
     <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
         <van-nav-bar title="监测预警" fixed custom-class="nav-reset">
-            <view slot="left">
+            <view slot="left" @tap="toReport">
                 上报预警
             </view>
         </van-nav-bar>
         <view class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
             <view class="box-view">
                 <view class="left-screen">
-                    <view class="opt">筛选
+                    <view class="opt" @tap="showScreenTime">筛选
                         <van-icon name="arrow-down" />
                     </view>
                     <view class="opt">分类
@@ -19,6 +19,10 @@
                     <text>本月：{{page.count}} 条</text>
                     <text class="split"> | </text>
                     <text>总共{{page.total}}条</text>
+                </view>
+
+                <view wx:if="{{timeScreen}}" class="screen-time">
+                    <view class="opt" wx:for="{{timeOptions}}" wx:key="index" @tap="selectTime">{{item.label}}</view>
                 </view>
             </view>
         </view>
@@ -52,6 +56,22 @@
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            timeScreen: false,
+            timeOptions : [
+                {
+                    id: 1,
+                    label: '预警时间从近到远'
+                }, {
+                    id: 2,
+                    label: '预警时间从远到近'
+                }, {
+                    id: 3,
+                    label: '预警时间从近到远'
+                }, {
+                    id: 4,
+                    label: '预警时间从远到近'
+                }
+            ],
             listData: [{
                 id: 1,
                 picture: '',
@@ -77,6 +97,21 @@
             page: {
                 count: 0,
                 total: 0
+            }
+        }
+
+        methods = {
+            showScreenTime() {
+                this.timeScreen = !this.timeScreen;
+            },
+            toReport() {
+                wx.navigateTo({
+                    url: '/pages/reportInfo'
+                })
+            },
+            selectTime(e) {
+                console.log(e);
+                this.timeScreen = false;
             }
         }
     }
@@ -127,6 +162,7 @@
                 font-size: 21rpx;
                 color: #333;
                 box-sizing: border-box;
+                position: relative;
                 .left-screen {
                     display: flex;
                     .opt {
@@ -137,6 +173,38 @@
                     .split {
                         color: #ccc;
                         padding: 0 10rpx;
+                    }
+                }
+
+                .screen-time {
+                    position: absolute;
+                    top: 75rpx;
+                    background-color: #4c4c4c;
+                    border-radius: 6rpx;
+                    z-index: 9;
+                    .opt {
+                        color: #fff;
+                        letter-spacing: 2rpx;
+                        font-size: 26rpx;
+                        padding: 23rpx 30rpx;
+                        border-bottom: 1px solid #545454;
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+                    }
+
+                    &:before {
+                        content: "";
+                        position: absolute;
+                        display: block;
+                        top: -10rpx;
+                        left: 75rpx;
+                        z-index: 11;
+                        width: 25rpx;
+                        height: 25rpx;
+                        transform: rotate(45deg);
+                        background-color: #4c4c4c;
                     }
                 }
             }

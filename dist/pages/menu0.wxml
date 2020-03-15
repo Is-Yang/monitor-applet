@@ -8,7 +8,7 @@
         <view class="item">
           <view class="head">
             <text class="company">{{item.company}}</text>
-            <button>上报预警</button>
+            <button bindtap="toReport">上报预警</button>
           </view>
           <view class="content">
             <view class="row">

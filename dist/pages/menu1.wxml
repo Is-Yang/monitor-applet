@@ -1,14 +1,14 @@
 
     <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
         <van-nav-bar title="监测预警" fixed="fixed" custom-class="nav-reset">
-            <view slot="left">
+            <view slot="left" bindtap="toReport">
                 上报预警
             </view>
         </van-nav-bar>
         <view class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
             <view class="box-view">
                 <view class="left-screen">
-                    <view class="opt">筛选
+                    <view class="opt" bindtap="showScreenTime">筛选
                         <van-icon name="arrow-down"/>
                     </view>
                     <view class="opt">分类
@@ -19,6 +19,10 @@
                     <text>本月：{{page.count}} 条</text>
                     <text class="split"> | </text>
                     <text>总共{{page.total}}条</text>
+                </view>
+
+                <view  wx:if="{{timeScreen}}" class="screen-time">
+                    <view class="opt" wx:for="{{timeOptions}}" wx:key="index" bindtap="selectTime">{{item.label}}</view>
                 </view>
             </view>
         </view>

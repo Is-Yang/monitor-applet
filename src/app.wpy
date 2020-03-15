@@ -25,12 +25,12 @@
     config = {
       pages: [
         'pages/login',
-        'pages/userUnit',
         'pages/reportInfo',
+        'pages/menu1',
+        'pages/userUnit',
         'pages/userInfo',
         'pages/menu2',
         'pages/menu0',
-        'pages/menu1',
       ],
       window: {
         backgroundTextStyle: 'light',

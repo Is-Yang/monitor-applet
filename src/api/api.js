@@ -6,7 +6,7 @@ import tip from '../utils/tip'
 
 import qs from 'qs';
 
-const wxRequest = async(params = {}, url, showLoding = true) => {
+const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) => {
     showLoding && tip.loading();
 
     let header = {
@@ -19,14 +19,15 @@ const wxRequest = async(params = {}, url, showLoding = true) => {
     if (environment == 'prod') {
         url = 'https://tcb-api.tencentcloudapi.com' + url;
     } else if (environment == 'test') {
-        url = 'https://beidou.signalfire.net.cn' + url;
+        url = 'https://beidou.signalfire.net.cn/' + url;
+        // url = 'https://mock.api.signalfire.net.cn/mock/5e6e33e3295a274363797433/example/' + url;
     }
-
+    let data = method == 'POST' ? qs.stringify(params) : params;
     let res = await wepy.request({
+        header,
         url,
-        method: 'POST',
-        data: qs.stringify(params),
-        header
+        method: method,
+        data: data,
     }).catch((err) => {
         console.log('wepy requerst err:' + err);
     });
@@ -39,4 +40,4 @@ const wxRequest = async(params = {}, url, showLoding = true) => {
 }
 
 // 获取验证码
-export const getCode = (params) => wxRequest(params, '');
+export const getCode = (params) => wxRequest(params, 'smscode', 'GET');

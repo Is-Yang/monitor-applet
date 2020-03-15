@@ -1,6 +1,6 @@
 <template>
     <view class="report-info-container">
-        <van-nav-bar title="预警上报" left-arrow left-text="返回" fixed custom-class="nav-reset" />
+        <van-nav-bar title="预警上报" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view class="report-form" style="padding-top: {{statusBarHeight}}px">
             <view class="cell link">
                 <text>地点</text>
@@ -25,7 +25,7 @@
                 <text>相关人员</text>
                 <view class="right-txt"></view>
             </view>
-            <view class="cell link">
+            <view class="cell link" @tap="uploadImage">
                 <text>拍照</text>
                 <view class="right-txt">
                     <text>可拍3张</text>
@@ -34,7 +34,10 @@
             </view>
 
             <view class="show-picture">
-                
+                 <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
+                    <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
+                    <image class='image' @tap="showImage" data-index="{{index}}" src='{{item}}' mode="aspectFill"/>
+                </view>
             </view>
         </view>
         <button class="submit">提交</button>
@@ -53,6 +56,46 @@
 
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            uploadList: []
+        }
+
+        methods = {
+            onClickLeft() {
+                wx.navigateBack({
+                    delta: 1
+                });
+            },
+            uploadImage() {
+                let that = this;
+                wx.chooseImage({
+                    count: 3, 
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function(res) {
+                        let tempFilePaths = res.tempFilePaths;
+                        let uploadList = that.uploadList.concat(tempFilePaths);
+                        if(uploadList.length > 3) {
+                            wx.showToast({
+                                title: '最多三张',
+                                icon: 'none', 
+                                duration: 1500
+                            })
+                            return;
+                        }
+                        that.uploadList = uploadList;
+                        that.$apply();
+                    }
+                })
+            },
+            removeImage(e) {
+                this.uploadList.splice(e.currentTarget.dataset.index, 1);
+            },
+            showImage(e) {
+                wx.previewImage({
+                    urls: this.uploadList,
+                    current: this.uploadList[e.currentTarget.dataset.index]
+                });
+            }
         }
     }
 </script>
@@ -124,10 +167,20 @@
             .show-picture {
                 padding: 28rpx 60rpx 28rpx 32rpx;
                 display: flex;
-                justify-content: space-between;
                 height: 150rpx;
 
-                image {
+                .item-image {
+                    position: relative;
+                    margin: 0 20rpx 0 0;
+                    .icon-remove {
+                        position: absolute;
+                        right: -5rpx;
+                        top: -5rpx;
+                        z-index: 5;
+                    }
+                }
+
+                .image {
                     width: 211rpx;
                     height: 141rpx;
                     background-color: #cccccc;
