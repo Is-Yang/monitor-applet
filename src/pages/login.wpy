@@ -21,13 +21,31 @@
             <view class="sum">
                 <text>其他登录方式</text>
             </view>
-            <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
-            <image src="../assets/images/wechat.png" />
-          </button>
+            <button open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber" class="reset-button">
+                <image src="../assets/images/wechat.png" />
+              </button>
         </view>
         <view class="agree">
             登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
         </view>
+
+        <van-popup show="{{ showGetPhone }}" position="bottom" custom-class="phone-popup">
+            <view class="head">
+                <image src="../assets/images/logo.png" />
+                <text>龙芯北斗地灾监控系统<text style="padding-left:30rpx;">申请使用</text></text>
+            </view>
+            <view class="body">
+                <view>您的手机号码</view>
+                <view class="info">
+                    <text>{{getPhone}}</text>
+                    <text style="padding-left: 28rpx; color:#999;">微信绑定号码</text>
+                </view>
+            </view>
+            <view class="foot">
+                <button @tap="showGetPhone = false">拒绝</button>
+                <button class="allow" open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber">允许</button>
+            </view>
+        </van-popup>
     </view>
 </template>
 
@@ -40,37 +58,57 @@
             navigationBarTitleText: '登录',
             usingComponents: {
                 "van-cell": "../components/vant/cell/index",
-                "van-field": "../components/vant/field/index"
+                "van-field": "../components/vant/field/index",
+                "van-icon": "../components/vant/icon/index",
+                "van-popup": "../components/vant/popup/index"
             }
         }
         data = {
             phone: '',
             code: '',
+            uuid: '',
             timer: 0,
+            getPhone: '',
             sendInterval: null,
+            showGetPhone: false,
             statusBarHeight: wx.getSystemInfoSync().statusBarHeight
         }
-
         methods = {
             tapLogin() {
-                if(this.verifyPhone()) {
-                    wx.switchTab({
-                        url: '/pages/menu0'
+                if (this.verifyPhone()) {
+                    this.smsLogin();
+                }
+            },
+            // 获取手机号
+            getPhoneNumber(event) {
+                if(event.detail.encryptedData) {
+                    // 获取用户登录code
+                    wx.login({
+                        success: ((res) => {
+                            if(res.code) {
+                                // 获取用户信息
+                                wx.getUserInfo({
+                                    success: ((data) => {
+                                        let userInfo = data.userInfo;
+                                        let params = {
+                                            code: res.code,
+                                            avatar: userInfo.avatarUrl,
+                                            nickName: userInfo.nickName,
+                                            sex: userInfo.gender,
+                                            phoneNumber: event.detail.encryptedData,
+                                            iv: event.detail.iv
+                                        }
+                                        this.wechatLogin(params);
+                                    })
+                                });
+                            }
+                        })
                     })
                 }
             },
-            // 微信授权登录
-            bindGetUserInfo(event) {
-                console.log(event)
-                wx.login({
-                    success: ((res) => {
-                        console.log(res);
-                    })
-                })
-            },
             // 发送验证码
             getSendCode() {
-                if(this.verifyPhone()) {
+                if (this.verifyPhone()) {
                     const that = this;
                     wx.showModal({
                         title: '确认手机号码',
@@ -96,12 +134,30 @@
                 this.code = e.detail;
             }
         }
+        // 手机验证码登录
+        async smsLogin(params) {
+            let res = await api.smsLogin({
+                phone: this.phone,
+                code: this.code,
+                uuid: this.uuid
+            });
+            // if(res.code == 200) {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            // }
+            this.$apply();
+        }
         async getCode() {
             let res = await api.getCode({
                 phone: this.phone
             })
             this.code = res.verifyCode;
+            this.uuid = res.uuid;
             this.$apply();
+        }
+        async wechatLogin(params) {
+            let res = await api.wechatLogin(params);
             console.log(res);
         }
         verifyPhone() {
@@ -176,6 +232,61 @@
         .van-field__button {
             height: 54rpx;
             line-height: 40rpx;
+        }
+        .phone-popup {
+            height: 572rpx;
+            padding: 30rpx;
+            color: #000;
+            font-size: 26rpx;
+            .head {
+                margin-bottom: 30rpx;
+                image {
+                    width: 70rpx;
+                    height: 70rpx;
+                    margin-right: 15rpx;
+                    vertical-align: middle;
+                }
+            }
+            .body {
+                .info {
+                    margin: 30rpx 0;
+                    padding: 40rpx 0;
+                    position: relative;
+                    border-top: 1px solid #e5e5e5;
+                    border-bottom: 1px solid #e5e5e5;
+
+                    &::after {
+                        content: "\F0C8";
+                        font-family: "vant-icon";
+                        position: absolute;
+                        right: 0;
+                        z-index: 1;
+                        font-size: 38rpx;
+                        color: #54bd53;
+                        font-weight: 600;
+                    }
+                }
+            }
+            .foot {
+                display: flex;
+                justify-content: center;
+                margin-top: 65rpx;
+                button {
+                    margin: 0 17rpx;
+                    width: 213rpx;
+                    height: 71rpx;
+                    line-height: 71rpx;
+                    text-align: center;
+                    background-color: #f2f2f2;
+                    border-radius: 4px;
+                    font-size: 24rpx;
+                    color: #333;
+                    &.allow {
+                        color: #fff;
+                        background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient( #54bd53, #54bd53);
+                    }
+                }
+            }
         }
         .get-code {
             width: 164rpx;

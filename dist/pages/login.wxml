@@ -21,11 +21,29 @@
             <view class="sum">
                 <text>其他登录方式</text>
             </view>
-            <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo" class="reset-button">
-            <image src="../assets/images/wechat.png"/>
-          </button>
+            <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" class="reset-button">
+                <image src="../assets/images/wechat.png"/>
+              </button>
         </view>
         <view class="agree">
             登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
         </view>
+
+        <van-popup show="{{ showGetPhone }}" position="bottom" custom-class="phone-popup">
+            <view class="head">
+                <image src="../assets/images/logo.png"/>
+                <text>龙芯北斗地灾监控系统<text style="padding-left:30rpx;">申请使用</text></text>
+            </view>
+            <view class="body">
+                <view>您的手机号码</view>
+                <view class="info">
+                    <text>{{getPhone}}</text>
+                    <text style="padding-left: 28rpx; color:#999;">微信绑定号码</text>
+                </view>
+            </view>
+            <view class="foot">
+                <button bindtap="showGetPhone = false">拒绝</button>
+                <button class="allow" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">允许</button>
+            </view>
+        </van-popup>
     </view>

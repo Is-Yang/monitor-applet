@@ -34,10 +34,21 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
 
     showLoding && tip.loaded();
 
-    if (res) {
+    if (res && res.data) {
+        let result = res.data;
+        // 未授权
+        if (result.code == 401) {
+            wx.navigateTo({
+                url: '/pages/login'
+            })
+        } 
         return res.data;
     }
 }
 
 // 获取验证码
 export const getCode = (params) => wxRequest(params, 'smscode', 'GET');
+// 短信验证码登录
+export const smsLogin = (params) => wxRequest(params, 'smslogin');
+// 微信授权登录
+export const wechatLogin = (params) => wxRequest(params, 'wechatlogin');
