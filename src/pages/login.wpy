@@ -51,8 +51,17 @@
 
 <script>
     import wepy from 'wepy'
+    import {
+        setStore,
+        getStore
+    } from 'wepy-redux'
+    import configStore from '../store'
     import tip from "../utils/tip"
     import * as api from '../api/api'
+
+    const store = configStore()
+    setStore(store)
+
     export default class Login extends wepy.page {
         config = {
             navigationBarTitleText: '登录',
@@ -137,15 +146,21 @@
         // 手机验证码登录
         async smsLogin(params) {
             let res = await api.smsLogin({
-                phone: this.phone,
+                phoneNumber: this.phone,
                 code: this.code,
                 uuid: this.uuid
             });
-            // if(res.code == 200) {
+            if(res.code == 200) {
+                store.dispatch({
+                    type: 'UPDATE_GLOBAL_DATA',
+                    globalData: {
+                        token: res.token
+                    }
+                });
                 wx.switchTab({
                     url: '/pages/menu0'
                 })
-            // }
+            }
             this.$apply();
         }
         async getCode() {

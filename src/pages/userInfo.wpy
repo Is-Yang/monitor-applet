@@ -4,7 +4,7 @@
         <view class="operate-cell" style="padding-top: {{statusBarHeight}}px">
             <view class="cell">
                 <view>
-                    <image src="../assets/images/nickname.png" mode="aspectFit" />
+                    <image src="../assets/images/user.png" mode="aspectFit" />
                     <text>昵称</text>
                 </view>
                 <input value="{{ nickname }}" />
@@ -32,9 +32,16 @@
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
-            nickname: 'isyang',
-            phone: '13143715009'
+            nickname: '',
+            phone: ''
         }
+
+        onLoad(e) {
+            this.nickname = e.nickname;
+            this.phone = e.tel;
+            this.$apply();
+        }
+
         methods = {
             onClickLeft() {
                 wx.navigateBack({

@@ -15,6 +15,9 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
 
     const store = getStore();
     let globalData = store.getState().user.globalData;
+    if (globalData.token) {
+        header['Authorization'] = globalData.token
+    }
     let environment = 'test';
     if (environment == 'prod') {
         url = 'https://tcb-api.tencentcloudapi.com' + url;
@@ -23,6 +26,7 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
         // url = 'https://mock.api.signalfire.net.cn/mock/5e6e33e3295a274363797433/example/' + url;
     }
     let data = method == 'POST' ? qs.stringify(params) : params;
+
     let res = await wepy.request({
         header,
         url,
@@ -41,7 +45,7 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
             wx.navigateTo({
                 url: '/pages/login'
             })
-        } 
+        }
         return res.data;
     }
 }
@@ -52,3 +56,5 @@ export const getCode = (params) => wxRequest(params, 'smscode', 'GET');
 export const smsLogin = (params) => wxRequest(params, 'smslogin');
 // 微信授权登录
 export const wechatLogin = (params) => wxRequest(params, 'wechatlogin');
+// 获取用户信息
+export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')

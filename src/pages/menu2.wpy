@@ -6,21 +6,21 @@
             <view class="my-box" style="margin-top: {{statusBarHeight}}px">
                 <view class="user-info" bindtap="toUserInfo">
                     <view class="photo" catchtap="uploadPhoto">
-                        <image wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera" />
-                        <image wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill" />
+                        <image wx:if="{{userInfo.avatar == '' }}" src="../assets/images/camera_w.png" class="camera" />
+                        <image wx:if="{{userInfo.avatar != '' }}" src="{{userInfo.avatar}}" mode="aspectFill" />
                     </view>
                     <view>
-                        <view>昵称</view>
-                        <view>136****7815</view>
+                        <view>{{userInfo.nickName}}</view>
+                        <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{company != '' || role != '' }}" class="mark" bindtap="toUserUnit">
-                    <text class="company">{{company}}</text>
-                    <text class="role">{{role}}</text>
+                <view wx:if="{{userInfo.company != '' || userInfo.admin }}" class="mark" bindtap="toUserUnit">
+                    <text class="company">{{userInfo.company}}</text>
+                    <text class="role">管理员</text>
                 </view>
                 <view wx:else class="mark">
                     <text class="no">未加入任何单位</text>
-                    <text class="flag">扫码加入</text>
+                    <text class="flag" @tap="scanJoin">扫码加入</text>
                 </view>
             </view>
         </view>
@@ -44,6 +44,7 @@
 
 <script>
     import wepy from 'wepy'
+    import * as api from '../api/api'
     export default class Menu2 extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
@@ -53,14 +54,32 @@
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
-            userPhoto: '',
-            company: '龙岩地区中心',
-            role: '管理员'
+            userInfo: {
+                avatar: '',
+                company: '',
+                admin: false,
+                tel: '',
+                nickname: ''
+            }
         }
+
+        onShow() {
+            this.getUserInfo();
+        }
+
         methods = {
+            // 扫码加入
+            scanJoin() {
+                wx.scanCode({
+                    success: (res) => {
+                        let result = res.result;
+                        console.log(result)
+                    }
+                })
+            },
             toUserInfo() {
                 wx.navigateTo({
-                    url: '/pages/userInfo'
+                    url: `/pages/userInfo?nickname=${this.userInfo.nickName}&tel=${this.userInfo.tel}`
                 })
             },
             toUserUnit() {
@@ -77,7 +96,7 @@
                     sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
                     success: function(res) {
                         let tempFilePaths = res.tempFilePaths
-                        that.userPhoto = tempFilePaths[0];
+                        that.userInfo.avatar = tempFilePaths[0];
                         // wx.uploadFile({
                         //   url: 'http://localhost:8080/upload/fileUpload', //仅为示例，非真实的接口地址
                         //   filePath: tempFilePaths[0],
@@ -94,6 +113,26 @@
                     }
                 })
             }
+        }
+
+        async getUserInfo() {
+            let res = await api.getUserInfo();
+            if(res.code == 200) {
+                const { avatar, nickName, phonenumber, sex, admin, userName, loginIp } = res.user;
+                let phone = phonenumber.replace(phonenumber.substring(3,7), "****")
+                this.userInfo = {
+                    avatar, // 头像
+                    nickName,  // 昵称
+                    sex,  // 性别
+                    userName,  // 用户名
+                    admin,  // 是否为管理员，ture为是
+                    phone,  // 手机号
+                    company: loginIp,   // 扫码加入后的公司名称
+                    tel: phonenumber
+                }
+                this.$apply();
+            }
+            console.log(res);
         }
     }
 </script>

@@ -25,8 +25,8 @@
     config = {
       pages: [
         'pages/login',
-        'pages/reportInfo',
         'pages/menu1',
+        'pages/reportInfo',
         'pages/userUnit',
         'pages/userInfo',
         'pages/menu2',

@@ -4,7 +4,7 @@
         <view class="operate-cell" style="padding-top: {{statusBarHeight}}px">
             <view class="cell">
                 <view>
-                    <image src="../assets/images/nickname.png" mode="aspectFit"/>
+                    <image src="../assets/images/user.png" mode="aspectFit"/>
                     <text>昵称</text>
                 </view>
                 <input value="{{ nickname }}"/>

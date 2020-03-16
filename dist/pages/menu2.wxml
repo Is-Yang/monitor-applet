@@ -6,21 +6,21 @@
             <view class="my-box" style="margin-top: {{statusBarHeight}}px">
                 <view class="user-info" bindtap="toUserInfo">
                     <view class="photo" catchtap="uploadPhoto">
-                        <image  wx:if="{{userPhoto == '' }}" src="../assets/images/camera_w.png" class="camera"/>
-                        <image  wx:if="{{userPhoto != '' }}" src="{{userPhoto}}" mode="aspectFill"/>
+                        <image  wx:if="{{userInfo.avatar == '' }}" src="../assets/images/camera_w.png" class="camera"/>
+                        <image  wx:if="{{userInfo.avatar != '' }}" src="{{userInfo.avatar}}" mode="aspectFill"/>
                     </view>
                     <view>
-                        <view>昵称</view>
-                        <view>136****7815</view>
+                        <view>{{userInfo.nickName}}</view>
+                        <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{company != '' || role != '' }}" class="mark" bindtap="toUserUnit">
-                    <text class="company">{{company}}</text>
-                    <text class="role">{{role}}</text>
+                <view wx:if="{{userInfo.company != '' || userInfo.admin }}" class="mark" bindtap="toUserUnit">
+                    <text class="company">{{userInfo.company}}</text>
+                    <text class="role">管理员</text>
                 </view>
                 <view wx:else class="mark">
                     <text class="no">未加入任何单位</text>
-                    <text class="flag">扫码加入</text>
+                    <text class="flag" bindtap="scanJoin">扫码加入</text>
                 </view>
             </view>
         </view>
