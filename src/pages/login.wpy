@@ -71,6 +71,15 @@
             userInfo: {},  // 用户信息
             statusBarHeight: wx.getSystemInfoSync().statusBarHeight
         }
+
+        onLoad() {
+            if(wx.getStorageSync('token')) {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            }
+        }
+
         methods = {
             tapLogin() {
                 if (this.verifyPhone()) {
@@ -90,11 +99,20 @@
                 this.userInfo.encryptedData = event.detail.encryptedData;
                 this.userInfo.iv = event.detail.iv;
                 if(event.detail.errMsg == 'getPhoneNumber:ok') {
+                    this.showGetPhone = false;
                     wx.checkSession({
                         success: () => {
                             let userInfo = wx.getStorageSync('userInfo');
-                            this.userInfo.openId = userInfo.open_id;
-                            this.userInfo.sessionKey = userInfo.session_key;
+                            if(!userInfo) {
+                                const store = getStore();
+                                let userData = store.getState().user.userInfo;
+                                console.log(userData)
+                                this.userInfo.openId = userData.openId;
+                                this.userInfo.sessionKey = userData.sessionKey;
+                            } else {
+                                this.userInfo.openId = userInfo.openId;
+                                this.userInfo.sessionKey = userInfo.sessionKey;
+                            }
                             this.wechatLogin();
                         },
                         fail: () => {
@@ -147,6 +165,11 @@
                 this.userInfo.openId = res.open_id;
                 this.userInfo.sessionKey = res.session_key;
                 wx.setStorageSync('userInfo', this.userInfo);
+                store.dispatch({
+                    type: 'UPDATE_USER_INFO',
+                    userInfo: this.userInfo
+                })
+                console.log(this.userInfo)
                 this.wechatLogin();
             }
         }
@@ -159,16 +182,7 @@
                 uuid: this.uuid
             });
             if(res.code == 200) {
-                store.dispatch({
-                    type: 'UPDATE_GLOBAL_DATA',
-                    globalData: {
-                        token: res.token
-                    }
-                });
-                wx.setStorageSync('token', res.token);
-                wx.switchTab({
-                    url: '/pages/menu0'
-                })
+                this.loginSuccess(res.token);
             }
             this.$apply();
         }
@@ -192,7 +206,16 @@
                 iv: userInfo.iv
             }
             let res = await api.wechatLogin(data);
+            if(res.code == 200) {
+               this.loginSuccess(res.token);
+            }
             
+        }
+        loginSuccess(token) {
+            wx.setStorageSync('token', token);
+            wx.switchTab({
+                url: '/pages/menu0'
+            })
         }
         verifyPhone() {
             if (this.phone == '') {
@@ -268,7 +291,7 @@
             line-height: 40rpx;
         }
         .phone-popup {
-            width: 80%;
+            width: 85%;
             padding: 65rpx 35rpx;
             color: #000;
             font-size: 26rpx;

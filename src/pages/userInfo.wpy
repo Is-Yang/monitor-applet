@@ -7,14 +7,14 @@
                     <image src="../assets/images/user.png" mode="aspectFit" />
                     <text>昵称</text>
                 </view>
-                <input value="{{ nickname }}" />
+                <input value="{{ nickname }}" @input="nicknameInput" />
             </view>
             <view class="cell">
                 <view>
                     <image src="../assets/images/phone.png" mode="aspectFit" class="icon-phone" />
                     <text>手机号</text>
                 </view>
-                <input type="number" value="{{ phone }}" />
+                <input type="number" value="{{ phone }}" @input="phoneInput" />
             </view>
         </view>
         <button class="complete" @tap="completeEdit">完成</button>
@@ -34,23 +34,30 @@
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
             nickname: '',
-            phone: ''
+            phone: '',
+            userId: ''
         }
 
         onLoad(e) {
             this.nickname = e.nickname;
             this.phone = e.tel;
+            this.userId = e.userId;
             this.$apply();
         }
 
         methods = {
+            nicknameInput(e) {
+                this.nickname = e.detail.value;
+            },
+            phoneInput(e) {
+                this.phone = e.detail.value;
+            },
             completeEdit() {
-                let params = {
-                    user: JSON.stringify({
-                        phonenumber: this.phone,
-                        nickName: this.nickname
-                    })
-                }
+                let params = JSON.stringify({
+                    userId: this.userId,
+                    phonenumber: this.phone,
+                    nickName: this.nickname
+                })
                 this.updateUser(params);
             },
             onClickLeft() {
@@ -62,7 +69,18 @@
 
         async updateUser(params) {
             let res = await api.updateUser(params);
-            console.log(res);
+            if (res.code == 200) {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
+                });
+                setTimeout(() => {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }, 1000)
+            }
         }
     }
 </script>

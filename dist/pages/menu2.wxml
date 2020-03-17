@@ -6,8 +6,8 @@
             <view class="my-box" style="margin-top: {{statusBarHeight}}px">
                 <view class="user-info" bindtap="toUserInfo">
                     <view class="photo" catchtap="uploadPhoto">
-                        <image  wx:if="{{userInfo.avatar == '' }}" src="../assets/images/camera_w.png" class="camera"/>
                         <image  wx:if="{{userInfo.avatar != '' }}" src="{{userInfo.avatar}}" mode="aspectFill"/>
+                        <image  wx:else src="../assets/images/camera_w.png" class="camera"/>
                     </view>
                     <view>
                         <view>{{userInfo.nickName}}</view>

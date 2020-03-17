@@ -6,8 +6,8 @@
             <view class="my-box" style="margin-top: {{statusBarHeight}}px">
                 <view class="user-info" bindtap="toUserInfo">
                     <view class="photo" catchtap="uploadPhoto">
-                        <image wx:if="{{userInfo.avatar == '' }}" src="../assets/images/camera_w.png" class="camera" />
                         <image wx:if="{{userInfo.avatar != '' }}" src="{{userInfo.avatar}}" mode="aspectFill" />
+                        <image wx:else src="../assets/images/camera_w.png" class="camera" />
                     </view>
                     <view>
                         <view>{{userInfo.nickName}}</view>
@@ -79,7 +79,7 @@
             },
             toUserInfo() {
                 wx.navigateTo({
-                    url: `/pages/userInfo?nickname=${this.userInfo.nickName}&tel=${this.userInfo.tel}`
+                    url: `/pages/userInfo?nickname=${this.userInfo.nickName}&tel=${this.userInfo.tel}&userId=${this.userInfo.userId}`
                 })
             },
             toUserUnit() {
@@ -122,7 +122,7 @@
         async userLogout() {
             let res = await api.userLogout();
             if (res.code == 200) {
-                wx.removeStorage('token');
+                wx.removeStorageSync('token');
                 wx.navigateTo({
                     url: '/pages/login'
                 })
@@ -132,7 +132,7 @@
         async getUserInfo() {
             let res = await api.getUserInfo();
             if(res.code == 200) {
-                const { avatar, nickName, phonenumber, sex, admin, userName, loginIp } = res.user;
+                const { avatar, nickName, phonenumber, sex, admin, userName, loginIp, userId } = res.user;
                 let phone = phonenumber.replace(phonenumber.substring(3,7), "****")
                 this.userInfo = {
                     avatar, // 头像
@@ -141,12 +141,12 @@
                     userName,  // 用户名
                     admin,  // 是否为管理员，ture为是
                     phone,  // 手机号
+                    userId,
                     company: loginIp,   // 扫码加入后的公司名称
                     tel: phonenumber
                 }
                 this.$apply();
             }
-            console.log(res);
         }
     }
 </script>
@@ -168,16 +168,16 @@
                 right: 23rpx;
                 z-index: 1;
                 height: 326rpx;
-                background-color: #ffffff;
+                padding: 0 40rpx;
+                background-color: #e8f7f4;
                 box-shadow: 0rpx 0rpx 11rpx 1rpx rgba(204, 204, 204, 0.2);
                 border-radius: 6rpx;
-                opacity: 0.9;
             }
             .user-info {
                 display: flex;
                 align-items: center;
                 position: relative;
-                padding: 40rpx;
+                padding: 40rpx 0;
                 line-height: 38rpx;
                 border-bottom: 1px solid rgba(56, 192, 153, 0.3);
                 color: #333;
@@ -202,7 +202,7 @@
                 &:after {
                     content: '\F00A';
                     position: absolute;
-                    right: 40rpx;
+                    right: 0;
                     font-family: 'vant-icon';
                     color: #ccc;
                     font-size: 30rpx;
@@ -211,7 +211,7 @@
             .mark {
                 display: flex;
                 justify-content: space-between;
-                padding: 20rpx 32rpx 50rpx 59rpx;
+                padding: 20rpx 0 50rpx 20rpx;
                 font-size: 18rpx;
                 color: #666;
                 line-height: 38rpx;

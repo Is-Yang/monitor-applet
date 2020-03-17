@@ -7,14 +7,14 @@
                     <image src="../assets/images/user.png" mode="aspectFit"/>
                     <text>昵称</text>
                 </view>
-                <input value="{{ nickname }}"/>
+                <input value="{{ nickname }}" bindinput="nicknameInput"/>
             </view>
             <view class="cell">
                 <view>
                     <image src="../assets/images/phone.png" mode="aspectFit" class="icon-phone"/>
                     <text>手机号</text>
                 </view>
-                <input type="number" value="{{ phone }}"/>
+                <input type="number" value="{{ phone }}" bindinput="phoneInput"/>
             </view>
         </view>
         <button class="complete" bindtap="completeEdit">完成</button>
