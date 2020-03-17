@@ -25,11 +25,11 @@
     config = {
       pages: [
         'pages/login',
+        'pages/menu2',
         'pages/menu1',
         'pages/reportInfo',
         'pages/userUnit',
         'pages/userInfo',
-        'pages/menu2',
         'pages/menu0',
       ],
       window: {
@@ -46,7 +46,7 @@
         "backgroundColor": "#ffffff",
         "list": [{
             "pagePath": "pages/menu0",
-            "text": '检测',
+            "text": '监测',
             "iconPath": '/assets/images/icon/detection.png',
             "selectedIconPath": '/assets/images/icon/detection_cur.png'
           },

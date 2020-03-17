@@ -17,5 +17,5 @@
                 <input type="number" value="{{ phone }}"/>
             </view>
         </view>
-        <button class="complete">完成</button>
+        <button class="complete" bindtap="completeEdit">完成</button>
     </view>

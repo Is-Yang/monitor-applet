@@ -21,7 +21,7 @@
             <view class="sum">
                 <text>其他登录方式</text>
             </view>
-            <button open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber" class="reset-button">
+            <button open-type='getUserInfo' bindgetuserinfo="getUserInfo" class="reset-button">
                 <image src="../assets/images/wechat.png" />
               </button>
         </view>
@@ -29,22 +29,10 @@
             登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
         </view>
 
-        <van-popup show="{{ showGetPhone }}" position="bottom" custom-class="phone-popup">
-            <view class="head">
-                <image src="../assets/images/logo.png" />
-                <text>龙芯北斗地灾监控系统<text style="padding-left:30rpx;">申请使用</text></text>
-            </view>
-            <view class="body">
-                <view>您的手机号码</view>
-                <view class="info">
-                    <text>{{getPhone}}</text>
-                    <text style="padding-left: 28rpx; color:#999;">微信绑定号码</text>
-                </view>
-            </view>
-            <view class="foot">
-                <button @tap="showGetPhone = false">拒绝</button>
-                <button class="allow" open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber">允许</button>
-            </view>
+        <van-popup show="{{ showGetPhone }}" closeable  bind:close="onClosePopup" custom-class="phone-popup">
+            <image src="../assets/images/logo.png" />
+            <view>龙芯北斗地灾监控系统 申请使用您的手机号码</view>
+            <button class="allow" open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber">去授权</button>
         </van-popup>
     </view>
 </template>
@@ -80,6 +68,7 @@
             getPhone: '',
             sendInterval: null,
             showGetPhone: false,
+            userInfo: {},  // 用户信息
             statusBarHeight: wx.getSystemInfoSync().statusBarHeight
         }
         methods = {
@@ -88,31 +77,37 @@
                     this.smsLogin();
                 }
             },
+            // 获取用户信息
+            getUserInfo(event) {
+                if (event.detail.userInfo) {
+                    this.userInfo = event.detail.userInfo;
+                    this.showGetPhone = true;
+                    this.$apply();
+                }
+            },
             // 获取手机号
             getPhoneNumber(event) {
-                if(event.detail.encryptedData) {
-                    // 获取用户登录code
-                    wx.login({
-                        success: ((res) => {
-                            if(res.code) {
-                                // 获取用户信息
-                                wx.getUserInfo({
-                                    success: ((data) => {
-                                        let userInfo = data.userInfo;
-                                        let params = {
-                                            code: res.code,
-                                            avatar: userInfo.avatarUrl,
-                                            nickName: userInfo.nickName,
-                                            sex: userInfo.gender,
-                                            phoneNumber: event.detail.encryptedData,
-                                            iv: event.detail.iv
-                                        }
-                                        this.wechatLogin(params);
-                                    })
-                                });
-                            }
-                        })
-                    })
+                this.userInfo.encryptedData = event.detail.encryptedData;
+                this.userInfo.iv = event.detail.iv;
+                if(event.detail.errMsg == 'getPhoneNumber:ok') {
+                    wx.checkSession({
+                        success: () => {
+                            let userInfo = wx.getStorageSync('userInfo');
+                            this.userInfo.openId = userInfo.open_id;
+                            this.userInfo.sessionKey = userInfo.session_key;
+                            this.wechatLogin();
+                        },
+                        fail: () => {
+                            // 获取用户登录code
+                            wx.login({
+                                success: ((res) => {
+                                    if(res.code) {
+                                        this.getOpenid({code: res.code})
+                                    }
+                                })
+                            })
+                        }
+                    });
                 }
             },
             // 发送验证码
@@ -136,6 +131,9 @@
                     })
                 }
             },
+            onClosePopup() {
+                this.showGetPhone = false;
+            },
             onPhoneInput(e) {
                 this.phone = e.detail;
             },
@@ -143,6 +141,16 @@
                 this.code = e.detail;
             }
         }
+        async getOpenid(params) {
+            let res = await api.getOpenid(params);
+            if (res.code == 200) {
+                this.userInfo.openId = res.open_id;
+                this.userInfo.sessionKey = res.session_key;
+                wx.setStorageSync('userInfo', this.userInfo);
+                this.wechatLogin();
+            }
+        }
+        
         // 手机验证码登录
         async smsLogin(params) {
             let res = await api.smsLogin({
@@ -157,6 +165,7 @@
                         token: res.token
                     }
                 });
+                wx.setStorageSync('token', res.token);
                 wx.switchTab({
                     url: '/pages/menu0'
                 })
@@ -171,9 +180,19 @@
             this.uuid = res.uuid;
             this.$apply();
         }
-        async wechatLogin(params) {
-            let res = await api.wechatLogin(params);
-            console.log(res);
+        async wechatLogin() {
+            let userInfo = this.userInfo;
+            let data = {
+                openId: userInfo.openId,
+                sessionKey: userInfo.sessionKey,
+                avatar: userInfo.avatarUrl,
+                nickName: userInfo.nickName,
+                sex: userInfo.gender,
+                phoneNumber: userInfo.encryptedData,
+                iv: userInfo.iv
+            }
+            let res = await api.wechatLogin(data);
+            
         }
         verifyPhone() {
             if (this.phone == '') {
@@ -249,57 +268,31 @@
             line-height: 40rpx;
         }
         .phone-popup {
-            height: 572rpx;
-            padding: 30rpx;
+            width: 80%;
+            padding: 65rpx 35rpx;
             color: #000;
             font-size: 26rpx;
-            .head {
-                margin-bottom: 30rpx;
-                image {
-                    width: 70rpx;
-                    height: 70rpx;
-                    margin-right: 15rpx;
-                    vertical-align: middle;
-                }
+            text-align: center;
+            image {
+                width: 85rpx;
+                height: 85rpx;
+                margin-bottom: 35rpx;
+                vertical-align: middle;
             }
-            .body {
-                .info {
-                    margin: 30rpx 0;
-                    padding: 40rpx 0;
-                    position: relative;
-                    border-top: 1px solid #e5e5e5;
-                    border-bottom: 1px solid #e5e5e5;
-
-                    &::after {
-                        content: "\F0C8";
-                        font-family: "vant-icon";
-                        position: absolute;
-                        right: 0;
-                        z-index: 1;
-                        font-size: 38rpx;
-                        color: #54bd53;
-                        font-weight: 600;
-                    }
-                }
-            }
-            .foot {
-                display: flex;
-                justify-content: center;
-                margin-top: 65rpx;
-                button {
-                    margin: 0 17rpx;
-                    width: 213rpx;
-                    height: 71rpx;
-                    line-height: 71rpx;
-                    text-align: center;
-                    background-color: #f2f2f2;
-                    border-radius: 4px;
-                    font-size: 24rpx;
-                    color: #333;
-                    &.allow {
-                        color: #fff;
-                        background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient( #54bd53, #54bd53);
-                    }
+            
+            button {
+                margin: 40rpx auto 20rpx;
+                width: 213rpx;
+                height: 71rpx;
+                line-height: 71rpx;
+                text-align: center;
+                background-color: #f2f2f2;
+                border-radius: 4px;
+                font-size: 24rpx;
+                color: #333;
+                &.allow {
+                    color: #fff;
+                    background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient( #54bd53, #54bd53);
                 }
             }
         }

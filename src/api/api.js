@@ -15,8 +15,11 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
 
     const store = getStore();
     let globalData = store.getState().user.globalData;
-    if (globalData.token) {
-        header['Authorization'] = globalData.token
+
+    let token = wx.getStorageSync('token');
+
+    if (token) {
+        header['Authorization'] = token;
     }
     let environment = 'test';
     if (environment == 'prod') {
@@ -25,7 +28,7 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
         url = 'https://beidou.signalfire.net.cn/' + url;
         // url = 'https://mock.api.signalfire.net.cn/mock/5e6e33e3295a274363797433/example/' + url;
     }
-    let data = method == 'POST' ? qs.stringify(params) : params;
+    let data = method == 'GET' ? params : qs.stringify(params);
 
     let res = await wepy.request({
         header,
@@ -51,10 +54,16 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
 }
 
 // 获取验证码
-export const getCode = (params) => wxRequest(params, 'smscode', 'GET');
+export const getCode = (params) => wxRequest(params, 'smscode', 'GET')
 // 短信验证码登录
-export const smsLogin = (params) => wxRequest(params, 'smslogin');
+export const smsLogin = (params) => wxRequest(params, 'smslogin')
 // 微信授权登录
-export const wechatLogin = (params) => wxRequest(params, 'wechatlogin');
+export const wechatLogin = (params) => wxRequest(params, 'wechatlogin')
 // 获取用户信息
 export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')
+// 退出登录
+export const userLogout = () => wxRequest({}, 'logout')
+// 获取微信openId
+export const getOpenid = (params) => wxRequest(params, 'getOpenid')
+// 修改用户信息
+export const updateUser = (params) => wxRequest(params, 'system/user/profile', 'PUT')

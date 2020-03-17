@@ -17,12 +17,13 @@
                 <input type="number" value="{{ phone }}" />
             </view>
         </view>
-        <button class="complete">完成</button>
+        <button class="complete" @tap="completeEdit">完成</button>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy'
+    import * as api from '../api/api'
     export default class UserInfo extends wepy.page {
         config = {
             navigationBarTitleText: '我的信息',
@@ -43,11 +44,25 @@
         }
 
         methods = {
+            completeEdit() {
+                let params = {
+                    user: JSON.stringify({
+                        phonenumber: this.phone,
+                        nickName: this.nickname
+                    })
+                }
+                this.updateUser(params);
+            },
             onClickLeft() {
                 wx.navigateBack({
                     delta: 1
                 });
             }
+        }
+
+        async updateUser(params) {
+            let res = await api.updateUser(params);
+            console.log(res);
         }
     }
 </script>

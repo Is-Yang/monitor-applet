@@ -22,7 +22,7 @@
                             <text class="tel">{{ item.phone }}</text>
                         </view>
                         <view slot="value">
-                            <text class="num">监测点2/2</text>
+                            <text class="num">监测点{{item.num}}/{{item.total}}</text>
                         </view>
                         <view class="operate-cell">
                             <view class="cell">
@@ -65,7 +65,7 @@
             </view>
         </view>
         <view class="panel-wrap">
-            <view class="title">检测点</view>
+            <view class="title">监测点</view>
             <view class="operate-cell">
                 <view class="cell link">
                     <view>
