@@ -69,13 +69,17 @@ const wxRequest = async (params = {}, url, method = 'POST', showLoding = true) =
 export const getCode = (params) => wxRequest(params, 'smscode', 'GET')
 // 短信验证码登录
 export const smsLogin = (params) => wxRequest(params, 'smslogin')
+// 获取微信openId
+export const getOpenid = (params) => wxRequest(params, 'getOpenid')
 // 微信授权登录
 export const wechatLogin = (params) => wxRequest(params, 'wechatlogin')
+// 解密微信手机号
+export const decryptPhone = (params) => wxRequest(params, 'decryptWeChatPhoneNumber');
+// 微信授权登录 - 手动录入手机号
+export const wechatByPhone = (params) => wxRequest(params, 'wetChatLoginByPhoneNumber')
 // 获取用户信息
 export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')
 // 退出登录
 export const userLogout = () => wxRequest({}, 'logout')
-// 获取微信openId
-export const getOpenid = (params) => wxRequest(params, 'getOpenid')
 // 修改用户信息
 export const updateUser = (params) => wxRequest(params, 'system/user/profile', 'PUT')

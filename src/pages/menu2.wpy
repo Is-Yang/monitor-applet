@@ -132,7 +132,7 @@
         async userLogout() {
             let res = await api.userLogout();
             if (res.code == 200) {
-                wx.removeStorage('token');
+                wx.removeStorageSync('token')
                 wx.navigateTo({
                     url: '/pages/login'
                 })

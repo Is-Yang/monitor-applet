@@ -62,7 +62,7 @@
         }
         data = {
             phone: '',
-            code: '',
+            code: '',  // 验证码
             uuid: '',
             timer: 0,
             getPhone: '',
@@ -81,51 +81,60 @@
         }
 
         methods = {
+            // 手机号发送验证码登录
             tapLogin() {
-                if (this.verifyPhone()) {
-                    this.smsLogin();
+                // 微信授权登录
+                if (this.userInfo.openId) {
+                    this.wechatByPhone();
+                } else {   // 短信验证码登录
+                    if (this.verifyPhone()) {
+                        this.smsLogin();
+                    }
                 }
             },
-            // 获取用户信息
+            // 微信授权登录-获取用户信息
             getUserInfo(event) {
-                if (event.detail.userInfo) {
+                if (event.detail.errMsg == 'getUserInfo:ok') {
                     this.userInfo = event.detail.userInfo;
-                    this.showGetPhone = true;
-                    this.$apply();
-                }
-            },
-            // 获取手机号
-            getPhoneNumber(event) {
-                this.userInfo.encryptedData = event.detail.encryptedData;
-                this.userInfo.iv = event.detail.iv;
-                if(event.detail.errMsg == 'getPhoneNumber:ok') {
-                    this.showGetPhone = false;
+                    // 检测session是否过期
                     wx.checkSession({
-                        success: () => {
+                        success: ()=> {
                             let userInfo = wx.getStorageSync('userInfo');
                             if(!userInfo) {
                                 const store = getStore();
-                                let userData = store.getState().user.userInfo;
-                                console.log(userData)
-                                this.userInfo.openId = userData.openId;
-                                this.userInfo.sessionKey = userData.sessionKey;
+                                this.userInfo = store.getState().user.userInfo;
                             } else {
-                                this.userInfo.openId = userInfo.openId;
-                                this.userInfo.sessionKey = userInfo.sessionKey;
+                                this.userInfo = userInfo;
                             }
-                            this.wechatLogin();
+                            // 已授权绑定
+                            if(this.userInfo.isBindWechat) {
+                                this.wechatLogin({openId: this.userInfo.code});  
+                            } else {
+                                // 弹出获取手机号
+                                this.showGetPhone = true;
+                            }
+                            this.$apply();
                         },
                         fail: () => {
                             // 获取用户登录code
                             wx.login({
                                 success: ((res) => {
                                     if(res.code) {
+                                        this.userInfo.code = res.code;
                                         this.getOpenid({code: res.code})
                                     }
                                 })
                             })
                         }
                     });
+                }
+            },
+            // 获取手机号
+            getPhoneNumber(event) {
+                if(event.detail.errMsg == 'getPhoneNumber:ok') {
+                    this.userInfo.encryptedData = event.detail.encryptedData;
+                    this.userInfo.iv = event.detail.iv;
+                    this.decryptPhone();
                 }
             },
             // 发送验证码
@@ -149,6 +158,7 @@
                     })
                 }
             },
+            // 取消授权手机号
             onClosePopup() {
                 this.showGetPhone = false;
             },
@@ -159,18 +169,60 @@
                 this.code = e.detail;
             }
         }
+        // 微信授权登录 - 录入手机号
+        async wechatByPhone() {
+            const { avatarUrl, openId, nickName, phone, gender } = this.userInfo;
+            let params = {
+                avatar: avatarUrl,
+                code: this.code,  // 手机验证码登录
+                uuid: this.uuid, // 唯一标识
+                openId: openId,
+                nickName: nickName,
+                sex: gender,
+                phoneNumber: phone
+            }
+            let res = await api.wechatByPhone(params);
+            if (res.code == 200) {
+                this.loginSuccess(res.token);
+            }
+        }
+        // 获取解密手机号
+        async decryptPhone() {
+            const { code, iv, encryptedData, sessionKey } = this.userInfo;
+            let params = {
+                code,
+                iv,
+                sessionKey,
+                phoneNumber: encryptedData
+            }
+            let res = await api.decryptPhone(params)
+            if (res.code == 200) {
+                this.phone = res.phoneNumber;
+                this.userInfo.phone = res.phoneNumber;
+                this.showGetPhone = false;
+                this.$apply();
+            }
+        }
+        // 通过code获取openid
         async getOpenid(params) {
             let res = await api.getOpenid(params);
             if (res.code == 200) {
                 this.userInfo.openId = res.open_id;
                 this.userInfo.sessionKey = res.session_key;
+                this.userInfo.isBindWechat = res.is_bind_wechat;
                 wx.setStorageSync('userInfo', this.userInfo);
                 store.dispatch({
                     type: 'UPDATE_USER_INFO',
                     userInfo: this.userInfo
                 })
-                console.log(this.userInfo)
-                this.wechatLogin();
+                // 已授权绑定
+                if(this.userInfo.isBindWechat) {
+                    this.wechatLogin({openId: params.code});  
+                } else {
+                    // 弹出获取手机号
+                    this.showGetPhone = true;
+                }
+                this.$apply();
             }
         }
         
@@ -194,29 +246,22 @@
             this.uuid = res.uuid;
             this.$apply();
         }
-        async wechatLogin() {
-            let userInfo = this.userInfo;
-            let data = {
-                openId: userInfo.openId,
-                sessionKey: userInfo.sessionKey,
-                avatar: userInfo.avatarUrl,
-                nickName: userInfo.nickName,
-                sex: userInfo.gender,
-                phoneNumber: userInfo.encryptedData,
-                iv: userInfo.iv
-            }
-            let res = await api.wechatLogin(data);
+        // 微信用户code登录
+        async wechatLogin(params) {
+            let res = await api.wechatLogin(params);
             if(res.code == 200) {
                this.loginSuccess(res.token);
             }
             
         }
+        // 登录成功
         loginSuccess(token) {
             wx.setStorageSync('token', token);
             wx.switchTab({
                 url: '/pages/menu0'
             })
         }
+        // 验证手机号是否正确
         verifyPhone() {
             if (this.phone == '') {
                 tip.showToast('请输入手机号获取验证码');
@@ -234,6 +279,7 @@
             }
             return true;
         }
+        // 时间改变
         timeChange() {
             const count = 60;
             this.timer = count;
