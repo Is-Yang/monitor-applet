@@ -1,0 +1,52 @@
+<template>
+    <view class="bind-phone-container">
+        <van-nav-bar title="" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+    
+        <view class="phone-wrap">
+            <view class="title">请绑定您的手机号：</view>
+            <van-cell-group>
+                <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable maxlength="11" @input="onPhoneInput" class="" />
+                <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" @input="onCodeInput" clearable use-button-slot>
+                </van-field>
+            </van-cell-group>
+            <button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</button>
+            <button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</button>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class BindPhone extends wepy.page{
+    config = {
+        navigationBarTitleText: '绑定手机号',
+        usingComponents: {
+            "van-nav-bar": "../components/vant/nav-bar/index"
+        }
+    }
+
+    data = {
+        phone: '',
+        code: ''
+    }
+
+    onLoad(e) {
+        console.log(e);
+    }
+
+    methods = {
+        onClickLeft() {
+            wx.navigateBack({
+                delta: 1
+            });
+        },
+        onPhoneInput(e) {
+            this.phone = e.detail;
+        },
+        onCodeInput(e) {
+            this.code = e.detail;
+        }
+    }
+}
+</script>
+

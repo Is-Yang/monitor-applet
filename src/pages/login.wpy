@@ -97,25 +97,25 @@
                 if (event.detail.errMsg == 'getUserInfo:ok') {
                     this.userInfo = event.detail.userInfo;
                     // 检测session是否过期
-                    wx.checkSession({
-                        success: ()=> {
-                            let userInfo = wx.getStorageSync('userInfo');
-                            if(!userInfo) {
-                                const store = getStore();
-                                this.userInfo = store.getState().user.userInfo;
-                            } else {
-                                this.userInfo = userInfo;
-                            }
-                            // 已授权绑定
-                            if(this.userInfo.isBindWechat) {
-                                this.wechatLogin({openId: this.userInfo.code});  
-                            } else {
-                                // 弹出获取手机号
-                                this.showGetPhone = true;
-                            }
-                            this.$apply();
-                        },
-                        fail: () => {
+                    // wx.checkSession({
+                    //     success: ()=> {
+                    //         let userInfo = wx.getStorageSync('userInfo');
+                    //         if(!userInfo) {
+                    //             const store = getStore();
+                    //             this.userInfo = store.getState().user.userInfo;
+                    //         } else {
+                    //             this.userInfo = userInfo;
+                    //         }
+                    //         // 已授权绑定
+                    //         if(this.userInfo.isBindWechat && this.userInfo.openId) {
+                    //             this.wechatLogin();  
+                    //         } else {
+                    //             // 弹出获取手机号
+                    //             this.showGetPhone = true;
+                    //         }
+                    //         this.$apply();
+                    //     },
+                    //     fail: () => {
                             // 获取用户登录code
                             wx.login({
                                 success: ((res) => {
@@ -125,8 +125,8 @@
                                     }
                                 })
                             })
-                        }
-                    });
+                    //     }
+                    // });
                 }
             },
             // 获取手机号
@@ -179,7 +179,7 @@
                 openId: openId,
                 nickName: nickName,
                 sex: gender,
-                phoneNumber: phone
+                phoneNumber: phone || this.phone
             }
             let res = await api.wechatByPhone(params);
             if (res.code == 200) {
@@ -217,7 +217,7 @@
                 })
                 // 已授权绑定
                 if(this.userInfo.isBindWechat) {
-                    this.wechatLogin({openId: params.code});  
+                    this.wechatLogin();  
                 } else {
                     // 弹出获取手机号
                     this.showGetPhone = true;
@@ -247,8 +247,8 @@
             this.$apply();
         }
         // 微信用户code登录
-        async wechatLogin(params) {
-            let res = await api.wechatLogin(params);
+        async wechatLogin() {
+            let res = await api.wechatLogin({openId: this.userInfo.openId});
             if(res.code == 200) {
                this.loginSuccess(res.token);
             }

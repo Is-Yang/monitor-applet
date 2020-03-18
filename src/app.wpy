@@ -25,6 +25,7 @@
     config = {
       pages: [
         'pages/login',
+        'pages/bindPhone',
         'pages/menu0',
         'pages/menu2',
         'pages/menu1',
