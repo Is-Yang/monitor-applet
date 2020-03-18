@@ -25,7 +25,7 @@
             </view>
         </view>
         <view class="operate-cell">
-            <view class="cell">
+            <view class="cell" bindtap="toLogs">
                 <image src="../assets/images/option.png" mode="aspectFit"/>
                 <text>操作记录</text>
             </view>
@@ -33,7 +33,7 @@
                 <image src="../assets/images/location.png" mode="aspectFit"/>
                 <text>监测点</text>
             </view>
-            <view class="cell">
+            <view class="cell" bindtap="toSetting">
                 <image src="../assets/images/location.png" mode="aspectFit"/>
                 <text>设置</text>
             </view>

@@ -25,7 +25,7 @@
             </view>
         </view>
         <view class="operate-cell">
-            <view class="cell">
+            <view class="cell" @tap="toLogs">
                 <image src="../assets/images/option.png" mode="aspectFit" />
                 <text>操作记录</text>
             </view>
@@ -33,7 +33,7 @@
                 <image src="../assets/images/location.png" mode="aspectFit" />
                 <text>监测点</text>
             </view>
-            <view class="cell">
+            <view class="cell" @tap="toSetting">
                 <image src="../assets/images/location.png" mode="aspectFit" />
                 <text>设置</text>
             </view>
@@ -87,6 +87,16 @@
                     url: '/pages/userUnit'
                 })
             },
+            toSetting() {
+                wx.navigateTo({
+                    url: '/pages/setting'
+                })
+            },
+            toLogs() {
+                wx.navigateTo({
+                    url: '/pages/logs'
+                })
+            },
             // 上传头像
             uploadPhoto() {
                 let that = this;
@@ -122,7 +132,7 @@
         async userLogout() {
             let res = await api.userLogout();
             if (res.code == 200) {
-                wx.removeStorageSync('token');
+                wx.removeStorage('token');
                 wx.navigateTo({
                     url: '/pages/login'
                 })

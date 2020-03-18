@@ -1,0 +1,30 @@
+<template>
+    <view class="setting-container">
+        <van-nav-bar title="设置" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Setting extends wepy.page {
+    config = {
+        navigationBarTitleText: '设置',
+        usingComponents: {
+            "van-nav-bar": "../components/vant/nav-bar/index"
+        }
+    }
+
+    data = {
+        statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+    }
+
+    methods = {
+        onClickLeft() {
+            wx.navigateBack({
+                delta: 1
+            });
+        }
+    }
+}
+</script>
+

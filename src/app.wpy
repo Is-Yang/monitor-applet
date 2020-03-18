@@ -31,6 +31,8 @@
         'pages/reportInfo',
         'pages/userUnit',
         'pages/userInfo',
+        'pages/logs',
+        'pages/setting'
       ],
       window: {
         backgroundTextStyle: 'light',
