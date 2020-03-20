@@ -1,93 +1,93 @@
 import wepy from 'wepy'
 import {
-  getStore
+    getStore
 } from 'wepy-redux'
 import tip from '../utils/tip'
 
 import qs from 'qs';
 
-const wxRequest = async (params = {}, url, method = 'POST', showLoding = true) => {
-  showLoding && tip.loading();
+const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) => {
+    showLoding && tip.loading();
 
-  let header = {};
+    let header = {};
 
-  if (method == 'PUT') {
-    header['content-type'] = 'application/json'
-  } else {
-    header['content-type'] = 'application/x-www-form-urlencoded'
-  }
-
-  const store = getStore();
-  let globalData = store.getState().user.globalData;
-
-  let token = wx.getStorageSync('token');
-
-  if (token) {
-    header['Authorization'] = token;
-  }
-  let environment = 'test';
-  if (environment == 'prod') {
-    url = 'https://tcb-api.tencentcloudapi.com' + url;
-  } else if (environment == 'test') {
-    url = 'https://beidou.signalfire.net.cn/' + url;
-    // url = 'https://mock.api.signalfire.net.cn/mock/5e6e33e3295a274363797433/example/' + url;
-  }
-  let data = method == 'POST' ? qs.stringify(params) : params;
-
-  let res = await wepy.request({
-    header,
-    url,
-    method: method,
-    data: data,
-  }).catch((err) => {
-    console.log('wepy requerst err:' + err);
-  });
-
-  showLoding && tip.loaded();
-
-  if (res && res.data) {
-    let result = res.data;
-    // 未授权
-    if (result.code == 401) {
-      let token = wx.getStorageSync('token');
-      if (token) {
-        wx.removeStorageSync('token')
-      }
-      setTimeout(()=> {
-          wx.navigateTo({
-              url: '/pages/login'
-          })
-      }, 1000)
+    if (method == 'PUT') {
+        header['content-type'] = 'application/json'
+    } else {
+        header['content-type'] = 'application/x-www-form-urlencoded'
     }
 
-    if (result.code == 500 && result.msg) {
-      wx.showToast({
-        title: result.msg,
-        icon: 'none',
-        duration: 1500
-      })
+    const store = getStore();
+    let globalData = store.getState().user.globalData;
+
+    let token = wx.getStorageSync('token');
+
+    if (token) {
+        header['Authorization'] = token;
     }
-    return res.data;
-  }
+    let environment = 'test';
+    if (environment == 'prod') {
+        url = 'https://tcb-api.tencentcloudapi.com' + url;
+    } else if (environment == 'test') {
+        url = 'https://beidou.signalfire.net.cn/' + url;
+        // url = 'https://mock.api.signalfire.net.cn/mock/5e6e33e3295a274363797433/example/' + url;
+    }
+    let data = method == 'POST' ? qs.stringify(params) : params;
+
+    let res = await wepy.request({
+        header,
+        url,
+        method: method,
+        data: data,
+    }).catch((err) => {
+        console.log('wepy requerst err:' + err);
+    });
+
+    showLoding && tip.loaded();
+
+    if (res && res.data) {
+        let result = res.data;
+        // 未授权
+        if (result.code == 401) {
+            let token = wx.getStorageSync('token');
+            if (token) {
+                wx.removeStorageSync('token')
+            }
+            setTimeout(() => {
+                wx.navigateTo({
+                    url: '/pages/login'
+                })
+            }, 1000)
+        }
+
+        if (result.code == 500 && result.msg) {
+            wx.showToast({
+                title: result.msg,
+                icon: 'none',
+                duration: 1500
+            })
+        }
+        return res.data;
+    }
 }
 
 // 获取验证码
 export const getCode = (params) => wxRequest(params, 'smscode', 'GET')
-// 短信验证码登录
+    // 短信验证码登录
 export const smsLogin = (params) => wxRequest(params, 'smslogin')
-// 获取微信openId
+    // 获取微信openId
 export const getOpenid = (params) => wxRequest(params, 'getOpenid')
-// 微信授权登录
+    // 微信授权登录
 export const wechatLogin = (params) => wxRequest(params, 'wechatlogin')
-// 解密微信手机号
+    // 解密微信手机号
 export const decryptPhone = (params) => wxRequest(params, 'decryptWeChatPhoneNumber');
 // 微信授权登录 - 手动录入手机号
 export const wechatByPhone = (params) => wxRequest(params, 'wetChatLoginByPhoneNumber')
-// 获取用户信息
+    // 获取用户信息
 export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')
-// 退出登录
+    // 退出登录
 export const userLogout = () => wxRequest({}, 'logout')
-// 修改用户信息
+    // 修改用户信息
 export const updateUser = (params) => wxRequest(params, 'system/user/profile', 'PUT')
-// 绑定单位
+    // 绑定单位
 export const bindDept = (params) => wxRequest(params, 'system/user/profile/bindDept', 'PUT')

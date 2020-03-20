@@ -75,7 +75,11 @@
         onLoad(options) {
             if (options.q) {
                 let url = decodeURIComponent(options.q);
-                this.userInfo.qrCode = url.split('?qrcode=')[1];
+                let qrCode = url.split('?qrcode=')[1];
+
+                if(qrCode) {
+                    this.userInfo.qrCode = qrCode;
+                }
             } else {
                 if(wx.getStorageSync('token')) {
                     wx.switchTab({
@@ -188,7 +192,7 @@
             }
             let res = await api.wechatByPhone(params);
             if (res.code == 200) {
-                this.loginSuccess(res.token);
+                this.loginSuccess(res);
             }
         }
         // 获取解密手机号
@@ -234,15 +238,17 @@
         
         // 手机验证码登录
         async smsLogin() {
+            console.log(this.userInfo)
             let params = {
                 phoneNumber: this.phone,
                 code: this.code,
                 uuid: this.uuid,
                 qrCode: this.userInfo.qrCode
             }
+            console.log(params);
             let res = await api.smsLogin(params);
             if(res.code == 200) {
-                this.loginSuccess(res.token);
+                this.loginSuccess(res);
             }
             this.$apply();
         }
@@ -256,6 +262,8 @@
         }
         // 微信用户code登录
         async wechatLogin() {
+            console.log('wx')
+            console.log(this.userInfo)
             const { openId, qrCode } = this.userInfo;
             let params = {
                 openId,
@@ -263,16 +271,26 @@
             }
             let res = await api.wechatLogin(params);
             if(res.code == 200) {
-               this.loginSuccess(res.token);
+               this.loginSuccess(res);
             }
             
         }
         // 登录成功
-        loginSuccess(token) {
-            wx.setStorageSync('token', token);
-            wx.switchTab({
-                url: '/pages/menu0'
-            })
+        loginSuccess(data) {
+            wx.setStorageSync('token', data.token);
+            // 本单位用户，跳转至我的单位页面
+            if(data.page == 'dept') {
+                wx.navigateTo({
+                    url: 'pages/userUnit'
+                })
+            } else {
+                if (data.waring_msg) {
+                    tip.showToast('您无权限查看该单位信息');
+                }
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            }
         }
         // 验证手机号是否正确
         verifyPhone() {
