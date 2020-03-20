@@ -49,9 +49,15 @@ const wxRequest = async (params = {}, url, method = 'POST', showLoding = true) =
     let result = res.data;
     // 未授权
     if (result.code == 401) {
-      wx.navigateTo({
-        url: '/pages/login'
-      })
+      let token = wx.getStorageSync('token');
+      if (token) {
+        wx.removeStorageSync('token')
+      }
+      setTimeout(()=> {
+          wx.navigateTo({
+              url: '/pages/login'
+          })
+      }, 1000)
     }
 
     if (result.code == 500 && result.msg) {
@@ -83,3 +89,5 @@ export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')
 export const userLogout = () => wxRequest({}, 'logout')
 // 修改用户信息
 export const updateUser = (params) => wxRequest(params, 'system/user/profile', 'PUT')
+// 绑定单位
+export const bindDept = (params) => wxRequest(params, 'system/user/profile/bindDept', 'PUT')

@@ -38,10 +38,10 @@
             userId: ''
         }
 
-        onLoad(e) {
-            this.nickname = e.nickname;
-            this.phone = e.tel;
-            this.userId = e.userId;
+        onLoad(options) {
+            this.nickname = options.nickname;
+            this.phone = options.tel;
+            this.userId = options.userId;
             this.$apply();
         }
 

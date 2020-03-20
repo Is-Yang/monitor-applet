@@ -14,9 +14,9 @@
                         <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{userInfo.company != '' || userInfo.admin }}" class="mark" bindtap="toUserUnit">
+                <view wx:if="{{userInfo.company != '' || userInfo.firstRoleName != '' }}" class="mark" bindtap="toUserUnit">
                     <text class="company">{{userInfo.company}}</text>
-                    <text class="role">管理员</text>
+                    <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
                 </view>
                 <view wx:else class="mark">
                     <text class="no">未加入任何单位</text>

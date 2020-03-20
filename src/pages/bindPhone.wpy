@@ -1,52 +1,196 @@
 <template>
-    <view class="bind-phone-container">
+    <view class="bind-phone-container" style="padding-top: {{ statusBarHeight}}px">
         <van-nav-bar title="" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
     
         <view class="phone-wrap">
-            <view class="title">请绑定您的手机号：</view>
-            <van-cell-group>
-                <van-field label="+86" title-width="60px" value="{{ phone }}" type="number" placeholder="请输入手机号" clearable maxlength="11" @input="onPhoneInput" class="" />
-                <van-field label="验证码" title-width="60px" value="{{ code }}" placeholder="请输入手机验证码" @input="onCodeInput" clearable use-button-slot>
-                </van-field>
-            </van-cell-group>
-            <button wx:if="{{phone == '' || code == ''}}" round block class="login-btn">同意协议并登录</button>
-            <button wx:if="{{phone != '' && code != ''}}" round block class="login-btn has" @tap="tapLogin">同意协议并登录</button>
+            <view class="title">验证码已发送至手机</view>
+            <view class="tel">+86 <text>{{phone}}</text></view>
+
+            <van-field value="{{ code }}" placeholder="请输入手机验证码" @input="onCodeInput" clearable use-button-slot>
+                <button wx:if="{{ timer == 0 }}" slot="button" class="get-code" @tap="getSendCode">获取验证码</button>
+                <text wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
+            </van-field>
+
+            <button wx:if="{{code == ''}}" round block class="login-btn">继续</button>
+            <button wx:if="{{code != ''}}" round block class="login-btn has" @tap="tapLogin">继续</button>
         </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import {
+    setStore,
+    getStore
+} from 'wepy-redux'
+import configStore from '../store'
+import * as api from '../api/api'
+
+const store = configStore()
+setStore(store)
+
 export default class BindPhone extends wepy.page{
     config = {
         navigationBarTitleText: '绑定手机号',
         usingComponents: {
-            "van-nav-bar": "../components/vant/nav-bar/index"
+            "van-nav-bar": "../components/vant/nav-bar/index",
+            "van-field": "../components/vant/field/index",
         }
     }
 
     data = {
-        phone: '',
-        code: ''
+        statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+        phone: '13143715009',
+        uuid: '',
+        code: '',
+        timer: 0,
+        sendInterval: null,
+        userInfo: {}
     }
 
-    onLoad(e) {
-        console.log(e);
+    onLoad(options) {
+        this.phone = options.tel;
+
+        let userInfo = wx.getStorageSync('userInfo');
+        if(!userInfo) {
+            const store = getStore();
+            this.userInfo = store.getState().user.userInfo;
+        } else {
+            this.userInfo = userInfo;
+        }
+
+        this.getCode();
+        this.$apply();
     }
 
     methods = {
+        tapLogin() {
+            this.wechatByPhone();
+        },
+        // 发送验证码
+        getSendCode() {
+            this.getCode();
+        },
         onClickLeft() {
             wx.navigateBack({
                 delta: 1
             });
         },
-        onPhoneInput(e) {
-            this.phone = e.detail;
-        },
         onCodeInput(e) {
             this.code = e.detail;
         }
     }
+
+    // 微信授权登录 - 录入手机号
+    async wechatByPhone() {
+        const { avatarUrl, openId, nickName, gender, qrCode } = this.userInfo;
+        let params = {
+            avatar: avatarUrl,
+            code: this.code,  // 手机验证码登录
+            uuid: this.uuid, // 唯一标识
+            phoneNumber: this.phone,
+            sex: gender,
+            openId,
+            nickName,
+            qrCode
+        }
+        let res = await api.wechatByPhone(params);
+        if (res.code == 200) {
+            wx.setStorageSync('token', res.token);
+            wx.switchTab({
+                url: '/pages/menu0'
+            })
+        }
+    }
+
+    async getCode() {
+        let res = await api.getCode({
+            phone: this.phone
+        })
+        if (res.code == 200) {
+            this.uuid = res.uuid;
+            this.timeChange();
+            this.$apply();
+        }
+    }
+
+    // 时间改变
+    timeChange() {
+        const count = 60;
+        this.timer = count;
+        if (!this.sendInterval) {
+            this.sendInterval = setInterval(() => {
+                if (this.timer > 0) {
+                    this.timer--;
+                    this.$apply();
+                } else {
+                    this.sendInterval && clearInterval(this.sendInterval);
+                    this.sendInterval = null;
+                }
+            }, 1000);
+        }
+    }
 }
 </script>
+
+<style lang="less">
+.bind-phone-container {
+    .phone-wrap {
+        margin-top: 44px;
+        padding: 100rpx 40rpx 0 40rpx;
+
+        .title {
+            font-size: 42rpx;
+            line-height: 38rpx;
+            padding: 10px;
+        }
+
+        .tel {
+            padding: 0 10px;
+            font-size: 36rpx;
+            margin-bottom: 30rpx;
+            line-height: 38rpx;
+            font-weight: bold;
+            color: #38c099;
+        }
+
+        .txtColor {
+            font-size: 21rpx;
+        }
+        .van-field__button {
+            height: 54rpx;
+            line-height: 40rpx;
+        }
+
+        .get-code {
+            width: 164rpx;
+            height: 54rpx;
+            line-height: 54rpx;
+            background-color: #e1e1e1;
+            border-radius: 2px;
+            color: #41c297;
+            font-size: 21rpx;
+            border: none;
+        }
+    }
+
+    .login-btn {
+        width: 586rpx;
+        height: 76rpx;
+        line-height: 76rpx;
+        margin-top: 83rpx;
+        color: #ffffff;
+        pointer-events: none;
+        background-color: #e6e6e6;
+        font-size: 28rpx;
+        font-weight: bold;
+        border-radius: 25px;
+    }
+    .login-btn.has {
+        background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+        pointer-events: all;
+    }
+}
+</style>
+
 

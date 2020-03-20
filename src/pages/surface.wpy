@@ -1,14 +1,14 @@
 <template>
-    <view class="logs-container">
-        <van-nav-bar title="操作记录" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+    <view class="surface-container">
+        <van-nav-bar title="表面位移" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
-export default class Logs extends wepy.page {
+export default class Surface extends wepy.page {
     config = {
-        navigationBarTitleText: '操作记录',
+        navigationBarTitleText: '表面位移',
         usingComponents: {
             "van-nav-bar": "../components/vant/nav-bar/index"
         }

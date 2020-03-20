@@ -11,7 +11,7 @@
             <button bindtap="toReport">上报预警</button>
           </view>
           <view class="content">
-            <view class="row">
+            <view class="row" bindtap="toSurface">
               <view class="left">
                 <image src="../assets/images/surface.png"/>
                 <text>表面位移</text>
@@ -32,7 +32,7 @@
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row">
+            <view class="row" bindtap="toDeep">
               <view class="left">
                 <image src="../assets/images/deep.png"/>
                 <text>深部位移</text>
@@ -57,7 +57,7 @@
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row">
+            <view class="row" bindtap="toRainfall">
               <view class="left">
                 <image src="../assets/images/rainfall.png"/>
                 <text>降雨量</text>
@@ -72,7 +72,7 @@
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row">
+            <view class="row" bindtap="toHumiture">
               <view class="left">
                 <image src="../assets/images/humiture.png"/>
                 <text>温湿度</text>

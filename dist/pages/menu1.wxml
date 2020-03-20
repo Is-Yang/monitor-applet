@@ -27,7 +27,7 @@
             </view>
         </view>
         <view class="list-wrap">
-            <view  wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}">
+            <view  wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" bindtap="toDetails">
                 <view class="content">
                     <image src="{{item.picture}}" class="picture"/>
                     <view class="full">

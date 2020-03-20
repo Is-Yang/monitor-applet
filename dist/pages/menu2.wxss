@@ -69,7 +69,7 @@
 }
 .menu2-container .head-wrap .mark .flag,
 .menu2-container .head-wrap .mark .role {
-  width: 105rpx;
+  padding: 0 20rpx;
   height: 40rpx;
   line-height: 40rpx;
   border-radius: 25px;

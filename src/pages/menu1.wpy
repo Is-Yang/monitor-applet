@@ -27,7 +27,7 @@
             </view>
         </view>
         <view class="list-wrap">
-            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}">
+            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" @tap="toDetails">
                 <view class="content">
                     <image src="{{item.picture}}" class="picture" />
                     <view class="full">
@@ -107,6 +107,11 @@
             toReport() {
                 wx.navigateTo({
                     url: '/pages/reportInfo'
+                })
+            },
+            toDetails() {
+                wx.navigateTo({
+                    url: '/pages/warningDetails'
                 })
             },
             selectTime(e) {

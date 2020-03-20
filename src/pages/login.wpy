@@ -72,11 +72,16 @@
             statusBarHeight: wx.getSystemInfoSync().statusBarHeight
         }
 
-        onLoad() {
-            if(wx.getStorageSync('token')) {
-                wx.switchTab({
-                    url: '/pages/menu0'
-                })
+        onLoad(options) {
+            if (options.q) {
+                let url = decodeURIComponent(options.q);
+                this.userInfo.qrCode = url.split('?qrcode=')[1];
+            } else {
+                if(wx.getStorageSync('token')) {
+                    wx.switchTab({
+                        url: '/pages/menu0'
+                    })
+                }
             }
         }
 
@@ -146,7 +151,7 @@
                         content: `我们将发送验证码短信到这个号码： +86 ${this.phone}`,
                         success(res) {
                             if (res.confirm) {
-                                that.getCode();
+                                that.getCode({phone: that.phone});
                                 wx.showToast({
                                     title: '发送成功',
                                     icon: 'success',
@@ -179,7 +184,7 @@
                 openId: openId,
                 nickName: nickName,
                 sex: gender,
-                phoneNumber: phone || this.phone
+                phoneNumber: this.phone
             }
             let res = await api.wechatByPhone(params);
             if (res.code == 200) {
@@ -197,8 +202,9 @@
             }
             let res = await api.decryptPhone(params)
             if (res.code == 200) {
-                this.phone = res.phoneNumber;
-                this.userInfo.phone = res.phoneNumber;
+                wx.navigateTo({
+                    url: `/pages/bindPhone?tel=${res.phoneNumber}`
+                });
                 this.showGetPhone = false;
                 this.$apply();
             }
@@ -227,28 +233,35 @@
         }
         
         // 手机验证码登录
-        async smsLogin(params) {
-            let res = await api.smsLogin({
+        async smsLogin() {
+            let params = {
                 phoneNumber: this.phone,
                 code: this.code,
-                uuid: this.uuid
-            });
+                uuid: this.uuid,
+                qrCode: this.userInfo.qrCode
+            }
+            let res = await api.smsLogin(params);
             if(res.code == 200) {
                 this.loginSuccess(res.token);
             }
             this.$apply();
         }
-        async getCode() {
-            let res = await api.getCode({
-                phone: this.phone
-            })
-            this.code = res.verifyCode;
-            this.uuid = res.uuid;
-            this.$apply();
+        async getCode(params) {
+            let res = await api.getCode(params);
+            if (res.code == 200) {
+                this.code = res.verifyCode;
+                this.uuid = res.uuid;
+                this.$apply();
+            }
         }
         // 微信用户code登录
         async wechatLogin() {
-            let res = await api.wechatLogin({openId: this.userInfo.openId});
+            const { openId, qrCode } = this.userInfo;
+            let params = {
+                openId,
+                qrCode
+            }
+            let res = await api.wechatLogin(params);
             if(res.code == 200) {
                this.loginSuccess(res.token);
             }

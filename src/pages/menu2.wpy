@@ -14,9 +14,9 @@
                         <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{userInfo.company != '' || userInfo.admin }}" class="mark" bindtap="toUserUnit">
+                <view wx:if="{{userInfo.company != '' || userInfo.firstRoleName != '' }}" class="mark" bindtap="toUserUnit">
                     <text class="company">{{userInfo.company}}</text>
-                    <text class="role">管理员</text>
+                    <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
                 </view>
                 <view wx:else class="mark">
                     <text class="no">未加入任何单位</text>
@@ -45,6 +45,7 @@
 <script>
     import wepy from 'wepy'
     import * as api from '../api/api'
+    import fun from '../utils/fun'
     export default class Menu2 extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
@@ -57,7 +58,7 @@
             userInfo: {
                 avatar: '',
                 company: '',
-                admin: false,
+                firstRoleName: '',
                 tel: '',
                 nickname: ''
             }
@@ -73,7 +74,17 @@
                 wx.scanCode({
                     success: (res) => {
                         let result = res.result;
-                        console.log(result)
+                        let qrCode = res.result.split('?qrcode=')[1];
+                        if(qrCode) {
+                            this.bindDept(qrCode);
+                        } else {
+                            wx.showToast({
+                                title: '请扫码有效的二维码',
+                                icon: 'none',
+                                duration: 1500
+                            })
+                        }
+
                     }
                 })
             },
@@ -129,30 +140,49 @@
             }
         }
 
+        async bindDept(params) {
+            let res = await api.bindDept(params);
+            if (res.code == 200) {
+                this.getUserInfo();
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1000
+                })
+            }
+        }
+
         async userLogout() {
             let res = await api.userLogout();
             if (res.code == 200) {
                 wx.removeStorageSync('token')
-                wx.navigateTo({
-                    url: '/pages/login'
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1000
                 })
+                setTimeout(()=> {
+                    wx.navigateTo({
+                        url: '/pages/login'
+                    })
+                }, 1000)
             }
         }
 
         async getUserInfo() {
             let res = await api.getUserInfo();
             if(res.code == 200) {
-                const { avatar, nickName, phonenumber, sex, admin, userName, loginIp, userId } = res.user;
+                const { avatar, nickName, phonenumber, sex, firstRoleName, userName, dept, userId } = res.user;
                 let phone = phonenumber.replace(phonenumber.substring(3,7), "****")
                 this.userInfo = {
                     avatar, // 头像
                     nickName,  // 昵称
                     sex,  // 性别
                     userName,  // 用户名
-                    admin,  // 是否为管理员，ture为是
+                    firstRoleName,  
                     phone,  // 手机号
                     userId,
-                    company: loginIp,   // 扫码加入后的公司名称
+                    company: dept && dept.deptName,   // 扫码加入后的公司名称
                     tel: phonenumber
                 }
                 this.$apply();
@@ -232,7 +262,7 @@
                 }
                 .flag,
                 .role {
-                    width: 105rpx;
+                    padding: 0 20rpx;
                     height: 40rpx;
                     line-height: 40rpx;
                     border-radius: 25px;
