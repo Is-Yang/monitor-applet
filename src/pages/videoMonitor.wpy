@@ -1,0 +1,50 @@
+<template>
+    <view class="video-monitor-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="视频监控" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+        <video id="myVideo" src="http://hls.open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.m3u8" controls autoplay></video>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class VideoMonitor extends wepy.page {
+    config = {
+        navigationBarTitleText: '视频监控',
+        usingComponents: {
+            "van-nav-bar": "../components/vant/nav-bar/index"
+        }
+    }
+    data = {
+        statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+    }
+
+    onShow() {
+        
+    }
+
+    methods = {
+        onClickLeft() {
+            wx.navigateBack({
+                delta: 1
+            });
+        }   
+    }
+}
+</script>
+
+<style lang="less">
+page {
+    height: 100%;
+    overflow: hidden;
+}
+.video-monitor-container {
+    height: 100%;
+    box-sizing: border-box;
+    #myVideo {
+        width: 100%;
+        margin-top: 44px;
+        height: calc(100% - 44px)
+    }
+}
+</style>
+

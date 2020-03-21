@@ -8,7 +8,10 @@
         <view class="item">
           <view class="head">
             <text class="company">{{item.company}}</text>
-            <button bindtap="toReport">上报预警</button>
+            <view>
+              <button bindtap="toVideo">视频监控</button>
+              <button bindtap="toReport">上报预警</button>
+            </view>
           </view>
           <view class="content">
             <view class="row" bindtap="toSurface">

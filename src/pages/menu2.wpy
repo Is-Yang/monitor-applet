@@ -14,13 +14,14 @@
                         <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{userInfo.company != '' || userInfo.firstRoleName != '' }}" class="mark" bindtap="toUserUnit">
-                    <text class="company">{{userInfo.company}}</text>
-                    <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
-                </view>
-                <view wx:else class="mark">
-                    <text class="no">未加入任何单位</text>
-                    <text class="flag" @tap="scanJoin">扫码加入</text>
+                <view class="mark" bindtap="toUserUnit">
+                    <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
+                    <text wx:else class="no">未加入任何单位</text>
+
+                    <view>
+                        <text wx:if="{{!userInfo.company}}"  class="flag" catchtap="scanJoin">扫码加入</text>
+                        <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
+                    </view>
                 </view>
             </view>
         </view>
@@ -45,7 +46,6 @@
 <script>
     import wepy from 'wepy'
     import * as api from '../api/api'
-    import fun from '../utils/fun'
     export default class Menu2 extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
@@ -94,6 +94,10 @@
                 })
             },
             toUserUnit() {
+                if(!this.userInfo.company) {
+                    return;
+                }
+                
                 wx.navigateTo({
                     url: '/pages/userUnit'
                 })
@@ -262,6 +266,8 @@
                 }
                 .flag,
                 .role {
+                    display: inline-block;
+                    margin-left: 15rpx;
                     padding: 0 20rpx;
                     height: 40rpx;
                     line-height: 40rpx;

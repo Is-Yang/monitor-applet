@@ -27,6 +27,7 @@
         'pages/menu0',
         'pages/login',
         'pages/bindPhone',
+        'pages/videoMonitor',
         'pages/menu2',
         'pages/menu1',
         'pages/reportInfo',

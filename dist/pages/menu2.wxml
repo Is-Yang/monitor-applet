@@ -14,13 +14,14 @@
                         <view>{{userInfo.phone}}</view>
                     </view>
                 </view>
-                <view wx:if="{{userInfo.company != '' || userInfo.firstRoleName != '' }}" class="mark" bindtap="toUserUnit">
-                    <text class="company">{{userInfo.company}}</text>
-                    <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
-                </view>
-                <view wx:else class="mark">
-                    <text class="no">未加入任何单位</text>
-                    <text class="flag" bindtap="scanJoin">扫码加入</text>
+                <view class="mark" bindtap="toUserUnit">
+                    <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
+                    <text wx:else class="no">未加入任何单位</text>
+
+                    <view>
+                        <text wx:if="{{!userInfo.company}}" class="flag" catchtap="scanJoin">扫码加入</text>
+                        <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
+                    </view>
                 </view>
             </view>
         </view>

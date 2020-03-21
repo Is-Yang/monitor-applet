@@ -10,7 +10,10 @@
         <view class="item">
           <view class="head">
             <text class="company">{{item.company}}</text>
-            <button @tap="toReport">上报预警</button>
+            <view>
+              <button @tap="toVideo">视频监控</button>
+              <button @tap="toReport">上报预警</button>
+            </view>
           </view>
           <view class="content">
             <view class="row" @tap="toSurface">
@@ -190,6 +193,11 @@
         wx.navigateTo({
             url: '/pages/deep'
         })
+      },
+      toVideo() {
+        wx.navigateTo({
+          url: '/pages/videoMonitor'
+        })
       }
     }
 
@@ -233,8 +241,9 @@
           }
 
           button {
+            display: inline-block;
             padding: 12rpx 20rpx;
-            margin: 0;
+            margin: 0 0 0 15rpx;
             line-height: 1.2;
             background-color: #52cc7a;
             border: solid 1rpx #3dc66a;
