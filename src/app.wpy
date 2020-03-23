@@ -24,10 +24,10 @@
   export default class extends wepy.app {
     config = {
       pages: [
+        'pages/menu0',
         'pages/menu1',
         'pages/reportInfo',
         'pages/userUnit',
-        'pages/menu0',
         'pages/login',
         'pages/bindPhone',
         'pages/videoMonitor',

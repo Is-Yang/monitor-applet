@@ -45,7 +45,7 @@
                                         <image src="../assets/images/location.png" mode="aspectFit"/>
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch checked="{{ site.check == 0 ? false : true }}" bindchange="onChangeSite"/>
+                                    <switch checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
                                 </view>
                             </block>
                         </view>

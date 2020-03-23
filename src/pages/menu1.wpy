@@ -32,7 +32,7 @@
                     <image src="{{item.picture}}" class="picture" />
                     <view class="full">
                         <view class="title">{{item.device.deviceName}}</view>
-                        <view class="desc">{{item.device.address}}</view>
+                        <view class="desc">{{item.description}}</view>
                         <text class="time"> {{item.createTime}}</text>
                     </view>
                 </view>
@@ -76,8 +76,8 @@
             ],
             listData: [],
             page: {
-                count: 0,
-                total: 0
+                count: 0, // 本月条
+                total: 0  // 总共条
             }
         }
 
@@ -112,7 +112,6 @@
                 this.listData = res.data;
                 this.$apply();
             }
-            console.log(res);
         }
     } 
 </script>

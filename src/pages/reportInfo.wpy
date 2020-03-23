@@ -21,7 +21,7 @@
             <view class="cell">
                 <text>说明</text>
                 <view>
-                    <textarea maxlength="200" @input="inputRemark" />
+                    <textarea maxlength="200" @input="inputDesc" />
                     <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
                 </view>
             </view>
@@ -73,7 +73,7 @@
             levelIndex: 0,
             levelRange: [],
             from: {
-                remark: '',
+                description: '',
                 createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
             }
 
@@ -96,10 +96,10 @@
             submitFrom() {
                 let deviceId = this.siteRange[this.siteIndex].deviceId;
                 let yuJingLevelId = this.levelRange[this.levelIndex].yuJingLevelId;
-                const { remark, createTime } = this.from;
+                const { description, createTime } = this.from;
 
                 let params = {
-                    remark: remark,
+                    description: description,
                     deviceId: deviceId,
                     yuJingLevelId: yuJingLevelId,
                     createTime: createTime
@@ -112,8 +112,8 @@
                     this.addWarning(JSON.stringify(params));
                 }
             },
-            inputRemark(e) {
-                this.from.remark = e.detail.value;
+            inputDesc(e) {
+                this.from.description = e.detail.value;
             },
             onChangeSite(e) {
                 this.siteIndex = e.detail.value;

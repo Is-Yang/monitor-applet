@@ -45,7 +45,7 @@
                                         <image src="../assets/images/location.png" mode="aspectFit" />
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch checked="{{ site.check == 0 ? false : true }}" @change="onChangeSite" />
+                                    <switch checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
                                 </view>
                             </repeat>
                         </view>
@@ -96,35 +96,8 @@
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
-            activeNames: ['1'],
-            userList: [{
-                    id: 1,
-                    nickname: '张三',
-                    phone: 13143715009,
-                    total: 2,  // 监测总数量
-                    num: 1,  // 已监测数量
-                    role: '普通用户', 
-                    site: [{
-                        name: '永定区抚市溪联南板',
-                        check: 1  // 已监测
-                    }, {
-                        name: '漳平市南洋利田',
-                        check: 0 // 未监测
-                    }]
-                },
-                {
-                    id: 2,
-                    nickname: '李四',
-                    phone: 15896585654,
-                    total: 2,
-                    num: 2,
-                    role: '普通用户',
-                    site: [{
-                        name: '永定区抚市溪联南板',
-                        check: 1
-                    }]
-                }
-            ]
+            activeNames: [],
+            userList: []
         }
 
         onLoad() {
@@ -133,7 +106,15 @@
 
         methods = {
             onChangeSite(e) {
-                console.log(e);
+                let check = e.detail.value ? 1 : 0;
+                let data = e.target.dataset.site;
+                let params = {
+                    check: check,
+                    id: data.id,
+                    name: data.name,
+                    userId: data.userId
+                }
+                this.userChangeStatus(JSON.stringify(params))
             },
             onChangeColl(e) {
                 this.activeNames = e.detail;
@@ -145,9 +126,23 @@
             }
         }
 
+        async userChangeStatus(params) {
+            let res = await api.userChangeStatus(params);
+            if(res.code == 200) {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
+                });
+            }
+        }
+
         async getUserByDept() {
-            let res = await api.getUserByDept()
-            console.log(res)
+            let res = await api.getUserByDept();
+            if(res.code == 200) {
+                this.userList = res.userList;
+                this.$apply();
+            }
         }
     }
 </script>
@@ -209,14 +204,16 @@
                 vertical-align: middle;
             }
             .nickname {
+                display: inline-block;
+                min-width: 100rpx;
+                margin-left: 10rpx;
                 color: #333;
-                margin: 0 40rpx 0 20rpx;
             }
             .tel {
                 color: #999;
             }
             .num {
-                padding-right: 50rpx;
+                padding-right: 20rpx;
             }
             .van-collapse-item__content {
                 padding: 0 0 0 75rpx;
