@@ -24,22 +24,21 @@
   export default class extends wepy.app {
     config = {
       pages: [
+        'pages/menu1',
+        'pages/reportInfo',
+        'pages/userUnit',
         'pages/menu0',
         'pages/login',
         'pages/bindPhone',
         'pages/videoMonitor',
         'pages/menu2',
-        'pages/menu1',
-        'pages/reportInfo',
-        'pages/userUnit',
         'pages/userInfo',
         'pages/logs',
         'pages/setting',
         'pages/surface',
         'pages/deep',
         'pages/rainfall',
-        'pages/humiture',
-        'pages/warningDetails'
+        'pages/humiture'
       ],
       window: {
         backgroundTextStyle: 'light',

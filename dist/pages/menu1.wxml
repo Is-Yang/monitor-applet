@@ -27,16 +27,17 @@
             </view>
         </view>
         <view class="list-wrap">
-            <view  wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" bindtap="toDetails">
+            <view  wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" data-id="{{item.yuJingId}}" bindtap="toDetails">
                 <view class="content">
                     <image src="{{item.picture}}" class="picture"/>
                     <view class="full">
-                        <view class="desc">{{item.desc}}</view>
-                        <text class="time"> {{item.time}}</text>
+                        <view class="title">{{item.device.deviceName}}</view>
+                        <view class="desc">{{item.device.address}}</view>
+                        <text class="time"> {{item.createTime}}</text>
                     </view>
                 </view>
                 <view class="user-info">
-                    <view class="name">{{item.user}}</view>
+                    <view class="name">{{item.createBy}}</view>
                     <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
                 </view>
             </view>

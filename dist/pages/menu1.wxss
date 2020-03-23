@@ -104,6 +104,16 @@
   margin-right: 23rpx;
   background-color: #eee;
 }
+.menu1-container .list-wrap .item .content .title {
+  margin-bottom: 5rpx;
+  line-height: 28rpx;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
 .menu1-container .list-wrap .item .content .desc {
   margin-bottom: 5rpx;
   line-height: 28rpx;

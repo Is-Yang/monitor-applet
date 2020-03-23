@@ -27,16 +27,17 @@
             </view>
         </view>
         <view class="list-wrap">
-            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" @tap="toDetails">
+            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" data-id="{{item.yuJingId}}" @tap="toDetails">
                 <view class="content">
                     <image src="{{item.picture}}" class="picture" />
                     <view class="full">
-                        <view class="desc">{{item.desc}}</view>
-                        <text class="time"> {{item.time}}</text>
+                        <view class="title">{{item.device.deviceName}}</view>
+                        <view class="desc">{{item.device.address}}</view>
+                        <text class="time"> {{item.createTime}}</text>
                     </view>
                 </view>
                 <view class="user-info">
-                    <view class="name">{{item.user}}</view>
+                    <view class="name">{{item.createBy}}</view>
                     <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
                 </view>
             </view>
@@ -46,6 +47,7 @@
 
 <script>
     import wepy from 'wepy'
+    import * as api  from '../api/api'
     export default class Menu1 extends wepy.page {
         config = {
             navigationBarTitleText: '监测预警',
@@ -72,32 +74,15 @@
                     label: '预警时间从远到近'
                 }
             ],
-            listData: [{
-                id: 1,
-                picture: '',  // 图片
-                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
-                time: '2019年11月20日 17:23:12',
-                user: '张三', 
-                state: 0 // 0: 未处理 1： 处理
-            }, {
-                id: 2,
-                picture: '',
-                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
-                time: '2019年11月20日 17:23:12',
-                user: '李四',
-                state: 1 // 0: 未处理 1： 处理
-            }, {
-                id: 3,
-                picture: '',
-                desc: '永定男板溪联村预警说明文字永定男板溪联村预警说明文字永定男板溪联村预警说明文',
-                time: '2019年11月20日 17:23:12',
-                user: '王五',
-                state: 1 // 0: 未处理 1： 处理
-            }],
+            listData: [],
             page: {
                 count: 0,
                 total: 0
             }
+        }
+
+        onShow() {
+            this.getList();
         }
 
         methods = {
@@ -109,9 +94,10 @@
                     url: '/pages/reportInfo'
                 })
             },
-            toDetails() {
+            toDetails(e) {
+                let id = e.currentTarget.dataset.id;
                 wx.navigateTo({
-                    url: '/pages/warningDetails'
+                    url: '/pages/reportInfo?id=' + id
                 })
             },
             selectTime(e) {
@@ -119,7 +105,16 @@
                 this.timeScreen = false;
             }
         }
-    }
+
+        async getList() {
+            let res = await api.warnList();
+            if (res.code == 200) {
+                this.listData = res.data;
+                this.$apply();
+            }
+            console.log(res);
+        }
+    } 
 </script>
 
 <style lang="less">
@@ -233,6 +228,16 @@
                         height: 85rpx;
                         margin-right: 23rpx;
                         background-color: #eee;
+                    }
+                    .title {
+                        margin-bottom: 5rpx;
+                        line-height: 28rpx;
+                        display: -webkit-box;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        word-break: break-all;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 1;
                     }
                     .desc {
                         margin-bottom: 5rpx;

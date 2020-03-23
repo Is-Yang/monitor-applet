@@ -1,25 +1,33 @@
 <template>
     <view class="report-info-container">
-        <van-nav-bar title="预警上报" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+        <van-nav-bar title="{{navTitle}}" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view class="report-form" style="padding-top: {{statusBarHeight}}px">
             <view class="cell link">
                 <text>地点</text>
-                <view class="right-txt">永定区抚市溪联南板</view>
+                <view class="right-txt">
+                    <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="address">
+                        <text class="val">{{siteRange[siteIndex].address}}</text>
+                    </picker>
+                </view>
             </view>
             <view class="cell link">
                 <text>等级</text>
-                <view class="right-txt">一级预警</view>
+                <view class="right-txt">
+                    <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
+                        <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
+                    </picker>
+                </view>
             </view>
             <view class="cell">
                 <text>说明</text>
                 <view>
-                    <textarea maxlength="200" />
+                    <textarea maxlength="200" @input="inputRemark" />
                     <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
                 </view>
             </view>
             <view class="cell">
                 <text>时间</text>
-                <view class="right-txt">2019年11月20日 17:23:12</view>
+                <view class="right-txt">{{from.createTime}}</view>
             </view>
             <view class="cell link">
                 <text>相关人员</text>
@@ -40,12 +48,14 @@
                 </view>
             </view>
         </view>
-        <button class="submit">提交</button>
+        <button class="submit" @tap="submitFrom">提交</button>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy'
+    import moment from 'moment'
+    import * as api from '../api/api'
     export default class ReportInfo extends wepy.page {
         config = {
             navigationBarTitleText: '预警上报',
@@ -55,11 +65,62 @@
         }
 
         data = {
+            navTitle: '预警上报',
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
-            uploadList: []
+            uploadList: [],
+            siteIndex: 0,
+            siteRange: [],
+            levelIndex: 0,
+            levelRange: [],
+            from: {
+                remark: '',
+                createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+            }
+
+        }
+
+        onLoad(options) {
+            this.getDeviceList()
+
+            this.getWarnOptions()
+
+            if(options.id) {
+                this.navTitle = '预警详情';
+                this.from.id = options.id;
+                this.getWarningInfo(this.from.id);
+                this.$apply();
+            }
         }
 
         methods = {
+            submitFrom() {
+                let deviceId = this.siteRange[this.siteIndex].deviceId;
+                let yuJingLevelId = this.levelRange[this.levelIndex].yuJingLevelId;
+                const { remark, createTime } = this.from;
+
+                let params = {
+                    remark: remark,
+                    deviceId: deviceId,
+                    yuJingLevelId: yuJingLevelId,
+                    createTime: createTime
+                }
+                // 修改
+                if(this.from.id) {
+                    params.yuJingId = this.from.id;
+                    this.updateWarning(JSON.stringify(params));
+                } else {   // 新增
+                    this.addWarning(JSON.stringify(params));
+                }
+            },
+            inputRemark(e) {
+                this.from.remark = e.detail.value;
+            },
+            onChangeSite(e) {
+                this.siteIndex = e.detail.value;
+            },
+            onChangeLevel(e) {
+                this.levelIndex = e.detail.value;
+            },
             onClickLeft() {
                 wx.navigateBack({
                     delta: 1
@@ -95,6 +156,62 @@
                     urls: this.uploadList,
                     current: this.uploadList[e.currentTarget.dataset.index]
                 });
+            }
+        }
+
+        async getWarningInfo(id) {
+            let res = await api.getWarningInfo({yuJingId: id});
+            if (res.code == 200) {
+                const { createTime, yuJingLevelId, deviceId } = res.data;
+                this.from.createTime = createTime;
+                this.levelIndex = this.levelRange.findIndex(item => item.yuJingLevelId == yuJingLevelId);
+                this.siteIndex = this.siteRange.findIndex(item => item.deviceId == deviceId);
+
+                this.$apply();
+            }
+        }
+
+        async updateWarning(params) {
+            let res = await api.updateWarning(params);
+            wx.showToast({
+                title: res.msg,
+                icon: 'success',
+                duration: 1500
+            });
+            setTimeout(function () {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }, 1000);
+        }
+
+        async addWarning(params) {
+            let res = await api.addWarning(params);
+            wx.showToast({
+                title: res.msg,
+                icon: 'success',
+                duration: 1500
+            });
+            setTimeout(function () {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }, 1000);
+        }
+
+        async getWarnOptions() {
+            let res = await api.warnOptions()
+            if(res.code == 200) {
+                this.levelRange = res.data;
+                this.$apply();
+            }
+        }
+
+        async getDeviceList() {
+            let res = await api.deviceList();
+            if(res.code == 200) {
+                this.siteRange = res.rows;
+                this.$apply();
             }
         }
     }

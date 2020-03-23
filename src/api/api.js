@@ -73,21 +73,35 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
 
 // 获取验证码
 export const getCode = (params) => wxRequest(params, 'smscode', 'GET')
-    // 短信验证码登录
+// 短信验证码登录
 export const smsLogin = (params) => wxRequest(params, 'smslogin')
-    // 获取微信openId
+// 获取微信openId
 export const getOpenid = (params) => wxRequest(params, 'getOpenid')
-    // 微信授权登录
+// 微信授权登录
 export const wechatLogin = (params) => wxRequest(params, 'wechatlogin')
-    // 解密微信手机号
+// 解密微信手机号
 export const decryptPhone = (params) => wxRequest(params, 'decryptWeChatPhoneNumber');
 // 微信授权登录 - 手动录入手机号
 export const wechatByPhone = (params) => wxRequest(params, 'wetChatLoginByPhoneNumber')
-    // 获取用户信息
+// 获取用户信息
 export const getUserInfo = () => wxRequest({}, 'getInfo', 'GET')
-    // 退出登录
+// 退出登录
 export const userLogout = () => wxRequest({}, 'logout')
-    // 修改用户信息
+// 修改用户信息
 export const updateUser = (params) => wxRequest(params, 'system/user/profile', 'PUT')
-    // 绑定单位
+// 绑定单位
 export const bindDept = (params) => wxRequest(params, 'system/user/profile/bindDept', 'PUT')
+// 新增预警
+export const addWarning = (params) => wxRequest(params, 'yujing')
+// 修改预警
+export const updateWarning = (params) => wxRequest(params, 'yujing', 'PUT')
+// 根据预警Id获取详细信息
+export const getWarningInfo = (params) => wxRequest({}, 'yujing/' + params.yuJingId, 'GET')
+// 获取预警列表
+export const warnList = (params) => wxRequest(params, 'yujing/list', 'GET')
+// 获取预警等级选择框列表
+export const warnOptions = (params) => wxRequest(params, 'yujing/optionselect', 'GET')
+// 获取设备列表
+export const deviceList = (params) => wxRequest(params, 'device/list', 'GET') 
+// 只有单位管理员可以获取单位下的用户列表
+export const getUserByDept = () => wxRequest({}, 'system/user/getUserListByDeptAdmin', 'GET')

@@ -84,6 +84,7 @@
 
 <script>
     import wepy from 'wepy'
+    import * as api from '../api/api'
     export default class UserUnit extends wepy.page {
         config = {
             navigationBarTitleText: '我的单位',
@@ -125,6 +126,11 @@
                 }
             ]
         }
+
+        onLoad() {
+            this.getUserByDept();
+        }
+
         methods = {
             onChangeSite(e) {
                 console.log(e);
@@ -137,6 +143,11 @@
                     delta: 1
                 });
             }
+        }
+
+        async getUserByDept() {
+            let res = await api.getUserByDept()
+            console.log(res)
         }
     }
 </script>
