@@ -2,16 +2,16 @@
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
         <view class="head-wrap">
-            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '304rpx' : '260rpx'}}"/>
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '324rpx' : '280rpx'}}"/>
             <view class="user-wrap">
                 <view class="mark">
-                    <view>龙岩地灾中心</view>
-                    <view class="flag">管理员</view>
+                    <view>{{userInfo.dept}}</view>
+                    <view  wx:if="{{userInfo.firstRoleName}}" class="flag">{{userInfo.firstRoleName}}</view>
                 </view>
-                <image src=""/>
+                <image src="{{userInfo.avatar}}"/>
             </view>
         </view>
-        <view class="panel-wrap">
+        <view class="panel-wrap" style="padding-top: 320rpx;">
             <view class="title">用户列表</view>
             <van-collapse value="{{ activeNames }}" bindchange="onChangeColl">
                 <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
@@ -53,13 +53,13 @@
                 </block>
             </van-collapse>
         </view>
-        <view class="panel-wrap">
+        <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
             <view class="title">上级单位</view>
             <view class="operate-cell">
                 <view class="cell">
                     <view>
                         <image src="../assets/images/write.png" mode="aspectFit"/>
-                        <text>省级地灾中心单位名</text>
+                        <text>{{userInfo.firstDept}}</text>
                     </view>
                 </view>
             </view>
@@ -67,16 +67,18 @@
         <view class="panel-wrap">
             <view class="title">监测点</view>
             <view class="operate-cell">
-                <view class="cell link">
-                    <view>
-                        <image src="../assets/images/location.png" mode="aspectFit"/>
-                        <text>永定区抚市溪联南板</text>
+                <block wx:for="{{deviceList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                    <view class="cell link">
+                        <view>
+                            <image src="../assets/images/location.png" mode="aspectFit"/>
+                            <text>{{item.deviceName}}</text>
+                        </view>
+                        <view class="right-txt font21">
+                            <view>{{item.deptName}}</view>
+                            <view>负责人：{{item.person}}</view>
+                        </view>
                     </view>
-                    <view class="right-txt font21">
-                        <view>龙岩地灾中心</view>
-                        <view>负责人：张三</view>
-                    </view>
-                </view>
+                 </block>
             </view>
         </view>
     </view>

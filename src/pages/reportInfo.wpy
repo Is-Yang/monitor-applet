@@ -29,9 +29,14 @@
                 <text>时间</text>
                 <view class="right-txt">{{from.createTime}}</view>
             </view>
-            <view class="cell link">
+            <view class="cell link" @tap="toDeptUser">
                 <text>相关人员</text>
-                <view class="right-txt"></view>
+                <view class="right-txt" wx:if="{{relationUser.length == 0}}">
+                    请选择
+                </view>
+                <view class="right-txt" wx:if="{{relationUser.length > 0}}">
+                    <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                </view>
             </view>
             <view class="cell link" @tap="uploadImage">
                 <text>拍照</text>
@@ -72,6 +77,9 @@
             siteRange: [],
             levelIndex: 0,
             levelRange: [],
+            relationUser: [],  // 相关人员
+            selectUserIds: [], // 相关人员id
+            sysFileIds: [], // 图片上传id
             from: {
                 description: '',
                 createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
@@ -79,9 +87,19 @@
 
         }
 
+        onShow() {
+            let pages = getCurrentPages()
+            let currPage = pages[pages.length - 1]  // 当前页
+            if (currPage.relationUser && currPage.relationUser.length > 0) {
+                this.relationUser = currPage.relationUser;
+                this.selectUserIds = currPage.selectUserIds;
+                console.log(this.selectUserIds)
+                this.$apply();
+            }
+        }
+
         onLoad(options) {
             this.getDeviceList()
-
             this.getWarnOptions()
 
             if(options.id) {
@@ -102,8 +120,11 @@
                     description: description,
                     deviceId: deviceId,
                     yuJingLevelId: yuJingLevelId,
-                    createTime: createTime
+                    createTime: createTime,
+                    relationUserIds: this.selectUserIds,
+                    sysFileIds: this.sysFileIds
                 }
+
                 // 修改
                 if(this.from.id) {
                     params.yuJingId = this.from.id;
@@ -112,8 +133,16 @@
                     this.addWarning(JSON.stringify(params));
                 }
             },
+            toDeptUser() {
+                wx.navigateTo({
+                    url: '/pages/package/deptUser'
+                });
+            },
             inputDesc(e) {
                 this.from.description = e.detail.value;
+            },
+            onChangeUser(e) {
+                this.userIndex = e.detail.value;
             },
             onChangeSite(e) {
                 this.siteIndex = e.detail.value;
@@ -128,6 +157,7 @@
             },
             uploadImage() {
                 let that = this;
+
                 wx.chooseImage({
                     count: 3, 
                     sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
@@ -144,11 +174,13 @@
                             return;
                         }
                         that.uploadList = uploadList;
+                        that.handleUploadApi(res.tempFilePaths);
                         that.$apply();
                     }
                 })
             },
             removeImage(e) {
+                this.sysFileIds.splice(e.currentTarget.dataset.index, 1);
                 this.uploadList.splice(e.currentTarget.dataset.index, 1);
             },
             showImage(e) {
@@ -159,6 +191,37 @@
             }
         }
 
+        handleUploadApi(files) {
+            let that = this;
+            let token = wx.getStorageSync('token');
+            let link = '';
+            if (wepy.$instance.globalData.env == 'prod') {
+                link = 'https://tcb-api.tencentcloudapi.com';
+            } else {
+                link = 'https://beidou.signalfire.net.cn';
+            }
+
+            files.forEach(item => {
+               wx.uploadFile({
+                    url: link + '/yujing/upload',
+                    filePath: item,
+                    name: "file",
+                    header: {
+                        "Content-Type": "multipart/form-data",
+                        "Authorization": token
+                    },
+                    formData: {},
+                    success: function(data) {
+                        let result = JSON.parse(data.data)
+                        if (result.code == 200) {
+                            that.sysFileIds.push(result.fileId)
+                            that.$apply();
+                        }
+                    }
+                });
+            });
+        }
+        
         async getWarningInfo(id) {
             let res = await api.getWarningInfo({yuJingId: id});
             if (res.code == 200) {
@@ -240,6 +303,10 @@
                     font-size: 26rpx;
                     color: #999999;
                     margin-right: 45rpx;
+
+                    text {
+                        margin-left: 12rpx;
+                    }
                 }
                 &.link {
                     position: relative;

@@ -17,6 +17,8 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
         header['content-type'] = 'application/x-www-form-urlencoded'
     }
 
+    console.log()
+
     const store = getStore();
     let globalData = store.getState().user.globalData;
 
@@ -25,7 +27,7 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
     if (token) {
         header['Authorization'] = token;
     }
-    let environment = 'test';
+    let environment = wepy.$instance.globalData.env;
     if (environment == 'prod') {
         url = 'https://tcb-api.tencentcloudapi.com' + url;
     } else if (environment == 'test') {
@@ -98,12 +100,16 @@ export const updateWarning = (params) => wxRequest(params, 'yujing/edit', 'PUT')
     // 根据预警Id获取详细信息
 export const getWarningInfo = (params) => wxRequest({}, 'yujing/' + params.yuJingId, 'GET')
     // 获取预警列表
-export const warnList = (params) => wxRequest(params, 'yujing/list', 'GET')
+export const warnList = (params) => wxRequest(params, 'yujing/list2', 'GET')
     // 获取预警等级选择框列表
 export const warnOptions = (params) => wxRequest(params, 'yujing/optionselect', 'GET')
     // 获取设备列表
 export const deviceList = (params) => wxRequest(params, 'device/list', 'GET')
     // 只有单位管理员可以获取单位下的用户列表
-export const getUserByDept = () => wxRequest({}, 'system/user/getUserListByDeptAdmin', 'GET')
+export const getUserByDept = () => wxRequest({}, 'system/user/getMy', 'GET')
     // 用户设备状态修改
 export const userChangeStatus = (params) => wxRequest(params, 'system/user/userDeviceChangeStatus', 'PUT')
+// 获取上级单位的用户列表
+export const getParentDeptUser = () => wxRequest({}, 'system/user/getpParentDeptUserlist', 'GET')
+// 操作记录
+export const getOperlog = (params) => wxRequest(params, 'monitor/operlog/list', 'GET')

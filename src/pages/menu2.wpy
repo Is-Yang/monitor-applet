@@ -17,9 +17,8 @@
                 <view class="mark" bindtap="toUserUnit">
                     <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
                     <text wx:else class="no">未加入任何单位</text>
-
                     <view>
-                        <text wx:if="{{!userInfo.company}}"  class="flag" catchtap="scanJoin">扫码加入</text>
+                        <text wx:if="{{!userInfo.company}}" class="flag" catchtap="scanJoin">扫码加入</text>
                         <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
                     </view>
                 </view>
@@ -63,11 +62,9 @@
                 nickname: ''
             }
         }
-
         onShow() {
             this.getUserInfo();
         }
-
         methods = {
             // 扫码加入
             scanJoin() {
@@ -75,7 +72,7 @@
                     success: (res) => {
                         let result = res.result;
                         let qrCode = res.result.split('?qrcode=')[1];
-                        if(qrCode) {
+                        if (qrCode) {
                             this.bindDept(qrCode);
                         } else {
                             wx.showToast({
@@ -84,7 +81,6 @@
                                 duration: 1500
                             })
                         }
-
                     }
                 })
             },
@@ -94,10 +90,9 @@
                 })
             },
             toUserUnit() {
-                if(!this.userInfo.company) {
+                if (!this.userInfo.company) {
                     return;
                 }
-                
                 wx.navigateTo({
                     url: '/pages/userUnit'
                 })
@@ -115,26 +110,33 @@
             // 上传头像
             uploadPhoto() {
                 let that = this;
+                let token = wx.getStorageSync('token');
+                let link = '';
+                if (wepy.$instance.globalData.env == 'prod') {
+                    link = 'https://tcb-api.tencentcloudapi.com';
+                } else {
+                    link = 'https://beidou.signalfire.net.cn';
+                }
                 wx.chooseImage({
                     count: 1, // 默认1张
                     sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
                     sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
                     success: function(res) {
                         let tempFilePaths = res.tempFilePaths
-                        that.userInfo.avatar = tempFilePaths[0];
-                        // wx.uploadFile({
-                        //   url: 'http://localhost:8080/upload/fileUpload', //仅为示例，非真实的接口地址
-                        //   filePath: tempFilePaths[0],
-                        //   name: "file",
-                        //   header: {
-                        //     "Content-Type": "multipart/form-data"
-                        //   },
-                        //   formData: {
-                        //   },
-                        //   success: function(res) {
-                        //     console.log(res);
-                        //   }
-                        // });
+                        wx.uploadFile({
+                            url: link + '/system/user/profile/avatar',
+                            filePath: tempFilePaths[0],
+                            name: "avatarfile",
+                            header: {
+                                "Content-Type": "multipart/form-data",
+                                "Authorization": token
+                            },
+                            formData: {},
+                            success: function(res) {
+                                that.userInfo.avatar = tempFilePaths[0];
+                                that.$apply();
+                            }
+                        });
                     }
                 })
             },
@@ -143,7 +145,6 @@
                 this.userLogout();
             }
         }
-
         async bindDept(params) {
             let res = await api.bindDept(params);
             if (res.code == 200) {
@@ -155,7 +156,6 @@
                 })
             }
         }
-
         async userLogout() {
             let res = await api.userLogout();
             if (res.code == 200) {
@@ -165,28 +165,36 @@
                     icon: 'success',
                     duration: 1000
                 })
-                setTimeout(()=> {
+                setTimeout(() => {
                     wx.navigateTo({
                         url: '/pages/login'
                     })
                 }, 1000)
             }
         }
-
         async getUserInfo() {
             let res = await api.getUserInfo();
-            if(res.code == 200) {
-                const { avatar, nickName, phonenumber, sex, firstRoleName, userName, dept, userId } = res.user;
-                let phone = phonenumber.replace(phonenumber.substring(3,7), "****")
+            if (res.code == 200) {
+                const {
+                    avatar,
+                    nickName,
+                    phonenumber,
+                    sex,
+                    firstRoleName,
+                    userName,
+                    dept,
+                    userId
+                } = res.user;
+                let phone = phonenumber.replace(phonenumber.substring(3, 7), "****")
                 this.userInfo = {
                     avatar, // 头像
-                    nickName,  // 昵称
-                    sex,  // 性别
-                    userName,  // 用户名
-                    firstRoleName,  
-                    phone,  // 手机号
+                    nickName, // 昵称
+                    sex, // 性别
+                    userName, // 用户名
+                    firstRoleName,
+                    phone, // 手机号
                     userId,
-                    company: dept && dept.deptName,   // 扫码加入后的公司名称
+                    company: dept && dept.deptName, // 扫码加入后的公司名称
                     tel: phonenumber
                 }
                 this.$apply();
@@ -279,7 +287,7 @@
                     background-color: #52cc7a;
                 }
                 .role {
-                    background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
+                    background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient(#52cc7a, #52cc7a);
                 }
                 .no {
                     position: relative;
@@ -334,7 +342,7 @@
             width: 335rpx;
             height: 76rpx;
             line-height: 76rpx;
-            background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient( #e6e6e6, #e6e6e6);
+            background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient(#e6e6e6, #e6e6e6);
             color: #fff;
             border-radius: 38rpx;
             font-size: 28rpx;
@@ -347,4 +355,3 @@
         }
     }
 </style>
-

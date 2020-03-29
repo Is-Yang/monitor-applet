@@ -1,11 +1,31 @@
 <template>
-    <view class="logs-container">
+    <view class="logs-container" style="padding-top: {{statusBarHeight}}px">
         <van-nav-bar title="操作记录" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+
+        <view class="table-wrap">
+            <view class="table-head">
+                <text>操作人员</text>
+                <text>模块</text>
+                <text>操作时间</text>
+            </view>
+            <view class="table-body">
+                <view wx:if="{{listData.lenght > 0}}" wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="row">
+                    <text>{{item.operName}}</text>
+                    <text>{{item.title}}</text>
+                    <text>{{item.operTime}}</text>
+                </view>
+
+                <view wx:if="{{listData.length == 0}}" class="no-data">
+                    <text>无操作记录</text>
+                </view>
+            </view>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import * as api from '../api/api'
 export default class Logs extends wepy.page {
     config = {
         navigationBarTitleText: '操作记录',
@@ -16,6 +36,25 @@ export default class Logs extends wepy.page {
 
     data = {
         statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+        listData: [],
+        page: {
+            pageNum: 1,
+            pageSize: 20,
+            total: 0,
+        }
+    }
+
+    onLoad() {
+        this.getOperlog();
+    }
+
+    // 上拉加载
+    onReachBottom() {
+      if (this.page.total == this.listData.length) {
+        return;
+      }
+      this.page.pageNum++;
+      this.getOperlog();
     }
 
     methods = {
@@ -25,6 +64,55 @@ export default class Logs extends wepy.page {
             });
         }
     }
+
+    async getOperlog() {
+        let { pageNum, pageSize } = this.page;
+        let params = {pageNum, pageSize}
+        let res = await api.getOperlog(params);
+        if(res.code == 200) {
+            if (res.rows.length > 0) {
+                this.listData = [...this.listData, ...res.rows]
+            }
+            this.page.total = res.total;
+            this.$apply();
+        }
+    }
 }
 </script>
+
+<style lang="less">
+.logs-container {
+    .table-wrap {
+        margin-top: 44px;
+        color: #666;
+        font-size: 24rpx;
+        .table-head {
+            position: fixed;
+            z-index: 1;
+            width: 100%;
+            height: 80rpx;
+            line-height: 80rpx;
+            font-size: 28rpx;
+            background-color: #FAF7FA;
+            color: #333;
+        }
+
+        .table-head, .table-body .row {
+            display: flex;
+            text-align: center;
+            text {
+                flex: 1;
+            }
+        }
+
+        .table-body {
+            padding-top: 90rpx;
+            padding-bottom: 20rpx;
+            .row {
+                padding: 15rpx 0;
+            }
+        } 
+    }
+}
+</style>
 

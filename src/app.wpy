@@ -8,6 +8,16 @@
   button:active {
     opacity: 0.8;
   }
+
+  .no-data {
+    margin-top: 300rpx;
+    text-align: center;
+    font-size: 24rpx;
+    color: #999;
+  }
+  .margin-nav {
+    margin-top: 44px;
+  }
 </style>
 
 <script>
@@ -25,20 +35,28 @@
     config = {
       pages: [
         'pages/menu0',
-        'pages/menu1',
+        'pages/logs',
         'pages/reportInfo',
         'pages/userUnit',
+        'pages/menu1',
         'pages/login',
         'pages/bindPhone',
         'pages/videoMonitor',
         'pages/menu2',
         'pages/userInfo',
-        'pages/logs',
         'pages/setting',
         'pages/surface',
         'pages/deep',
         'pages/rainfall',
         'pages/humiture'
+      ],
+      subPackages: [
+        {
+          root: 'pages/package/',
+          pages: [
+            'deptUser'  // 相关人员
+          ]
+        }
       ],
       window: {
         backgroundTextStyle: 'light',
@@ -87,6 +105,7 @@
       defaultImg: '', // 默认图
     }
     globalData = {
+      env: 'test',  // prod 正式， test 测试
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight
     }
   }

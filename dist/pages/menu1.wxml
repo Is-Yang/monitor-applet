@@ -41,5 +41,8 @@
                     <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
                 </view>
             </view>
+             <view wx:if="{{listData.length == 0}}" class="no-data">
+                <text>无预警信息</text>
+            </view>
         </view>
     </view>

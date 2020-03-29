@@ -15,12 +15,12 @@ component_1.VantComponent({
         },
         zIndex: {
             type: Number,
-            value: 1
+            value: 9
         },
         safeAreaInsetTop: {
             type: Boolean,
             value: true
-        },
+        }
     },
     data: {
         statusBarHeight: 0

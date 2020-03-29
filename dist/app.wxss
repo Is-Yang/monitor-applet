@@ -1,1 +1,18 @@
-.txtColor{color:#41c297}button::after{border:none}button:active{opacity:.8}
+.txtColor {
+  color: #41c297;
+}
+button::after {
+  border: none;
+}
+button:active {
+  opacity: 0.8;
+}
+.no-data {
+  margin-top: 300rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+}
+.margin-nav {
+  margin-top: 44px;
+}
