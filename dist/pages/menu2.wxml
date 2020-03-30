@@ -24,7 +24,7 @@
                 </view>
             </view>
         </view>
-        <view class="operate-cell">
+        <view wx:if="{{isBindDept}}" class="operate-cell">
             <view class="cell" bindtap="toLogs">
                 <image src="../assets/images/option.png" mode="aspectFit"/>
                 <text>操作记录</text>

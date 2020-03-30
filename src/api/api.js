@@ -17,8 +17,6 @@ const wxRequest = async(params = {}, url, method = 'POST', showLoding = true) =>
         header['content-type'] = 'application/x-www-form-urlencoded'
     }
 
-    console.log()
-
     const store = getStore();
     let globalData = store.getState().user.globalData;
 
@@ -104,7 +102,7 @@ export const warnList = (params) => wxRequest(params, 'yujing/list2', 'GET')
     // 获取预警等级选择框列表
 export const warnOptions = (params) => wxRequest(params, 'yujing/optionselect', 'GET')
     // 获取设备列表
-export const deviceList = (params) => wxRequest(params, 'device/list', 'GET')
+export const deviceOptions = (params) => wxRequest(params, 'device/optionselect', 'GET')
     // 只有单位管理员可以获取单位下的用户列表
 export const getUserByDept = () => wxRequest({}, 'system/user/getMy', 'GET')
     // 用户设备状态修改

@@ -238,14 +238,12 @@
         
         // 手机验证码登录
         async smsLogin() {
-            console.log(this.userInfo)
             let params = {
                 phoneNumber: this.phone,
                 code: this.code,
                 uuid: this.uuid,
                 qrCode: this.userInfo.qrCode
             }
-            console.log(params);
             let res = await api.smsLogin(params);
             if(res.code == 200) {
                 this.loginSuccess(res);
@@ -278,6 +276,7 @@
         // 登录成功
         loginSuccess(data) {
             wx.setStorageSync('token', data.token);
+            wx.setStorageSync('isBindDept', data.isBindDept);
             // 本单位用户，跳转至我的单位页面
             if(data.page == 'dept') {
                 wx.navigateTo({

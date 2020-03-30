@@ -93,13 +93,12 @@
             if (currPage.relationUser && currPage.relationUser.length > 0) {
                 this.relationUser = currPage.relationUser;
                 this.selectUserIds = currPage.selectUserIds;
-                console.log(this.selectUserIds)
                 this.$apply();
             }
         }
 
         onLoad(options) {
-            this.getDeviceList()
+            this.getDeviceOptions()
             this.getWarnOptions()
 
             if(options.id) {
@@ -236,30 +235,46 @@
 
         async updateWarning(params) {
             let res = await api.updateWarning(params);
-            wx.showToast({
-                title: res.msg,
-                icon: 'success',
-                duration: 1500
-            });
-            setTimeout(function () {
-                wx.navigateBack({
-                    delta: 1
+            if(res.code == 200) {
+                 wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
                 });
-            }, 1000);
+                setTimeout(function () {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }, 1000);
+            } else {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'none',
+                    duration: 1500
+                });
+            }
         }
 
         async addWarning(params) {
             let res = await api.addWarning(params);
-            wx.showToast({
-                title: res.msg,
-                icon: 'success',
-                duration: 1500
-            });
-            setTimeout(function () {
-                wx.navigateBack({
-                    delta: 1
+            if(res.code == 200) {
+                 wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
                 });
-            }, 1000);
+                setTimeout(function () {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }, 1000);
+            } else {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'none',
+                    duration: 1500
+                });
+            }
         }
 
         async getWarnOptions() {
@@ -270,10 +285,14 @@
             }
         }
 
-        async getDeviceList() {
-            let res = await api.deviceList();
+        async getDeviceOptions() {
+            let res = await api.deviceOptions();
             if(res.code == 200) {
-                this.siteRange = res.rows;
+                this.siteRange = res.data;
+                this.siteRange.unshift({
+                    address: '请选择',
+                    deviceId: undefined
+                })
                 this.$apply();
             }
         }

@@ -24,7 +24,7 @@
                 </view>
             </view>
         </view>
-        <view class="operate-cell">
+        <view wx:if="{{isBindDept}}" class="operate-cell">
             <view class="cell" @tap="toLogs">
                 <image src="../assets/images/option.png" mode="aspectFit" />
                 <text>操作记录</text>
@@ -54,6 +54,7 @@
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            isBindDept: false,
             userInfo: {
                 avatar: '',
                 company: '',
@@ -64,6 +65,12 @@
         }
         onShow() {
             this.getUserInfo();
+        }
+        onLoad() {
+            if (wx.getStorageSync('isBindDept')) {
+                this.isBindDept = wx.getStorageSync('isBindDept');
+                this.$apply();
+            }
         }
         methods = {
             // 扫码加入
@@ -160,6 +167,7 @@
             let res = await api.userLogout();
             if (res.code == 200) {
                 wx.removeStorageSync('token')
+                wx.removeStorageSync('isBindDept');
                 wx.showToast({
                     title: res.msg,
                     icon: 'success',
