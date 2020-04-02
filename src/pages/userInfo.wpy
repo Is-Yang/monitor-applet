@@ -38,10 +38,13 @@
             userId: ''
         }
 
-        onLoad(options) {
-            this.nickname = options.nickname;
-            this.phone = options.tel;
-            this.userId = options.userId;
+        onLoad() {
+            const pages = getCurrentPages()
+            const prevPage = pages[pages.length - 2]
+            const {nickName, tel, userId} = prevPage.data.userInfo
+            this.nickname = nickName;
+            this.phone = tel;
+            this.userId = userId;
             this.$apply();
         }
 

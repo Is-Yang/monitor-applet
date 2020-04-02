@@ -45,6 +45,22 @@
 <script>
     import wepy from 'wepy'
     import * as api from '../api/api'
+    import {
+        setStore,
+        getStore,
+        connect
+    } from 'wepy-redux';
+    import configStore from '../store'
+
+    const store = configStore()
+    setStore(store)
+
+    @connect({
+        //取数据
+        globalData(state) {
+            return state.user.globalData;
+        }
+    })
     export default class Menu2 extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
@@ -93,7 +109,7 @@
             },
             toUserInfo() {
                 wx.navigateTo({
-                    url: `/pages/userInfo?nickname=${this.userInfo.nickName}&tel=${this.userInfo.tel}&userId=${this.userInfo.userId}`
+                    url: `/pages/userInfo`
                 })
             },
             toUserUnit() {
@@ -180,33 +196,45 @@
                 }, 1000)
             }
         }
+
         async getUserInfo() {
-            let res = await api.getUserInfo();
-            if (res.code == 200) {
-                const {
-                    avatar,
-                    nickName,
-                    phonenumber,
-                    sex,
-                    firstRoleName,
-                    userName,
-                    dept,
-                    userId
-                } = res.user;
-                let phone = phonenumber.replace(phonenumber.substring(3, 7), "****")
-                this.userInfo = {
-                    avatar, // 头像
-                    nickName, // 昵称
-                    sex, // 性别
-                    userName, // 用户名
-                    firstRoleName,
-                    phone, // 手机号
-                    userId,
-                    company: dept && dept.deptName, // 扫码加入后的公司名称
-                    tel: phonenumber
+            // 如果没有数据，重新请求接口
+            if (!this.globalData.userId) {
+                let res = await api.getUserInfo();
+                if (res.code == 200) {
+                    this.globalData = res.user;
+                    store.dispatch({
+                        type: 'UPDATE_GLOBAL_DATA',
+                        globalData: res.user
+                    })
                 }
-                this.$apply();
+            } 
+
+            const {
+                avatar,
+                nickName,
+                phonenumber,
+                sex,
+                firstRoleName,
+                userName,
+                dept,
+                userId
+            } = this.globalData;
+
+            let phone = phonenumber.replace(phonenumber.substring(3, 7), "****")
+            this.userInfo = {
+                avatar, // 头像
+                nickName, // 昵称
+                sex, // 性别
+                userName, // 用户名
+                firstRoleName,
+                phone, // 手机号
+                userId,
+                company: dept && dept.deptName, // 扫码加入后的公司名称
+                tel: phonenumber
             }
+            
+            this.$apply();
         }
     }
 </script>

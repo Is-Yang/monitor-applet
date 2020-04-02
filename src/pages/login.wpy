@@ -80,12 +80,6 @@
                 if(qrCode) {
                     this.userInfo.qrCode = qrCode;
                 }
-            } else {
-                if(wx.getStorageSync('token')) {
-                    wx.switchTab({
-                        url: '/pages/menu0'
-                    })
-                }
             }
         }
 
@@ -105,37 +99,15 @@
             getUserInfo(event) {
                 if (event.detail.errMsg == 'getUserInfo:ok') {
                     this.userInfo = event.detail.userInfo;
-                    // 检测session是否过期
-                    // wx.checkSession({
-                    //     success: ()=> {
-                    //         let userInfo = wx.getStorageSync('userInfo');
-                    //         if(!userInfo) {
-                    //             const store = getStore();
-                    //             this.userInfo = store.getState().user.userInfo;
-                    //         } else {
-                    //             this.userInfo = userInfo;
-                    //         }
-                    //         // 已授权绑定
-                    //         if(this.userInfo.isBindWechat && this.userInfo.openId) {
-                    //             this.wechatLogin();  
-                    //         } else {
-                    //             // 弹出获取手机号
-                    //             this.showGetPhone = true;
-                    //         }
-                    //         this.$apply();
-                    //     },
-                    //     fail: () => {
-                            // 获取用户登录code
-                            wx.login({
-                                success: ((res) => {
-                                    if(res.code) {
-                                        this.userInfo.code = res.code;
-                                        this.getOpenid({code: res.code})
-                                    }
-                                })
-                            })
-                    //     }
-                    // });
+                    // 获取用户登录code
+                    wx.login({
+                        success: ((res) => {
+                            if(res.code) {
+                                this.userInfo.code = res.code;
+                                this.getOpenid({code: res.code})
+                            }
+                        })
+                    })
                 }
             },
             // 获取手机号

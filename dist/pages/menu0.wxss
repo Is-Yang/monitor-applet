@@ -57,7 +57,7 @@
 }
 .menu0-container .monitor-list .item .content .left text {
   margin-left: 20rpx;
-  font-size: 28rpx;
+  font-size: 32rpx;
 }
 .menu0-container .monitor-list .item .content .right {
   flex: 1;

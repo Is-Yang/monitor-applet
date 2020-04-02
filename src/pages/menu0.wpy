@@ -288,7 +288,7 @@
 
             text {
               margin-left: 20rpx;
-              font-size: 28rpx;
+              font-size: 32rpx;
             }
           }
 

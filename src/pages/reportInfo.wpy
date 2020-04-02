@@ -21,7 +21,7 @@
             <view class="cell">
                 <text>说明</text>
                 <view>
-                    <textarea maxlength="200" @input="inputDesc" />
+                    <textarea value="{{from.description}}" maxlength="200" @input="inputDesc" />
                     <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
                 </view>
             </view>
@@ -49,11 +49,11 @@
             <view class="show-picture">
                  <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
                     <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
-                    <image class='image' @tap="showImage" data-index="{{index}}" src='{{item}}' mode="aspectFill"/>
+                    <image class='image' @tap="showImage" data-index="{{index}}" src='{{item || item.fileUrl}}' mode="aspectFill"/>
                 </view>
             </view>
         </view>
-        <button class="submit" @tap="submitFrom">提交</button>
+        <button wx:if="{{isBindDept}}" class="submit" @tap="submitFrom">提交</button>
     </view>
 </template>
 
@@ -83,8 +83,8 @@
             from: {
                 description: '',
                 createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-            }
-
+            },
+            isBindDept: false
         }
 
         onShow() {
@@ -98,6 +98,11 @@
         }
 
         onLoad(options) {
+            if (wx.getStorageSync('isBindDept')) {
+                this.isBindDept = wx.getStorageSync('isBindDept');
+                this.$apply();
+            }
+
             this.getDeviceOptions()
             this.getWarnOptions()
 
@@ -114,6 +119,15 @@
                 let deviceId = this.siteRange[this.siteIndex].deviceId;
                 let yuJingLevelId = this.levelRange[this.levelIndex].yuJingLevelId;
                 const { description, createTime } = this.from;
+
+                if (!deviceId) {
+                    wx.showToast({
+                        title: '请选择地点',
+                        icon: 'none',
+                        duration: 1500
+                    })
+                    return;
+                }
 
                 let params = {
                     description: description,
@@ -224,11 +238,18 @@
         async getWarningInfo(id) {
             let res = await api.getWarningInfo({yuJingId: id});
             if (res.code == 200) {
-                const { createTime, yuJingLevelId, deviceId } = res.data;
+                const { createTime, yuJingLevelId, deviceId, sysFiles, sysFileIds, description, relationUsers } = res.data;
                 this.from.createTime = createTime;
+                this.from.description = description;
                 this.levelIndex = this.levelRange.findIndex(item => item.yuJingLevelId == yuJingLevelId);
-                this.siteIndex = this.siteRange.findIndex(item => item.deviceId == deviceId);
-
+                let deviceInfo = this.siteRange.findIndex(item => item.deviceId == deviceId);
+                this.siteIndex = (deviceInfo > -1) ? deviceInfo : 0;
+                // this.relationUser = relationUsers;
+                this.uploadList = [];
+                sysFiles.forEach((item) => {
+                    this.uploadList.push(item.fileUrl)
+                })
+                this.sysFileIds = sysFileIds;
                 this.$apply();
             }
         }

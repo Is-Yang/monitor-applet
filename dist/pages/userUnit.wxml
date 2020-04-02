@@ -1,17 +1,18 @@
 
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
-        <view class="head-wrap">
+        <view class="head-wrap" style="height: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}">
             <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '324rpx' : '280rpx'}}"/>
             <view class="user-wrap">
                 <view class="mark">
                     <view>{{userInfo.dept}}</view>
                     <view  wx:if="{{userInfo.firstRoleName}}" class="flag">{{userInfo.firstRoleName}}</view>
                 </view>
-                <image src="{{userInfo.avatar}}"/>
+                <image src="{{userInfo.avatar}}" mode="aspectFill"/>
             </view>
         </view>
-        <view class="panel-wrap" style="padding-top: 320rpx;">
+        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}"/>
+        <view class="panel-wrap">
             <view class="title">用户列表</view>
             <van-collapse value="{{ activeNames }}" bindchange="onChangeColl">
                 <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
@@ -45,13 +46,14 @@
                                         <image src="../assets/images/location.png" mode="aspectFit"/>
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
+                                    <switch wx:if="{{isOper}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
                                 </view>
                             </block>
                         </view>
                     </van-collapse-item>
                 </block>
             </van-collapse>
+            <view wx:if="{{userPage.total > userList.length}}" class="more" bindtap="getMoreUserList"><van-icon name="arrow-down"/></view>
         </view>
         <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
             <view class="title">上级单位</view>

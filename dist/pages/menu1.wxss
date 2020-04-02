@@ -8,7 +8,7 @@
   background-color: transparent;
   color: #fff;
   line-height: 1;
-  font-size: 16rpx;
+  font-size: 18rpx;
   bottom: 10px;
 }
 .menu1-container .nav-reset .van-nav-bar__left::after {
@@ -88,7 +88,7 @@
   display: flex;
   padding: 30rpx 20rpx 30rpx 30rpx;
   border-bottom: 1px solid #e5e5e5;
-  font-size: 21rpx;
+  font-size: 26rpx;
   color: #333333;
 }
 .menu1-container .list-wrap .item .content {
@@ -99,8 +99,8 @@
   flex: 1;
 }
 .menu1-container .list-wrap .item .content .picture {
-  width: 85rpx;
-  height: 85rpx;
+  width: 100rpx;
+  height: 100rpx;
   margin-right: 23rpx;
   background-color: #eee;
 }
@@ -115,6 +115,7 @@
   -webkit-line-clamp: 1;
 }
 .menu1-container .list-wrap .item .content .desc {
+  font-size: 22rpx;
   margin-bottom: 5rpx;
   line-height: 28rpx;
   display: -webkit-box;
@@ -125,6 +126,7 @@
   -webkit-line-clamp: 2;
 }
 .menu1-container .list-wrap .item .content .time {
+  font-size: 21rpx;
   color: #999;
 }
 .menu1-container .list-wrap .item .user-info {
@@ -140,7 +142,7 @@
   background-image: linear-gradient(#999999, #999999), linear-gradient(#52cc7a, #52cc7a);
   border-radius: 25px;
   color: #fff;
-  font-size: 16rpx;
+  font-size: 21rpx;
 }
 .menu1-container .list-wrap .item.not {
   background-color: #ffffcc;

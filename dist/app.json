@@ -1,14 +1,15 @@
 {
   "pages": [
+    "pages/index",
+    "pages/userUnit",
+    "pages/menu2",
     "pages/menu0",
     "pages/logs",
     "pages/reportInfo",
-    "pages/userUnit",
     "pages/menu1",
     "pages/login",
     "pages/bindPhone",
     "pages/videoMonitor",
-    "pages/menu2",
     "pages/userInfo",
     "pages/setting",
     "pages/surface",
@@ -57,5 +58,5 @@
       }
     ]
   },
-  "sitemapLocation": "sitemap74.json"
+  "sitemapLocation": "sitemap67.json"
 }

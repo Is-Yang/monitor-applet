@@ -1,17 +1,18 @@
 <template>
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
-        <view class="head-wrap">
+        <view class="head-wrap" style="height: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}">
             <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '324rpx' : '280rpx'}}" />
             <view class="user-wrap">
                 <view class="mark">
                     <view>{{userInfo.dept}}</view>
                     <view wx:if="{{userInfo.firstRoleName}}" class="flag">{{userInfo.firstRoleName}}</view>
                 </view>
-                <image src="{{userInfo.avatar}}" />
+                <image src="{{userInfo.avatar}}" mode="aspectFill" />
             </view>
         </view>
-        <view class="panel-wrap" style="padding-top: 320rpx;">
+        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}"></view>
+        <view class="panel-wrap">
             <view class="title">用户列表</view>
             <van-collapse value="{{ activeNames }}" @change="onChangeColl">
                 <repeat wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
@@ -45,13 +46,14 @@
                                         <image src="../assets/images/location.png" mode="aspectFit" />
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
+                                    <switch wx:if="{{isOper}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
                                 </view>
                             </repeat>
                         </view>
                     </van-collapse-item>
                 </repeat>
             </van-collapse>
+            <view wx:if="{{userPage.total > userList.length}}" class="more" @tap="getMoreUserList"><van-icon name="arrow-down" /></view>
         </view>
         <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
             <view class="title">上级单位</view>
@@ -91,6 +93,7 @@
         config = {
             navigationBarTitleText: '我的单位',
             usingComponents: {
+                "van-icon": "../components/vant/icon/index",
                 "van-nav-bar": "../components/vant/nav-bar/index",
                 "van-collapse": "../components/vant/collapse/index",
                 "van-collapse-item": "../components/vant/collapse-item/index",
@@ -101,6 +104,17 @@
             activeNames: [],
             userList: [],
             deviceList: [], // 监测点
+            isOper: false,  // 是否可操作关闭
+            userPage: {
+                pageNum: 1,
+                pageSize: 5,
+                total: 0,
+            },
+            deviePage: {
+                pageNum: 1,
+                pageSize: 10,
+                total: 0,
+            },
             userInfo: {
                 userId: '',  // 用户Id， 用于查询设备列表
                 avatar: '',  // 头像
@@ -111,7 +125,18 @@
         }
 
         onLoad() {
-            this.getUserByDept();
+            this.getMyInfo();
+            this.getDevieList();
+            this.getUserList();
+        }
+
+        // 上拉加载
+        onReachBottom() {
+            if (this.deviePage.total == this.deviceList.length) {
+                return;
+            }
+            this.deviePage.pageNum++;
+            this.getDevieList();
         }
 
         methods = {
@@ -133,6 +158,13 @@
                 wx.navigateBack({
                     delta: 1
                 });
+            },
+            getMoreUserList() {
+                if (this.userPage.total == this.userList.length) {
+                    return;
+                }
+                this.userPage.pageNum++;
+                this.getUserList();
             }
         }
 
@@ -147,12 +179,42 @@
             }
         }
 
-        async getUserByDept() {
-            let res = await api.getUserByDept();
+        // 获取我的信息
+        async getMyInfo() {
+            let res = await api.getMyInfo();
             if(res.code == 200) {
-                this.userList = res.userList;
-                this.deviceList = res.deviceList;
                 this.userInfo = res.userInfo;
+                this.$apply();
+            }
+        }
+
+        // 获取监测列表
+        async getDevieList() {
+            let { pageNum, pageSize } = this.deviePage;
+            let params = {pageNum, pageSize}
+            let res = await api.getDevieList(params);
+            if(res.code == 200) {
+                const { rows, total } = res.deviceList;
+                if (rows.length > 0) {
+                    this.deviceList = [...this.deviceList, ...rows]
+                }
+                this.deviePage.total = total;
+                this.$apply();
+            }
+        }
+        // 获取用户列表
+        async getUserList() {
+            let { pageNum, pageSize } = this.userPage;
+            let params = {pageNum, pageSize}
+
+            let res = await api.getDeptUserList(params);
+            if(res.code == 200) {
+                const { rows, total, isOper } = res.userList;
+                if (rows.length > 0) {
+                    this.userList = [...this.userList, ...rows]
+                }
+                this.userPage.total = total;
+                this.isOper = isOper;
                 this.$apply();
             }
         }
@@ -297,6 +359,21 @@
         }
         .van-cell__value {
             flex: none;
+        }
+
+        .more {
+            width: 50%;
+            margin: 0 auto;
+            height: 50rpx;
+            line-height: 50rpx;
+            background-color: #fff;
+            border: 1px solid #f1f1f1;
+            border-top: none;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            text-align: center;
+            font-size: 32rpx;
+            color: #666;
         }
     }
 </style>

@@ -1,0 +1,142 @@
+<template>
+    <view class="loading-wraper">
+        <view class="loader">
+            <text class="before"></text>
+            <text class="after"></text>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import {
+    setStore,
+    getStore
+} from 'wepy-redux'
+import configStore from '../store'
+import tip from "../utils/tip"
+
+const store = configStore()
+setStore(store)
+
+export default class Index extends wepy.page {
+
+    onLoad() {
+        this.getUserInfo();
+    }
+
+    getUserInfo() {
+        let header = {
+            'content-type': 'application/x-www-form-urlencoded'
+        };
+
+        let token = wx.getStorageSync('token');
+        if (token) {
+            header['Authorization'] = token;
+        }
+
+        let environment = wepy.$instance.globalData.env;
+        let url = 'getInfo';
+        if (environment == 'prod') {
+            url = 'https://tcb-api.tencentcloudapi.com' + url;
+        } else if (environment == 'test') {
+            url = 'https://beidou.signalfire.net.cn/' + url;
+        }
+
+        wepy.request({
+            header,
+            url,
+            method: 'GET'
+        }).then((res) => {
+            let data = res.data;
+            if (data) {
+                if (data.code == 401) {
+                    setTimeout(() => {
+                        wx.redirectTo({
+                            url: '/pages/login'
+                        })
+                    }, 1000)
+                } else if (data.code == 200) {
+                    store.dispatch({
+                        type: 'UPDATE_GLOBAL_DATA',
+                        globalData: data.user
+                    })
+
+                    setTimeout(() => {
+                        wx.switchTab({
+                            url: '/pages/menu0'
+                        })
+                    }, 1000);
+                }
+            }
+            
+        }).catch((err) => {
+            console.log('wepy requerst err:' + err);
+        });
+    }
+
+}
+</script>
+
+<style lang="less">
+    .loading-wraper {
+        position: fixed;
+        width: 100%;
+        top: 50%;
+        bottom: 50%;
+        transform: translateY(-50%);
+        z-index: 11;
+        text-align: center;
+        .loader {
+            display: inline-block;
+            position: relative;
+            width: 100rpx;
+            height: 30rpx;
+            &>text {
+                content: "";
+                display: block;
+                width: 30rpx;
+                height: 30rpx;
+                border-radius: 50%;
+                position: absolute;
+                z-index: 9;
+            }
+            .before {
+                animation: loadingB 1s ease-in-out infinite;
+                background: #ed174c;
+            }
+            .after {
+                animation: loadingA 1s ease-in-out infinite;
+                background: #38539a;
+            }
+        }
+        @keyframes loadingB {
+            0% {
+                left: 0;
+                z-index: 0
+            }
+            50% {
+                left: 100%;
+                z-index: 1
+            }
+            100% {
+                left: 0;
+                z-index: 0
+            }
+        }
+        @keyframes loadingA {
+            0% {
+                left: 100%;
+                z-index: 1
+            }
+            50% {
+                left: 0;
+                z-index: 0
+            }
+            100% {
+                left: 100%;
+                z-index: 1
+            }
+        }
+    }
+</style>

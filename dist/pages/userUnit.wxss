@@ -132,3 +132,17 @@ page {
 .user-unit-container .van-cell__value {
   flex: none;
 }
+.user-unit-container .more {
+  width: 50%;
+  margin: 0 auto;
+  height: 50rpx;
+  line-height: 50rpx;
+  background-color: #fff;
+  border: 1px solid #f1f1f1;
+  border-top: none;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  text-align: center;
+  font-size: 32rpx;
+  color: #666;
+}

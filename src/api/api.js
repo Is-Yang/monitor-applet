@@ -105,9 +105,15 @@ export const warnOptions = (params) => wxRequest(params, 'yujing/optionselect', 
 export const deviceOptions = (params) => wxRequest(params, 'device/optionselect', 'GET')
     // 只有单位管理员可以获取单位下的用户列表
 export const getUserByDept = () => wxRequest({}, 'system/user/getMy', 'GET')
+    // 我的信息
+export const getMyInfo = () => wxRequest({}, 'system/user/getMyInfo', 'GET')
     // 用户设备状态修改
 export const userChangeStatus = (params) => wxRequest(params, 'system/user/userDeviceChangeStatus', 'PUT')
-// 获取上级单位的用户列表
+    // 获取上级单位的用户列表
 export const getParentDeptUser = () => wxRequest({}, 'system/user/getpParentDeptUserlist', 'GET')
-// 操作记录
+    // 操作记录
 export const getOperlog = (params) => wxRequest(params, 'monitor/operlog/list', 'GET')
+    // 我的单位用户列表【分页】
+export const getDeptUserList = (params) => wxRequest(params, 'system/user/getMyDeptUserList', 'GET')
+    // 我的监测列表 【分页】
+export const getDevieList = (params) => wxRequest(params, 'system/user/getMyDeviceList', 'GET')
