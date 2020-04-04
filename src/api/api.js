@@ -96,7 +96,7 @@ export const addWarning = (params) => wxRequest(params, 'yujing/add', 'PUT')
     // 修改预警
 export const updateWarning = (params) => wxRequest(params, 'yujing/edit', 'PUT')
     // 根据预警Id获取详细信息
-export const getWarningInfo = (params) => wxRequest({}, 'yujing/' + params.yuJingId, 'GET')
+export const getWarningInfo = (params) => wxRequest({}, 'yujing/getInfoByAuthorization/' + params.yuJingId, 'GET')
     // 获取预警列表
 export const warnList = (params) => wxRequest(params, 'yujing/list2', 'GET')
     // 获取预警等级选择框列表
@@ -117,3 +117,5 @@ export const getOperlog = (params) => wxRequest(params, 'monitor/operlog/list', 
 export const getDeptUserList = (params) => wxRequest(params, 'system/user/getMyDeptUserList', 'GET')
     // 我的监测列表 【分页】
 export const getDevieList = (params) => wxRequest(params, 'system/user/getMyDeviceList', 'GET')
+    // 我的-角色下拉列表
+export const optionsRole = (params) => wxRequest(params, 'system/role/optionselectForApp', 'GET')

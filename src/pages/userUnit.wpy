@@ -33,7 +33,20 @@
                                 </view>
                                 <text class="right-txt">{{ item.phone }}</text>
                             </view>
-                            <view class="cell link">
+                            <view wx:if="{{isOper}}" class="cell link" @tap="toRole" data-id="{{ item.id }}" data-roles="{{item.roleIds}}">
+                                <view>
+                                    <image src="../assets/images/role.png" mode="aspectFit" />
+                                    <text>角色</text>
+                                </view>
+                                <view class="right-txt" wx:if="{{item.role.length == 0}}">
+                                    请选择
+                                </view>
+                                <view class="right-txt" wx:else>
+                                    {{item.role}}
+                                    <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
+                                </view>
+                            </view>
+                            <view wx:if="{{!isOper}}" class="cell">
                                 <view>
                                     <image src="../assets/images/role.png" mode="aspectFit" />
                                     <text>角色</text>
@@ -46,7 +59,7 @@
                                         <image src="../assets/images/location.png" mode="aspectFit" />
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch wx:if="{{isOper}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
+                                    <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
                                 </view>
                             </repeat>
                         </view>
@@ -105,6 +118,7 @@
             userList: [],
             deviceList: [], // 监测点
             isOper: false,  // 是否可操作关闭
+            roleRange: [],
             userPage: {
                 pageNum: 1,
                 pageSize: 5,
@@ -121,10 +135,11 @@
                 dept: '', // 部门
                 firstRoleName: '',  // 角色
                 firstDept: '',  // 上级单位
-            }
+            },
+            roleIds: []
         }
 
-        onLoad() {
+        onShow() {
             this.getMyInfo();
             this.getDevieList();
             this.getUserList();
@@ -159,12 +174,22 @@
                     delta: 1
                 });
             },
+            toRole(e) {
+                this.roleIds = e.currentTarget.dataset.roles;
+                let id = e.currentTarget.dataset.id;
+                wx.navigateTo({
+                    url: '/pages/package/roleList?id=' + id
+                });
+            },
             getMoreUserList() {
                 if (this.userPage.total == this.userList.length) {
                     return;
                 }
                 this.userPage.pageNum++;
                 this.getUserList();
+            },
+            onChangeRole(e) {
+                this.roleIndex = e.detail.value;
             }
         }
 
@@ -209,12 +234,12 @@
 
             let res = await api.getDeptUserList(params);
             if(res.code == 200) {
-                const { rows, total, isOper } = res.userList;
+                const { rows, total } = res.userList;
                 if (rows.length > 0) {
                     this.userList = [...this.userList, ...rows]
                 }
                 this.userPage.total = total;
-                this.isOper = isOper;
+                this.isOper = res.isOper;
                 this.$apply();
             }
         }
@@ -241,13 +266,13 @@
                 align-items: center;
                 z-index: 2;
                 image {
-                    width: 117rpx;
-                    height: 117rpx;
+                    width: 120rpx;
+                    height: 120rpx;
                     background-color: #ffffff;
                 }
                 .mark {
                     margin-right: 21rpx;
-                    font-size: 21rpx;
+                    font-size: 24rpx;
                     color: #fff;
                     text-align: right;
                     .flag {
@@ -258,7 +283,7 @@
                         margin-top: 12rpx;
                         background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
                         border-radius: 25px;
-                        font-size: 16rpx;
+                        font-size: 21rpx;
                         text-align: center;
                     }
                 }
@@ -274,7 +299,7 @@
             border-bottom: 1px solid #f7f7f7;
 
             .title {
-                font-size: 21rpx;
+                font-size: 24rpx;
                 color: #666;
                 padding: 15rpx 23rpx;
             }

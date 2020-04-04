@@ -221,7 +221,7 @@
                 userId
             } = this.globalData;
 
-            let phone = phonenumber.replace(phonenumber.substring(3, 7), "****")
+            let phone = phonenumber ? phonenumber.replace(phonenumber.substring(3, 7), "****") : ''
             this.userInfo = {
                 avatar, // 头像
                 nickName, // 昵称
@@ -272,8 +272,8 @@
                 box-sizing: border-box;
                 font-size: 28rpx;
                 .photo {
-                    width: 118rpx;
-                    height: 118rpx;
+                    width: 120rpx;
+                    height: 120rpx;
                     margin-right: 39rpx;
                     image {
                         border-radius: 50%;
@@ -300,13 +300,13 @@
                 display: flex;
                 justify-content: space-between;
                 padding: 20rpx 0 50rpx 20rpx;
-                font-size: 18rpx;
+                font-size: 21rpx;
                 color: #666;
                 line-height: 38rpx;
                 box-sizing: border-box;
                 .company {
                     color: #333333;
-                    font-size: 21rpx;
+                    font-size: 24rpx;
                 }
                 .flag,
                 .role {
@@ -351,12 +351,12 @@
                 color: #333;
                 padding: 28rpx 32rpx;
                 border-bottom: 1px solid #f7f7f7;
-                font-size: 26rpx;
+                font-size: 28rpx;
                 image {
-                    width: 34rpx;
-                    height: 34rpx;
+                    width: 38rpx;
+                    height: 38rpx;
                     vertical-align: middle;
-                    margin-right: 30rpx;
+                    margin-right: 20rpx;
                 }
                 &:after {
                     content: '\F00A';

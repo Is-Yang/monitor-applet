@@ -1,59 +1,106 @@
 <template>
     <view class="report-info-container">
         <van-nav-bar title="{{navTitle}}" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
-        <view class="report-form" style="padding-top: {{statusBarHeight}}px">
-            <view class="cell link">
-                <text>地点</text>
-                <view class="right-txt">
-                    <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="address">
-                        <text class="val">{{siteRange[siteIndex].address}}</text>
-                    </picker>
+        <view wx:if="{{!readOnly}}" style="padding-top: {{statusBarHeight}}px">
+            <view class="report-form">
+                <view class="cell link">
+                    <text>地点</text>
+                    <view class="right-txt">
+                        <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="address">
+                            <text class="val">{{siteRange[siteIndex].address}}</text>
+                        </picker>
+                    </view>
                 </view>
-            </view>
-            <view class="cell link">
-                <text>等级</text>
-                <view class="right-txt">
-                    <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
-                        <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
-                    </picker>
+                <view class="cell link">
+                    <text>等级</text>
+                    <view class="right-txt">
+                        <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
+                            <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
+                        </picker>
+                    </view>
                 </view>
-            </view>
-            <view class="cell">
-                <text>说明</text>
-                <view>
-                    <textarea value="{{from.description}}" maxlength="200" @input="inputDesc" />
-                    <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
+                <view class="cell">
+                    <text>说明</text>
+                    <view>
+                        <textarea value="{{from.description}}" maxlength="200" @input="inputDesc" />
+                        <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
+                    </view>
                 </view>
-            </view>
-            <view class="cell">
-                <text>时间</text>
-                <view class="right-txt">{{from.createTime}}</view>
-            </view>
-            <view class="cell link" @tap="toDeptUser">
-                <text>相关人员</text>
-                <view class="right-txt" wx:if="{{relationUser.length == 0}}">
-                    请选择
+                <view class="cell">
+                    <text>时间</text>
+                    <view class="right-txt">{{from.createTime}}</view>
                 </view>
-                <view class="right-txt" wx:if="{{relationUser.length > 0}}">
-                    <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                <view class="cell link" @tap="toDeptUser">
+                    <text>相关人员</text>
+                    <view class="right-txt" wx:if="{{relationUser.length == 0}}">
+                        请选择
+                    </view>
+                    <view class="right-txt" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                    </view>
                 </view>
-            </view>
-            <view class="cell link" @tap="uploadImage">
-                <text>拍照</text>
-                <view class="right-txt">
-                    <text>可拍3张</text>
-                    <image src="../assets/images/camera.png" class="icon-camera" mode="aspectFit" />
+                <view class="cell link" @tap="uploadImage">
+                    <text>拍照</text>
+                    <view class="right-txt">
+                        <text>可拍3张</text>
+                        <image src="../assets/images/camera.png" class="icon-camera" mode="aspectFit" />
+                    </view>
                 </view>
-            </view>
 
-            <view class="show-picture">
-                 <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
-                    <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
-                    <image class='image' @tap="showImage" data-index="{{index}}" src='{{item || item.fileUrl}}' mode="aspectFill"/>
+                <view class="show-picture">
+                    <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
+                        <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
+                        <image class='image' @tap="showImage" data-index="{{index}}" src='{{item || item.fileUrl}}' mode="aspectFill"/>
+                    </view>
+                </view>
+            </view>
+            <button wx:if="{{isBindDept}}" class="submit" @tap="submitFrom">提交</button>
+        </view>
+
+        <view wx:if="{{readOnly}}" class="readOnly" style="padding-top: {{statusBarHeight}}px">
+            <view class="report-form">
+                <view class="cell">
+                    <text>地点</text>
+                    <view class="right-txt">
+                       {{deviceAddress}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>等级</text>
+                    <view class="right-txt">
+                        {{yuJingLevelName}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>说明</text>
+                    <view>
+                        <textarea value="{{from.description}}" disabled maxlength="200" @input="inputDesc" />
+                        <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>时间</text>
+                    <view class="right-txt">{{from.createTime}}</view>
+                </view>
+                <view class="cell">
+                    <text>相关人员</text>
+                    <view class="right-txt" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                    </view>
+                    <view class="right-txt" wx:else>--</view>
+                </view>
+                <view class="cell">
+                    <text>拍照如下</text>
+                </view>
+
+                <view class="show-picture">
+                    <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
+                        <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
+                        <image class='image' @tap="showImage" data-index="{{index}}" src='{{item || item.fileUrl}}' mode="aspectFill"/>
+                    </view>
                 </view>
             </view>
         </view>
-        <button wx:if="{{isBindDept}}" class="submit" @tap="submitFrom">提交</button>
     </view>
 </template>
 
@@ -72,6 +119,7 @@
         data = {
             navTitle: '预警上报',
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+            readOnly: false, // true为只读, 小程序展示为只读的模式，否则预警详情页可以进行更新操作
             uploadList: [],
             siteIndex: 0,
             siteRange: [],
@@ -84,6 +132,8 @@
                 description: '',
                 createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
             },
+            deviceAddress: '',
+            yuJingLevelName: '',
             isBindDept: false
         }
 
@@ -238,18 +288,23 @@
         async getWarningInfo(id) {
             let res = await api.getWarningInfo({yuJingId: id});
             if (res.code == 200) {
-                const { createTime, yuJingLevelId, deviceId, sysFiles, sysFileIds, description, relationUsers } = res.data;
+                this.readOnly = res.readOnly;
+                const { createTime, yuJingLevelId, deviceId, sysFiles, sysFileIds, description, relationUsers, relationUserIds, device, yuJingLevel } = res.yujing;
                 this.from.createTime = createTime;
                 this.from.description = description;
                 this.levelIndex = this.levelRange.findIndex(item => item.yuJingLevelId == yuJingLevelId);
                 let deviceInfo = this.siteRange.findIndex(item => item.deviceId == deviceId);
                 this.siteIndex = (deviceInfo > -1) ? deviceInfo : 0;
-                // this.relationUser = relationUsers;
+                this.relationUser = relationUsers;
+                this.selectUserIds = relationUserIds;
                 this.uploadList = [];
                 sysFiles.forEach((item) => {
                     this.uploadList.push(item.fileUrl)
                 })
                 this.sysFileIds = sysFileIds;
+
+                this.deviceAddress = device.address;
+                this.yuJingLevelName = yuJingLevel.yuJingLevelName;
                 this.$apply();
             }
         }
@@ -420,6 +475,12 @@
             color: #fff;
             border-radius: 25px;
             font-size: 28rpx;
+        }
+
+        .readOnly {
+            .report-form .cell .right-txt {
+                margin-right: 0;
+            }
         }
     }
 </style>

@@ -33,7 +33,20 @@
                                 </view>
                                 <text class="right-txt">{{ item.phone }}</text>
                             </view>
-                            <view class="cell link">
+                            <view wx:if="{{isOper}}" class="cell link" bindtap="toRole" data-id="{{ item.id }}" data-roles="{{item.roleIds}}">
+                                <view>
+                                    <image src="../assets/images/role.png" mode="aspectFit"/>
+                                    <text>角色</text>
+                                </view>
+                                <view class="right-txt" wx:if="{{item.role.length == 0}}">
+                                    请选择
+                                </view>
+                                <view class="right-txt" wx:else>
+                                    {{item.role}}
+                                    <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
+                                </view>
+                            </view>
+                            <view wx:if="{{!isOper}}" class="cell">
                                 <view>
                                     <image src="../assets/images/role.png" mode="aspectFit"/>
                                     <text>角色</text>
@@ -46,7 +59,7 @@
                                         <image src="../assets/images/location.png" mode="aspectFit"/>
                                         <text>{{site.name}}</text>
                                     </view>
-                                    <switch wx:if="{{isOper}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
+                                    <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
                                 </view>
                             </block>
                         </view>

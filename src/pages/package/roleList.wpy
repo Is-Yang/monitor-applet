@@ -1,12 +1,12 @@
 <template>
-    <view class="dept-user" style="padding-top: {{statusBarHeight}}px">
-        <van-nav-bar title="相关人员列表" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+    <view class="dept-role" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="相关角色列表" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
 
-        <view class="user-list margin-nav">
+        <view class="role-list margin-nav">
             <checkbox-group bindchange="checkboxChange">
-                <label wx:for="{{userList}}" wx:for-item="item" wx:key="index" class="item">
-                    <checkbox value="{{item.userId}}" checked="{{item.checked}}">
-                        <text class="name">{{item.nickName}}</text>
+                <label wx:for="{{roleList}}" wx:for-item="item" wx:key="index" class="item">
+                    <checkbox value="{{item.roleId}}" checked="{{item.checked}}">
+                        <text class="name">{{item.roleName}}</text>
                     </checkbox>
                 </label>
             </checkbox-group>
@@ -19,9 +19,9 @@
 <script>
 import wepy from 'wepy'
 import * as api from '../../api/api'
-export default class DeptUser extends wepy.page {
+export default class RoleList extends wepy.page {
     config = {
-        navigationBarTitleText: '相关人员列表',
+        navigationBarTitleText: '相关角色列表',
         usingComponents: {
             "van-nav-bar": "../../components/vant/nav-bar/index"
         }
@@ -29,32 +29,19 @@ export default class DeptUser extends wepy.page {
 
     data = {
         statusBarHeight: wepy.$instance.globalData.statusBarHeight,
-        userList: [],  // 相关人员
+        userId: '',
+        roleList: [],  // 相关人员
         selectId: []   // 所选人员id
     }
 
-    onLoad() {
-        this.getParentDeptUser();
+    onLoad(options) {
+        this.userId = options.id;
+        this.optionsRole();
     }
 
     methods = {
         submitSelect() {
-            let selectUser = [];
-            for (const select of this.selectId) {
-                for (const item of this.userList) {
-                    if (select == item.userId) {
-                        selectUser.push(item);
-                    }
-                }
-            }
-
-            const pages = getCurrentPages()
-            const prevPage = pages[pages.length - 2]
-            prevPage.relationUser = selectUser;
-            prevPage.selectUserIds = this.selectId;
-            wx.navigateBack({
-                delta: 1
-            });
+            this.updateUser();
         },
         checkboxChange(e) {
             this.selectId = e.detail.value;
@@ -67,19 +54,39 @@ export default class DeptUser extends wepy.page {
         }
     }
 
-    // 获取相关人员
-    async getParentDeptUser() {
-        let res = await api.getParentDeptUser();
+    async updateUser() {
+        let params = JSON.stringify({
+            userId: this.userId,
+            roleIds: this.selectId
+        })
+        let res = await api.updateUser(params);
+        if (res.code == 200) {
+            wx.showToast({
+                title: res.msg,
+                icon: 'success',
+                duration: 1500
+            });
+            setTimeout(() => {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }, 1000)
+        }
+    }
+
+    // 获取相关角色
+    async optionsRole() {
+        let res = await api.optionsRole();
         if(res.code == 200) {
-            this.userList = res.data;
+            this.roleList = res.data;
 
             const pages = getCurrentPages()
             const prevPage = pages[pages.length - 2]
-            this.selectId = prevPage.data.selectUserIds;
-            if(this.selectId.length > 0) {
+            this.selectId = prevPage.data.roleIds;
+            if(this.selectId && this.selectId.length > 0) {
                 for (const select of this.selectId) {
-                    for (const item of this.userList) {
-                        if (select == item.userId) {
+                    for (const item of this.roleList) {
+                        if (select == item.roleId) {
                             item.checked = true;
                         }
                     }
@@ -92,8 +99,8 @@ export default class DeptUser extends wepy.page {
 </script>
 
 <style lang="less">
-.dept-user {
-    .user-list {
+.dept-role {
+    .role-list {
         margin-bottom: 80rpx;
         .item {
             display: block;

@@ -35,12 +35,12 @@
     config = {
       pages: [
         'pages/index',
-        'pages/userUnit',
         'pages/menu2',
+        'pages/menu1',
+        'pages/userUnit',
         'pages/menu0',
         'pages/logs',
         'pages/reportInfo',
-        'pages/menu1',
         'pages/login',
         'pages/bindPhone',
         'pages/videoMonitor',
@@ -55,6 +55,7 @@
         {
           root: 'pages/package/',
           pages: [
+            'roleList',  // 相关角色
             'deptUser'  // 相关人员
           ]
         }
