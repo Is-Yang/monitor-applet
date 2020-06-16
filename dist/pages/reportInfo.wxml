@@ -1,0 +1,128 @@
+
+    <view class="report-info-container">
+        <van-nav-bar title="{{navTitle}}" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+        <view  wx:if="{{!readOnly}}" style="padding-top: {{statusBarHeight}}px">
+            <view class="report-form">
+                <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="monitorAreaName">
+                    <view class="cell link">
+                        <text>地点</text>
+                        <view class="right-txt">
+                            <text class="val">{{siteRange[siteIndex].monitorAreaName}}</text>
+                        </view>
+                    </view>
+                </picker>
+
+                <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
+                    <view class="cell link">
+                        <text>等级</text>
+                        <view class="right-txt">
+                                <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
+                        </view>
+                    </view>
+                </picker>
+
+                <view class="cell">
+                    <text>说明</text>
+                    <view>
+                        <textarea value="{{from.description}}" maxlength="200" bindinput="inputDesc"/>
+                        <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
+                    </view>
+                </view>
+                <!-- <view class="cell">
+                    <text>时间</text>
+                    <view class="right-txt">{{from.createTime}}</view>
+                </view> -->
+                <view class="cell link" bindtap="toDeptUser">
+                    <text>相关人员</text>
+                    <view class="right-txt" wx:if="{{relationUser.length == 0}}">
+                        请选择
+                    </view>
+                    <view class="right-txt line-clamp-2" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}<text wx:if="{{index != (relationUser.length - 1) }}">, </text></text>
+                    </view>
+                </view>
+                <view class="cell link" bindtap="uploadImage">
+                    <text>拍照</text>
+                    <view class="right-txt">
+                        <text>可拍3张</text>
+                        <image src="../assets/images/camera.png" class="icon-camera" mode="aspectFit"/>
+                    </view>
+                </view>
+
+                <view class="show-picture">
+                    <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
+                        <icon class="icon-remove" bindtap="removeImage" data-index="{{index}}" type="clear" size="20" color="red"/>
+                        <image class="image" bindtap="showImage" data-index="{{index}}" src="{{item || item.fileUrl}}" mode="aspectFill"/>
+                    </view>
+                </view>
+            </view>
+            <button wx:if="{{isBindDept}}" class="submit" bindtap="submitFrom">提交</button>
+        </view>
+
+        <view  wx:if="{{readOnly}}" class="readOnly" style="padding-top: {{statusBarHeight}}px">
+            <view class="report-form">
+                <view class="cell">
+                    <text>地点</text>
+                    <view class="right-txt">
+                       <view>{{monitorAreaName}}</view>
+                       <view>{{monitorAddress}}</view>
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>等级</text>
+                    <view class="right-txt">
+                        {{yuJingLevelName}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>类型</text>
+                    <view class="right-txt">
+                        {{type == 0 ? '自动预警' : type == 1 ? '手工录入' : '--'}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>状态</text>
+                    <view class="right-txt">
+                        {{status == '0' ? '未处理' : '已处理'}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>说明</text>
+                    <view>
+                        <textarea value="{{from.description}}" disabled maxlength="200" bindinput="inputDesc"/>
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>时间</text>
+                    <view class="right-txt">{{from.createTime}}</view>
+                </view>
+                <view class="cell">
+                    <text>相关人员</text>
+                    <view class="right-txt line-clamp-2" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}<text wx:if="{{index != (relationUser.length - 1) }}">, </text></text>
+                    </view>
+                    <view class="right-txt" wx:else>--</view>
+                </view>
+                <view class="cell {{hasMonitorDevice ? 'link' : ''}}" bindtap="toMonitorDevice">
+                    <text>现场照片</text>
+                    <view wx:if="{{hasMonitorDevice}}" class="right-txt" style="margin-right: 45rpx;">查看监控</view>
+                </view>
+
+                <view wx:if="{{uploadList.length > 0}}" class="show-picture">
+                    <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
+                        <image class="image" bindtap="showImage" data-index="{{index}}" src="{{item || item.fileUrl}}" mode="aspectFill"/>
+                    </view>
+                </view>
+
+                <view class="cell link" bindtap="toReportLogs">
+                    <text>操作日志</text>
+                    <view class="right-txt" style="margin-right: 45rpx;">查看日志</view>
+                </view>
+            </view>
+        </view>
+
+        <!-- 本单位的管理员 或 创建当前预警人员更改 -->
+        <button wx:if="{{status == '0' && (isAdmin || isCreate)}}" class="submit" bindtap="changeStatus">完成处理</button>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

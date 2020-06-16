@@ -1,0 +1,11 @@
+.dept-role .role-list {
+  margin-bottom: 80rpx;
+}
+.dept-role .role-list .item {
+  display: block;
+  padding: 20rpx 30rpx;
+  border-bottom: 1px solid #eee;
+}
+.dept-role .role-list .item .name {
+  padding-left: 15rpx;
+}

@@ -31,9 +31,16 @@ var filter = {
     if (format === 'Y') {
       return Y
     }
+  },
+  isHasValue: function(data) {
+    if (data || data == 0) {
+      return data;
+    }
+    return '--';
   }
 }
 
 module.exports = {
-  timestampToTime: filter.timestampToTime
+  timestampToTime: filter.timestampToTime,
+  isHasValue: filter.isHasValue
 }

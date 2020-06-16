@@ -1,0 +1,128 @@
+<template>
+    <view class="logs-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="预警信息-操作记录" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+
+        <view class="table-wrap">
+            <view class="table-head" style="top: {{statusBarHeight + 44}}px">
+                <text class="col">时间</text>
+                <text class="col">操作</text>
+                <text class="col">人员</text>
+            </view>
+            <view class="table-body">
+                <view wx:if="{{listData.length > 0}}" wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="row">
+                    <view class="col time">{{item.operTime}}</view>
+                    <view class="col">
+                        <view>{{item.title || '--'}}</view>
+                        <view>{{item.operatorContent || '--'}}</view>
+                    </view>
+                    <view class="col">
+                        <view>{{item.operName || '--'}}</view>
+                        <view>{{item.operLocation || '--'}}</view>
+                    </view>
+                </view>
+
+                <view wx:if="{{listData.length == 0}}" class="no-data">
+                    <text>无操作记录</text>
+                </view>
+            </view>
+        </view>
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { reportOperLogs } from '../../api/api'
+import decode from '../../utils/util.js';
+export default class reportLogs extends wepy.page {
+    config = {
+        navigationBarTitleText: '预警信息-操作日志',
+        usingComponents: {
+            "van-nav-bar": "../components/vant/nav-bar/index"
+        },
+        // enablePullDownRefresh: true
+    }
+
+    data = {
+        statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+        listData: [],
+        yujingId: '',
+        page: {
+            pageNum: 1,
+            pageSize: 20,
+            total: 0,
+        }
+    }
+
+    onLoad(options) {
+        wepy.$instance.shareImage()
+        
+        this.yujingId = options.yujingId;
+        this.getOperlog('init');
+    }
+
+    //下拉刷新
+    // onPullDownRefresh() {
+    //     this.getOperlog('init');
+    //     wx.stopPullDownRefresh();
+    // }
+
+    // 上拉加载
+    // onReachBottom() {
+    //   if (this.page.total == this.listData.length) {
+    //     return;
+    //   }
+    //   this.page.pageNum++;
+    //   this.getOperlog();
+    // }
+
+    methods = {
+        onClickLeft() {
+            let pages = getCurrentPages();
+            if (pages.length == 1) {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            } else {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        }
+    }
+
+    async getOperlog(reset) {
+        if (reset == 'init') {
+            this.page.total = 0;
+            this.page.pageNum = 1;
+            this.listData = [];
+        }
+        let { pageNum, pageSize } = this.page;
+
+        let params = {
+            yujingId: this.yujingId,
+            // pageNum, 
+            // pageSize
+        }
+        let res = await reportOperLogs(params);
+        if(res.code == 200) {
+            if (res.data.length > 0) {
+                this.listData = [...this.listData, ...res.data]
+            }
+            this.listData.forEach(item => {
+                if (item.operName) {
+                    item.operName = decode(item.operName);
+                }
+            });
+            this.page.total = res.total;
+            this.$apply();
+        }
+    }
+}
+</script>
+
+<style lang="less">
+
+</style>
+

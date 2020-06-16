@@ -1,0 +1,7 @@
+
+    <view class="loading-wraper">
+        <view class="loader">
+            <text class="before"/>
+            <text class="after"/>
+        </view>
+    </view>

@@ -23,15 +23,21 @@
             </view>
             <button open-type="getUserInfo" bindgetuserinfo="getUserInfo" class="reset-button">
                 <image src="../assets/images/wechat.png"/>
-              </button>
+            </button>
         </view>
         <view class="agree">
             登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
         </view>
 
-        <van-popup show="{{ showGetPhone }}" closeable="closeable"  bind:close="onClosePopup" custom-class="phone-popup">
+        <van-popup show="{{ showGetPhone }}" closeable="closeable"  bind:close="onClosePhonePopup" custom-class="custom-popup">
             <image src="../assets/images/logo.png"/>
             <view>龙芯北斗地灾监控系统 申请使用您的手机号码</view>
             <button class="allow" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">去授权</button>
+        </van-popup>
+
+        <van-popup show="{{ showMessage }}" closeable="closeable"  bind:close="onCloseMessagePopup" custom-class="custom-popup">
+            <image src="../assets/images/logo.png"/>
+            <view>龙芯北斗地灾监控系统 需要得到您的授权才能推送预警提示信息，是否马上去授权？</view>
+            <button class="allow" bindtap="onAuthMesg">去授权</button>
         </van-popup>
     </view>

@@ -1,0 +1,7 @@
+
+    <view class="video-monitor-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="视频监控" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+        <video id="myVideo" src="{{link}}" controls autoplay/>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

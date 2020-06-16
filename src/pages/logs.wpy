@@ -3,16 +3,22 @@
         <van-nav-bar title="操作记录" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
 
         <view class="table-wrap">
-            <view class="table-head">
-                <text>操作人员</text>
-                <text>模块</text>
-                <text>操作时间</text>
+            <view class="table-head" style="top: {{statusBarHeight + 44}}px">
+                <text class="col">时间</text>
+                <text class="col">操作</text>
+                <text class="col">人员</text>
             </view>
             <view class="table-body">
                 <view wx:if="{{listData.length > 0}}" wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="row">
-                    <text>{{item.operName}}</text>
-                    <text>{{item.title}}</text>
-                    <text>{{item.operTime}}</text>
+                    <view class="col time">{{item.operTime}}</view>
+                    <view class="col">
+                        <view>{{item.title || '--'}}</view>
+                        <view>{{item.operatorContent || '--'}}</view>
+                    </view>
+                    <view class="col">
+                        <view>{{item.operName || '--'}}</view>
+                        <view>{{item.operLocation || '--'}}</view>
+                    </view>
                 </view>
 
                 <view wx:if="{{listData.length == 0}}" class="no-data">
@@ -20,18 +26,21 @@
                 </view>
             </view>
         </view>
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
 import * as api from '../api/api'
+import decode from '../utils/util.js';
 export default class Logs extends wepy.page {
     config = {
         navigationBarTitleText: '操作记录',
         usingComponents: {
             "van-nav-bar": "../components/vant/nav-bar/index"
-        }
+        },
+        // enablePullDownRefresh: true
     }
 
     data = {
@@ -45,8 +54,16 @@ export default class Logs extends wepy.page {
     }
 
     onLoad() {
-        this.getOperlog();
+        wepy.$instance.shareImage()
+        
+        this.getOperlog('init');
     }
+
+    //下拉刷新
+    // onPullDownRefresh() {
+    //     this.getOperlog('init');
+    //     wx.stopPullDownRefresh();
+    // }
 
     // 上拉加载
     onReachBottom() {
@@ -59,20 +76,43 @@ export default class Logs extends wepy.page {
 
     methods = {
         onClickLeft() {
-            wx.navigateBack({
-                delta: 1
-            });
+            let pages = getCurrentPages();
+            if (pages.length == 1) {
+                wx.switchTab({
+                    url: '/pages/menu2'
+                })
+            } else {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
         }
     }
 
-    async getOperlog() {
+    async getOperlog(reset) {
+        if (reset == 'init') {
+            this.page.total = 0;
+            this.page.pageNum = 1;
+            this.listData = [];
+        }
         let { pageNum, pageSize } = this.page;
-        let params = {pageNum, pageSize}
+
+        const { deptId } = wx.getStorageSync('globalData');
+        let params = {
+            deptId,
+            pageNum, 
+            pageSize
+        }
         let res = await api.getOperlog(params);
         if(res.code == 200) {
             if (res.rows.length > 0) {
                 this.listData = [...this.listData, ...res.rows]
             }
+            this.listData.forEach(item => {
+                if (item.operName) {
+                    item.operName = decode(item.operName);
+                }
+            });
             this.page.total = res.total;
             this.$apply();
         }
@@ -81,38 +121,6 @@ export default class Logs extends wepy.page {
 </script>
 
 <style lang="less">
-.logs-container {
-    .table-wrap {
-        margin-top: 44px;
-        color: #666;
-        font-size: 24rpx;
-        .table-head {
-            position: fixed;
-            z-index: 1;
-            width: 100%;
-            height: 80rpx;
-            line-height: 80rpx;
-            font-size: 26rpx;
-            background-color: #FAF7FA;
-            color: #333;
-        }
 
-        .table-head, .table-body .row {
-            display: flex;
-            text-align: center;
-            text {
-                flex: 1;
-            }
-        }
-
-        .table-body {
-            padding-top: 90rpx;
-            padding-bottom: 20rpx;
-            .row {
-                padding: 15rpx 0;
-            }
-        } 
-    }
-}
 </style>
 

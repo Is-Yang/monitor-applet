@@ -14,6 +14,12 @@
             <button wx:if="{{code == ''}}" round block class="login-btn">继续</button>
             <button wx:if="{{code != ''}}" round block class="login-btn has" @tap="tapLogin">继续</button>
         </view>
+
+        <van-popup show="{{ showMessage }}" closeable bind:close="onCloseMessagePopup" custom-class="custom-popup">
+            <image src="../assets/images/logo.png" />
+            <view>龙芯北斗地灾监控系统 需要得到您的授权才能推送预警提示信息，是否马上去授权？</view>
+            <button class="allow" bindtap="onAuthMesg">去授权</button>
+        </van-popup>
     </view>
 </template>
 
@@ -35,6 +41,7 @@ export default class BindPhone extends wepy.page{
         usingComponents: {
             "van-nav-bar": "../components/vant/nav-bar/index",
             "van-field": "../components/vant/field/index",
+            "van-popup": "../components/vant/popup/index"
         }
     }
 
@@ -45,6 +52,11 @@ export default class BindPhone extends wepy.page{
         code: '',
         timer: 0,
         sendInterval: null,
+        showMessage: false,
+        flag: {
+            to: 'index', // 标识跳转到哪个页面
+            isMsg: false,  // 是否有消息弹出
+        },
         userInfo: {}
     }
 
@@ -72,8 +84,36 @@ export default class BindPhone extends wepy.page{
             this.getCode();
         },
         onClickLeft() {
-            wx.navigateBack({
-                delta: 1
+            let pages = getCurrentPages();
+            if (pages.length == 1) {
+                wx.redirectTo({
+                    url: '/pages/login'
+                })
+            } else {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        },
+        onAuthMesg() {
+            let tmplId = wepy.$instance.globalData.tmplId;
+            wx.requestSubscribeMessage({
+                tmplIds: [tmplId],
+                success: (res => {
+                    console.log('suc:', res)
+                    if (res[tmplId] == 'accept') {
+                        this.showMessage = false;
+                        this.toPage();
+                    } else if (res[tmplId] == 'reject') { // 用户拒绝授权
+                        this.showTips();
+                    }
+                }),
+                fail: (err => {
+                    if (err.errCode == '20004') {
+                        this.showTips();
+                    }
+                    console.log('err:', err)
+                })
             });
         },
         onCodeInput(e) {
@@ -81,9 +121,30 @@ export default class BindPhone extends wepy.page{
         }
     }
 
+    showTips() {
+        wx.showModal({
+            title: '温馨提示',
+            content: "您的消息订阅主开关已关闭，如需要消息推送服务，请点击确定跳转设置页面打开授权后再次尝试。",
+            success: (modal) => {
+                if (modal.confirm) { // 点击确定
+                    wx.openSetting({ 
+                        withSubscriptions: true,
+                        success: (res) => {
+                            if(res.errMsg == 'openSetting:ok') {
+                                this.showMessage = false;
+                                this.toPage();
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    }
+
     // 微信授权登录 - 录入手机号
     async wechatByPhone() {
-        const { avatarUrl, openId, nickName, gender, qrCode } = this.userInfo;
+        console.log(this.userInfo)
+        const { avatarUrl, openId, nickName, gender, qrCode, unionId } = this.userInfo;
         let params = {
             avatar: avatarUrl,
             code: this.code,  // 手机验证码登录
@@ -92,14 +153,48 @@ export default class BindPhone extends wepy.page{
             sex: gender,
             openId,
             nickName,
-            qrCode
+            qrCode,
+            unionId: unionId,
         }
         let res = await api.wechatByPhone(params);
         if (res.code == 200) {
             wx.setStorageSync('token', res.token);
             wx.setStorageSync('isBindDept', res.isBindDept);
-            wx.switchTab({
-                url: '/pages/menu0'
+            this.flag = {
+                to: data.page,
+                isMsg: data.waring_msg || false
+            }
+            // 判断用户是否开启订阅消息
+            wx.getSetting({
+                withSubscriptions: true,
+                success: ((res) => {
+                    const { subscriptionsSetting } = res;
+                    console.log(res)
+                    let tempId = wepy.$instance.globalData.tmplId;
+                    if (subscriptionsSetting && subscriptionsSetting.itemSettings && subscriptionsSetting.itemSettings[tempId] == 'accept') {
+                        this.toPage();
+                    } else {
+                        this.showMessage = true;
+                        this.$apply();
+                    }
+                })
+            })
+        }
+    }
+
+    // 跳转页面
+    toPage() {
+        // 本单位用户，跳转至我的单位页面
+        if(this.flag.to == 'dept') {
+            wx.navigateTo({
+                url: 'pages/userUnit'
+            })
+        } else {
+            if (this.flag.isMsg) {
+                tip.showToast('您无权限查看该单位信息');
+            }
+            wx.redirectTo({
+                url: '/pages/index'
             })
         }
     }

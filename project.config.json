@@ -27,5 +27,6 @@
 	"miniprogramRoot": "dist/",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
+	"libVersion": "2.11.1",
 	"condition": {}
 }

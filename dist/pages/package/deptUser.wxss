@@ -1,0 +1,11 @@
+.dept-user .user-list {
+  margin-bottom: 80rpx;
+}
+.dept-user .user-list .item {
+  display: block;
+  padding: 20rpx 30rpx;
+  border-bottom: 1px solid #eee;
+}
+.dept-user .user-list .item .name {
+  padding-left: 15rpx;
+}

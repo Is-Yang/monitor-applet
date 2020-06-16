@@ -2,106 +2,143 @@
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view class="head-wrap" style="height: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}">
-            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '324rpx' : '280rpx'}}" />
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '344rpx' : '300rpx'}}" />
             <view class="user-wrap">
-                <view class="mark">
-                    <view>{{userInfo.dept}}</view>
-                    <view wx:if="{{userInfo.firstRoleName}}" class="flag">{{userInfo.firstRoleName}}</view>
+                <view class="dept">{{userInfo.dept}}</view>
+                <view class="display-flex">
+                    <view class="mark">
+                        <view>{{userInfo.nickName}} ({{ userInfo.userName || '--' }})</view>
+                        <view wx:if="{{userInfo.firstRoleName}}">{{userInfo.firstRoleName}}</view>
+                    </view>
+                    <image src="{{userInfo.deptQrCode}}" mode="aspectFill" @tap="showQrCode" />
                 </view>
-                <image src="{{userInfo.avatar}}" mode="aspectFill" />
             </view>
         </view>
-        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}"></view>
-        <view class="panel-wrap">
-            <view class="title">用户列表</view>
-            <van-collapse value="{{ activeNames }}" @change="onChangeColl">
-                <repeat wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
-                    <van-collapse-item name="{{index}}">
-                        <view slot="title">
-                            <image src="../assets/images/user.png" mode="aspectFit" class="icon" />
-                            <text class="nickname">{{ item.nickname}}</text>
-                            <text class="tel">{{ item.phone }}</text>
+        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}; padding-bottom: 80rpx;">
+            <view class="panel-wrap">
+                <view class="title">单位信息</view>
+                <view class="operate-cell">
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="contact" size="24" color="#38c099" />
+                            <text>负责人</text>
                         </view>
-                        <view slot="value">
-                            <text class="num">监测点{{item.num}}/{{item.total}}</text>
+                        <view class="right-txt" style="margin-right: 0;">
+                            <view>{{userInfo.deptLeader}}</view>
                         </view>
-                        <view class="operate-cell">
-                            <view class="cell">
-                                <view>
-                                    <image src="../assets/images/phone.png" mode="aspectFit" />
-                                    <text>手机号</text>
-                                </view>
-                                <text class="right-txt">{{ item.phone }}</text>
+                    </view>
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="phone-o" size="24" color="#38c099" />
+                            <text>联系方式</text>
+                        </view>
+                        <view class="right-txt" style="margin-right: 0;">
+                            <view>{{userInfo.deptContact}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="panel-wrap">
+                <view class="title">用户列表</view>
+                <van-collapse value="{{ activeNames }}" bind:change="onChangeColl">
+                    <repeat wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                        <van-collapse-item name="{{index}}">
+                            <view slot="title">
+                                <van-icon class="icon" name="contact" size="24" color="#38c099" />
+                                <text class="nickname">{{ item.nickname }}</text>
+                                <text class="tel">({{ item.userName }})</text>
                             </view>
-                            <view wx:if="{{isOper}}" class="cell link" @tap="toRole" data-id="{{ item.id }}" data-roles="{{item.roleIds}}">
-                                <view>
-                                    <image src="../assets/images/role.png" mode="aspectFit" />
-                                    <text>角色</text>
-                                </view>
-                                <view class="right-txt" wx:if="{{item.role.length == 0}}">
-                                    请选择
-                                </view>
-                                <view class="right-txt" wx:else>
-                                    {{item.role}}
-                                    <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
-                                </view>
+                            <view slot="value">
+                                <text class="num">监测区域{{item.num}}/{{item.total}}</text>
                             </view>
-                            <view wx:if="{{!isOper}}" class="cell">
-                                <view>
-                                    <image src="../assets/images/role.png" mode="aspectFit" />
-                                    <text>角色</text>
-                                </view>
-                                <text class="right-txt">{{ item.role }}</text>
-                            </view>
-                            <repeat wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                            <view class="operate-cell">
                                 <view class="cell">
                                     <view>
-                                        <image src="../assets/images/location.png" mode="aspectFit" />
-                                        <text>{{site.name}}</text>
+                                        <van-icon class="icon" name="phone-o" size="24" color="#38c099" />
+                                        <text>手机号</text>
                                     </view>
-                                    <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
+                                    <text class="right-txt">{{ item.phone }}</text>
                                 </view>
-                            </repeat>
+                                <view wx:if="{{isOper}}" class="cell link" @tap="toRole" data-id="{{ item.id }}" data-roles="{{item.role}}">
+                                    <view>
+                                        <van-icon class="icon" name="manager-o" size="24" color="#38c099" />
+                                        <text>角色</text>
+                                    </view>
+                                    <view class="right-txt" wx:if="{{item.role == ''}}">
+                                        请选择
+                                    </view>
+                                    <view class="right-txt" wx:else>
+                                        {{item.role}}
+                                        <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
+                                    </view>
+                                </view>
+                                <view wx:if="{{!isOper}}" class="cell">
+                                    <view>
+                                        <van-icon class="icon" name="manager-o" size="24" color="#38c099" />
+                                        <text>角色</text>
+                                    </view>
+                                    <text class="right-txt">{{ item.role }}</text>
+                                </view>
+                                <repeat wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                                    <view class="cell">
+                                        <view>
+                                            <van-icon class="icon" name="location-o" size="24" color="#38c099" />
+                                            <text>{{site.name}}</text>
+                                        </view>
+                                        <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" @change="onChangeSite" />
+                                    </view>
+                                </repeat>
+                            </view>
+                        </van-collapse-item>
+                    </repeat>
+                </van-collapse>
+                <view wx:if="{{userPage.total > userList.length}}" class="more" @tap="getMoreUserList"><van-icon name="arrow-down" /></view>
+            </view>
+            <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
+                <view class="title">上级单位</view>
+                <view class="operate-cell">
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="label-o" size="24" color="#38c099" />
+                            <text>{{userInfo.firstDept}}</text>
                         </view>
-                    </van-collapse-item>
-                </repeat>
-            </van-collapse>
-            <view wx:if="{{userPage.total > userList.length}}" class="more" @tap="getMoreUserList"><van-icon name="arrow-down" /></view>
-        </view>
-        <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
-            <view class="title">上级单位</view>
-            <view class="operate-cell">
-                <view class="cell">
-                    <view>
-                        <image src="../assets/images/write.png" mode="aspectFit" />
-                        <text>{{userInfo.firstDept}}</text>
                     </view>
                 </view>
             </view>
-        </view>
-        <view class="panel-wrap">
-            <view class="title">监测点</view>
-            <view class="operate-cell">
-                <repeat wx:for="{{deviceList}}" wx:key="index" wx:index="index" wx:for-item="item">
-                    <view class="cell link">
-                        <view>
-                            <image src="../assets/images/location.png" mode="aspectFit" />
-                            <text>{{item.deviceName}}</text>
+            <view wx:if="{{monitorList.length > 0}}" class="panel-wrap">
+                <view class="title">监测区域</view>
+                <view class="operate-cell">
+                    <repeat wx:for="{{monitorList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                        <view class="cell link" data-title="{{item.monitorAreaName}}" @tap="toMonitorSite">
+                            <view>
+                                <van-icon class="icon" name="location-o" size="24" color="#38c099" />
+                                <text>{{item.monitorAreaName}}</text>
+                            </view>
+                            <view class="right-txt">
+                                <view>经度：{{item.lng}}，纬度：{{item.lat}}</view>
+                            </view>
                         </view>
-                        <view class="right-txt font21">
-                            <view>{{item.deptName}}</view>
-                            <view>负责人：{{item.person}}</view>
-                        </view>
-                    </view>
-                 </repeat>
+                    </repeat>
+                </view>
             </view>
         </view>
+
+        <button class="btn-bottom" @tap="outUnit">退出单位</button>
+
+        <van-popup show="{{ previewQrcode }}" closeable bind:close="onClosePopup" custom-class="popup-qrcode">
+            <view class="title">单位二维码</view>
+            <view class="dept">{{userInfo.dept}}</view>
+            <image class="qr" src="{{userInfo.deptQrCode}}" />
+        </van-popup>
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy'
     import * as api from '../api/api'
+    import decode from '../utils/util.js';
     export default class UserUnit extends wepy.page {
         config = {
             navigationBarTitleText: '我的单位',
@@ -110,13 +147,14 @@
                 "van-nav-bar": "../components/vant/nav-bar/index",
                 "van-collapse": "../components/vant/collapse/index",
                 "van-collapse-item": "../components/vant/collapse-item/index",
+                "van-popup": "../components/vant/popup/index"
             }
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
             activeNames: [],
             userList: [],
-            deviceList: [], // 监测点
+            monitorList: [], // 监测区域
             isOper: false,  // 是否可操作关闭
             roleRange: [],
             userPage: {
@@ -124,37 +162,50 @@
                 pageSize: 5,
                 total: 0,
             },
-            deviePage: {
+            monitorPage: {
                 pageNum: 1,
                 pageSize: 10,
                 total: 0,
             },
             userInfo: {
                 userId: '',  // 用户Id， 用于查询设备列表
-                avatar: '',  // 头像
+                userName: '', // 用户名
+                nickName: '',  // 用户昵称
+                deptQrCode: '',  // 单位二维码
+                deptLeader: '', // 负责人
                 dept: '', // 部门
+                deptContact: '', // 联系方式
                 firstRoleName: '',  // 角色
                 firstDept: '',  // 上级单位
             },
-            roleIds: []
+            role: '',
+            previewQrcode: false,  // 预览二维码
         }
 
         onShow() {
             this.getMyInfo();
-            this.getDevieList();
-            this.getUserList();
+            this.getMoitorList('init');
+            this.getUserList('init');
+        }
+
+        onLoad() {
+            wepy.$instance.shareImage()
         }
 
         // 上拉加载
         onReachBottom() {
-            if (this.deviePage.total == this.deviceList.length) {
+            if (this.monitorPage.total == this.monitorList.length) {
                 return;
             }
-            this.deviePage.pageNum++;
-            this.getDevieList();
+            this.monitorPage.pageNum++;
+            this.getMoitorList();
         }
 
         methods = {
+            // 退出单位
+            outUnit() {
+                this.uniteDept();
+            },
             onChangeSite(e) {
                 let check = e.detail.value ? 1 : 0;
                 let data = e.target.dataset.site;
@@ -166,6 +217,12 @@
                 }
                 this.userChangeStatus(JSON.stringify(params))
             },
+            showQrCode() {
+                this.previewQrcode = true;
+            },
+            onClosePopup() {
+                this.previewQrcode = false;
+            },
             onChangeColl(e) {
                 this.activeNames = e.detail;
             },
@@ -175,10 +232,16 @@
                 });
             },
             toRole(e) {
-                this.roleIds = e.currentTarget.dataset.roles;
+                this.role = e.currentTarget.dataset.roles;
                 let id = e.currentTarget.dataset.id;
                 wx.navigateTo({
                     url: '/pages/package/roleList?id=' + id
+                });
+            },
+            toMonitorSite(e) {
+                let title = e.currentTarget.dataset.title;
+                wx.navigateTo({
+                    url: '/pages/package/monitorSite?title=' + title
                 });
             },
             getMoreUserList() {
@@ -193,6 +256,25 @@
             }
         }
 
+        async uniteDept() {
+            let res = await api.uniteDept();
+            if(res.code == 200) {
+                // 设置缓存未绑定部门
+                wx.setStorageSync('isBindDept', false);
+                
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
+                });
+                setTimeout(() => {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }, 1000)
+            } 
+        }
+
         async userChangeStatus(params) {
             let res = await api.userChangeStatus(params);
             if(res.code == 200) {
@@ -201,6 +283,16 @@
                     icon: 'success',
                     duration: 1500
                 });
+            } else {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'none',
+                    duration: 1500
+                });
+                setTimeout(() => {
+                    this.getUserList('init');
+                    this.$apply();
+                }, 1500);
             }
         }
 
@@ -209,27 +301,51 @@
             let res = await api.getMyInfo();
             if(res.code == 200) {
                 this.userInfo = res.userInfo;
+                if(res.userInfo.nickName) {
+                    this.userInfo.nickName = decode(res.userInfo.nickName)
+                }
+                let base64Image = res.userInfo.deptQrCode;
+                if (base64Image) {
+                    let imgData = base64Image.replace(/[\r\n]/g, '');
+                    this.userInfo.deptQrCode = 'data:image/png;base64,' + imgData;
+                }
                 this.$apply();
             }
         }
 
         // 获取监测列表
-        async getDevieList() {
-            let { pageNum, pageSize } = this.deviePage;
+        async getMoitorList(reset) {
+            if (reset == 'init') {
+                this.monitorPage.total = 0;
+                this.monitorPage.pageNum = 1;
+                this.monitorList = [];
+            }
+            let { pageNum, pageSize } = this.monitorPage;
+
             let params = {pageNum, pageSize}
-            let res = await api.getDevieList(params);
-            if(res.code == 200) {
-                const { rows, total } = res.deviceList;
-                if (rows.length > 0) {
-                    this.deviceList = [...this.deviceList, ...rows]
+            let res = await api.getMoitorList(params);
+            if(res.code == 200 && res.monitorAreaList) {
+                const { rows, total } = res.monitorAreaList;
+                if (rows && rows.length > 0) {
+                    this.monitorList = [...this.monitorList, ...rows]
                 }
-                this.deviePage.total = total;
+                this.monitorList.forEach(item => {
+                    if (item.person) {
+                        item.person = decode(item.person);
+                    }
+                });
+                this.monitorPage.total = total;
                 this.$apply();
             }
         }
         // 获取用户列表
-        async getUserList() {
+        async getUserList(reset) {
             let { pageNum, pageSize } = this.userPage;
+            if (reset == 'init') {
+                this.userPage.total = 0;
+                pageNum = 1;
+                this.userList = [];
+            }
             let params = {pageNum, pageSize}
 
             let res = await api.getDeptUserList(params);
@@ -238,6 +354,11 @@
                 if (rows.length > 0) {
                     this.userList = [...this.userList, ...rows]
                 }
+                this.userList.forEach(item => {
+                    if (item.nickname) {
+                        item.nickname = decode(item.nickname);
+                    }
+                });
                 this.userPage.total = total;
                 this.isOper = res.isOper;
                 this.$apply();
@@ -260,11 +381,19 @@
             .user-wrap {
                 position: absolute;
                 right: 27rpx;
-                bottom: 30rpx;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                bottom: 10rpx;
                 z-index: 2;
+                color: #fff;
+                .dept {
+                    font-size: 32rpx;
+                    margin-bottom: 5rpx;
+                    text-align: right;
+                }
+                .display-flex {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
                 image {
                     width: 120rpx;
                     height: 120rpx;
@@ -272,25 +401,14 @@
                 }
                 .mark {
                     margin-right: 21rpx;
-                    font-size: 24rpx;
+                    font-size: 28rpx;
                     color: #fff;
                     text-align: right;
-                    .flag {
-                        display: inline-block;
-                        padding: 0 20rpx;
-                        height: 40rpx;
-                        line-height: 40rpx;
-                        margin-top: 12rpx;
-                        background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient( #52cc7a, #52cc7a);
-                        border-radius: 25px;
-                        font-size: 21rpx;
-                        text-align: center;
-                    }
                 }
             }
             .bg {
                 width: 100%;
-                height: 280rpx;
+                height: 300rpx;
             }
         }
         .panel-wrap {
@@ -304,21 +422,20 @@
                 padding: 15rpx 23rpx;
             }
             .icon {
-                width: 53rpx;
-                height: 53rpx;
+                margin-right: 10rpx;
                 vertical-align: middle;
             }
             .nickname {
                 display: inline-block;
                 min-width: 100rpx;
-                margin-left: 10rpx;
+                margin-right: 10rpx;
                 color: #333;
             }
             .tel {
                 color: #999;
             }
             .num {
-                padding-right: 20rpx;
+                padding-right: 10rpx;
             }
             .van-collapse-item__content {
                 padding: 0 0 0 75rpx;
@@ -332,8 +449,8 @@
                 padding: 21rpx 26rpx;
                 height: 88rpx;
                 border-bottom: 1px solid #f7f7f7;
-                font-size: 26rpx;
-                color: #333;
+                font-size: 28rpx;
+                color: #999999;
                 box-sizing: border-box;
                 background-color: #fff;
                 &:last-child {
@@ -347,13 +464,11 @@
                 }
                 input,
                 .right-txt {
+                    flex: 1;
+                    margin-right: 50rpx;
                     text-align: right;
                     font-size: 26rpx;
-                    color: #999999;
-                    margin-right: 60rpx;
-                }
-                switch {
-                    transform: scale(0.8);
+                    color: #333;
                 }
                 &.link {
                     position: relative;
@@ -399,6 +514,26 @@
             text-align: center;
             font-size: 32rpx;
             color: #666;
+        }
+
+        .popup-qrcode {
+            width: 90%;
+            padding: 20rpx 0;
+            text-align: center;
+
+            .title {
+                font-size: 30rpx;
+                margin: 25rpx 0 35rpx;
+                color: #666;
+            }
+            .dept {
+                font-size: 36rpx;
+
+            }
+            .qr {
+                width: 600rpx;
+                height: 600rpx
+            }
         }
     }
 </style>

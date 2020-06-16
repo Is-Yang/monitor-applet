@@ -23,16 +23,22 @@
             </view>
             <button open-type='getUserInfo' bindgetuserinfo="getUserInfo" class="reset-button">
                 <image src="../assets/images/wechat.png" />
-              </button>
+            </button>
         </view>
         <view class="agree">
             登录/注册代表已阅读并同意<text>用户协议</text>和<text>隐私政策</text>
         </view>
 
-        <van-popup show="{{ showGetPhone }}" closeable  bind:close="onClosePopup" custom-class="phone-popup">
+        <van-popup show="{{ showGetPhone }}" closeable bind:close="onClosePhonePopup" custom-class="custom-popup">
             <image src="../assets/images/logo.png" />
             <view>龙芯北斗地灾监控系统 申请使用您的手机号码</view>
             <button class="allow" open-type='getPhoneNumber' bindgetphonenumber="getPhoneNumber">去授权</button>
+        </van-popup>
+
+        <van-popup show="{{ showMessage }}" closeable bind:close="onCloseMessagePopup" custom-class="custom-popup">
+            <image src="../assets/images/logo.png" />
+            <view>龙芯北斗地灾监控系统 需要得到您的授权才能推送预警提示信息，是否马上去授权？</view>
+            <button class="allow" bindtap="onAuthMesg">去授权</button>
         </van-popup>
     </view>
 </template>
@@ -68,6 +74,11 @@
             getPhone: '',
             sendInterval: null,
             showGetPhone: false,
+            showMessage: false,
+            flag: {
+                to: 'index', // 标识跳转到哪个页面
+                isMsg: false,  // 是否有消息弹出
+            },
             userInfo: {},  // 用户信息
             statusBarHeight: wx.getSystemInfoSync().statusBarHeight
         }
@@ -98,15 +109,23 @@
             // 微信授权登录-获取用户信息
             getUserInfo(event) {
                 if (event.detail.errMsg == 'getUserInfo:ok') {
-                    this.userInfo = event.detail.userInfo;
-                    // 获取用户登录code
-                    wx.login({
-                        success: ((res) => {
-                            if(res.code) {
-                                this.userInfo.code = res.code;
-                                this.getOpenid({code: res.code})
+                    wx.checkSession({
+                        success: () => {
+                            console.log('===未失效====')
+                            this.userInfo = wx.getStorageSync('userInfo');
+                            console.log(this.userInfo);
+                            if(this.userInfo) {
+                                this.judgeBindWechat();
+                            } else {
+                                console.log('====userInfo缓存过期，重新登录获取=====')
+                                this.handleWxLogin(event);
                             }
-                        })
+                        },
+                        fail: () => {
+                            console.log('====已失效，重新登录获取=====')
+                            this.handleWxLogin(event);
+                            
+                        }
                     })
                 }
             },
@@ -139,9 +158,41 @@
                     })
                 }
             },
+            onAuthMesg() {
+                let tmplId = wepy.$instance.globalData.tmplId;
+                wx.requestSubscribeMessage({
+                    tmplIds: [tmplId],
+                    success: (res => {
+                        console.log('suc:', res)
+                        if (res[tmplId] == 'accept') {
+                            this.showMessage = false;
+                            this.toPage();
+                        } else if (res[tmplId] == 'reject') { // 用户拒绝授权
+                            this.showTips();
+                        }
+                        this.showMessage = false;
+                        this.toPage();
+                    }),
+                    fail: (err => {
+                        if (err.errCode == '20004') {
+                            this.showTips();
+                        } else if (err.errCode == '20001') {
+                            wx.showToast({
+                                title: '订阅号模板id信息错误，请监测配置',
+                                icon: 'none',
+                                duration: 1500
+                            })
+                        }
+                        console.log('err:', err)
+                    })
+                });
+            },
             // 取消授权手机号
-            onClosePopup() {
+            onClosePhonePopup() {
                 this.showGetPhone = false;
+            },
+            onCloseMessagePopup() {
+                this.showMessage = false;
             },
             onPhoneInput(e) {
                 this.phone = e.detail;
@@ -150,9 +201,94 @@
                 this.code = e.detail;
             }
         }
+        handleWxLogin(event) {
+            // 获取用户登录code
+            wx.login({
+                success: ((res) => {
+                    if(res.code) {
+                        const { userInfo, iv, encryptedData } = event.detail;
+                        this.userInfo = userInfo;
+                        this.userInfo.iv = iv;
+                        this.userInfo.encryptedData = encryptedData;
+                        this.userInfo.code = res.code;
+                        this.getOpenid({code: res.code})
+                    }
+                })
+            })
+        }
+        showTips() {
+            wx.showModal({
+                title: '温馨提示',
+                content: "您的消息订阅主开关已关闭，如需要消息推送服务，请点击确定跳转设置页面打开授权后再次尝试。",
+                success: (modal) => {
+                    if (modal.confirm) { // 点击确定
+                        wx.openSetting({ 
+                            withSubscriptions: true,
+                            success: (res) => {
+                                if(res.errMsg == 'openSetting:ok') {
+                                    this.showMessage = false;
+                                    this.toPage();
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
+        // 获取是否绑定微信
+        async judgeBindWechat() {
+            console.log(this.userInfo.unionId)
+            let res = await api.bindWeChatState({unionId: this.userInfo.unionId});
+            console.log(res)
+            if(res.code == 200) {
+                this.userInfo.isBindWechat = res.data;
+                console.log('绑定状态：', res.data)
+                // 已授权绑定
+                if(res.data) {
+                    this.wechatLogin();  
+                } else {
+                    // 弹出获取手机号
+                    this.showGetPhone = true;
+                }
+                this.$apply();
+            }
+        }
+        // 获取unionId
+        async decryptUnionId() {
+            const { iv, encryptedData, sessionKey } = this.userInfo;
+            let params = {
+                iv,
+                sessionKey,
+                encryptedData
+            }
+            let res = await api.decryptUnionId(params);
+            if (res.code == 200) {
+                this.userInfo.unionId = res.unionId;
+                wx.setStorageSync('userInfo', this.userInfo);
+                store.dispatch({
+                    type: 'UPDATE_USER_INFO',
+                    userInfo: this.userInfo
+                })
+                this.judgeBindWechat();
+            } else if (res.code == 500 && res.msg == '加密字符串解密失败') {
+                // 当用户缓存过期，但sessionKey未过期时，需要重新去wx.login，这时候就会报错，需要用户重新点击去获取才行
+                wx.showToast({
+                    title: '信息获取失败，请重新获取',
+                    icon: 'none',
+                    duration: 1500
+                })
+            } else {
+                wx.showToast({
+                    title: result.msg || '服务器异常',
+                    icon: 'none',
+                    duration: 1500
+                })
+            }
+        }
+
         // 微信授权登录 - 录入手机号
         async wechatByPhone() {
-            const { avatarUrl, openId, nickName, phone, gender } = this.userInfo;
+            const { avatarUrl, openId, nickName, phone, gender, unionId } = this.userInfo;
             let params = {
                 avatar: avatarUrl,
                 code: this.code,  // 手机验证码登录
@@ -160,6 +296,7 @@
                 openId: openId,
                 nickName: nickName,
                 sex: gender,
+                unionId: unionId,
                 phoneNumber: this.phone
             }
             let res = await api.wechatByPhone(params);
@@ -177,13 +314,13 @@
                 phoneNumber: encryptedData
             }
             let res = await api.decryptPhone(params)
-            if (res.code == 200) {
+            if (res.code == 200 && res.phoneNumber) {
                 wx.navigateTo({
                     url: `/pages/bindPhone?tel=${res.phoneNumber}`
                 });
                 this.showGetPhone = false;
                 this.$apply();
-            }
+            } 
         }
         // 通过code获取openid
         async getOpenid(params) {
@@ -191,23 +328,11 @@
             if (res.code == 200) {
                 this.userInfo.openId = res.open_id;
                 this.userInfo.sessionKey = res.session_key;
-                this.userInfo.isBindWechat = res.is_bind_wechat;
-                wx.setStorageSync('userInfo', this.userInfo);
-                store.dispatch({
-                    type: 'UPDATE_USER_INFO',
-                    userInfo: this.userInfo
-                })
-                // 已授权绑定
-                if(this.userInfo.isBindWechat) {
-                    this.wechatLogin();  
-                } else {
-                    // 弹出获取手机号
-                    this.showGetPhone = true;
-                }
+                this.decryptUnionId();
                 this.$apply();
             }
         }
-        
+
         // 手机验证码登录
         async smsLogin() {
             let params = {
@@ -232,16 +357,14 @@
         }
         // 微信用户code登录
         async wechatLogin() {
-            console.log('wx')
-            console.log(this.userInfo)
-            const { openId, qrCode } = this.userInfo;
+            const { unionId, qrCode } = this.userInfo;
             let params = {
-                openId,
+                unionId,
                 qrCode
             }
             let res = await api.wechatLogin(params);
             if(res.code == 200) {
-               this.loginSuccess(res);
+                this.loginSuccess(res);
             }
             
         }
@@ -249,17 +372,44 @@
         loginSuccess(data) {
             wx.setStorageSync('token', data.token);
             wx.setStorageSync('isBindDept', data.isBindDept);
+            this.flag = {
+                to: data.page,
+                isMsg: data.waring_msg || false
+            }
+            if(data.isBindDept) {
+                // 判断用户是否开启订阅消息
+                wx.getSetting({
+                    withSubscriptions: true,
+                    success: ((res) => {
+                        const { subscriptionsSetting } = res;
+                        console.log('setting', res)
+                        let tempId = wepy.$instance.globalData.tmplId;
+                        if (subscriptionsSetting && subscriptionsSetting.itemSettings && subscriptionsSetting.itemSettings[tempId] == 'accept') {
+                            this.toPage();
+                        } else {
+                            this.showMessage = true;
+                            this.$apply();
+                        }
+                    })
+                })
+            } else {
+                this.toPage();
+            }
+            
+        }
+        // 跳转页面
+        toPage() {
             // 本单位用户，跳转至我的单位页面
-            if(data.page == 'dept') {
+            if(this.flag.to == 'dept') {
                 wx.navigateTo({
                     url: 'pages/userUnit'
                 })
             } else {
-                if (data.waring_msg) {
+                if (this.flag.isMsg) {
                     tip.showToast('您无权限查看该单位信息');
                 }
-                wx.switchTab({
-                    url: '/pages/menu0'
+                wx.redirectTo({
+                    url: '/pages/index'
                 })
             }
         }
@@ -276,7 +426,7 @@
             if (this.phone) {
                 if (!(/^1[3456789]\d{9}$/.test(this.phone))) {
                     tip.showToast("手机号码有误，请重填");
-                    return flase;
+                    return false;
                 }
             }
             return true;
@@ -311,8 +461,8 @@
             font-size: 21rpx;
             text-align: center;
             .logo {
-                width: 103rpx;
-                height: 103rpx;
+                width: 108rpx;
+                height: 108rpx;
                 margin-top: 30rpx;
             }
             .title {
@@ -337,35 +487,6 @@
         .van-field__button {
             height: 54rpx;
             line-height: 40rpx;
-        }
-        .phone-popup {
-            width: 85%;
-            padding: 65rpx 35rpx;
-            color: #000;
-            font-size: 26rpx;
-            text-align: center;
-            image {
-                width: 85rpx;
-                height: 85rpx;
-                margin-bottom: 35rpx;
-                vertical-align: middle;
-            }
-            
-            button {
-                margin: 40rpx auto 20rpx;
-                width: 213rpx;
-                height: 71rpx;
-                line-height: 71rpx;
-                text-align: center;
-                background-color: #f2f2f2;
-                border-radius: 4px;
-                font-size: 24rpx;
-                color: #333;
-                &.allow {
-                    color: #fff;
-                    background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient( #54bd53, #54bd53);
-                }
-            }
         }
         .get-code {
             width: 164rpx;

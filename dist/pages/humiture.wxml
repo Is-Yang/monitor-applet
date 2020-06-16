@@ -1,0 +1,4 @@
+
+    <view class="humiture-container">
+        <van-nav-bar title="温湿度" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+    </view>

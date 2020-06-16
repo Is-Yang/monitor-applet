@@ -1,0 +1,18 @@
+
+    <view class="dept-role" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="相关角色列表" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <view class="role-list margin-nav">
+            <radio-group bindchange="checkboxChange">
+                <label  wx:for="{{roleList}}" wx:for-item="item" wx:key="index" class="item">
+                    <radio value="{{item.roleId}}" checked="{{item.checked}}">
+                        <text class="name">{{item.roleName}}</text>
+                    </radio>
+                </label>
+            </radio-group>
+        </view>
+
+        <button class="btn-bottom" bindtap="submitSelect">确定</button>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

@@ -1,0 +1,31 @@
+
+    <view class="logs-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="预警信息-操作记录" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <view class="table-wrap">
+            <view class="table-head" style="top: {{statusBarHeight + 44}}px">
+                <text class="col">时间</text>
+                <text class="col">操作</text>
+                <text class="col">人员</text>
+            </view>
+            <view class="table-body">
+                <view  wx:if="{{listData.length > 0}}" wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="row">
+                    <view class="col time">{{item.operTime}}</view>
+                    <view class="col">
+                        <view>{{item.title || '--'}}</view>
+                        <view>{{item.operatorContent || '--'}}</view>
+                    </view>
+                    <view class="col">
+                        <view>{{item.operName || '--'}}</view>
+                        <view>{{item.operLocation || '--'}}</view>
+                    </view>
+                </view>
+
+                <view  wx:if="{{listData.length == 0}}" class="no-data">
+                    <text>无操作记录</text>
+                </view>
+            </view>
+        </view>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

@@ -1,0 +1,57 @@
+<template>
+    <view class="monitor-type-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="{{title}}" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import * as api  from '../../api/api'
+export default class monitorSite extends wepy.page {
+    config = {
+        navigationBarTitleText: '监测区域列表',
+        usingComponents: {
+            "van-nav-bar": "../../components/vant/nav-bar/index"
+        }
+    }
+
+    data = {
+        statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+        title: '',
+    }
+
+    onLoad(options) {
+        wepy.$instance.shareImage()
+        
+        const { title, } = options
+        this.title = title;
+        this.$apply();
+    }
+
+    onShow(){
+    }
+
+    methods = {
+        onClickLeft() {
+            let pages = getCurrentPages();
+            if (pages.length == 1) {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            } else {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        }
+    }
+}
+</script>
+
+<style lang="less">
+page {
+    background-color: #FAF7FA;
+}
+</style>

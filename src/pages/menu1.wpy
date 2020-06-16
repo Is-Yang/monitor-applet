@@ -1,25 +1,35 @@
 <template>
     <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
-        <van-nav-bar title="监测预警" fixed custom-class="nav-reset">
-            <view wx:if="{{isBindDept}}" slot="left" @tap="toReport">
+        <van-nav-bar wx:if="{{isBindDept}}" title="监测预警" fixed custom-class="nav-reset" bind:click-left="toReport">
+            <view slot="left">
                 上报预警
             </view>
         </van-nav-bar>
-        <view wx:if="{{isBindDept}}" class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
+        <van-nav-bar wx:if="{{!isBindDept}}" title="监测预警" fixed></van-nav-bar>
+        <view wx:if="{{isBindDept}}" class="screen-page-wrap {{beginTime && endTime ? 'time-h' : ''}}" style="margin-top: {{statusBarHeight}}px;">
             <view class="box-view">
-                <view class="left-screen">
-                    <view class="opt" @tap="showScreenTime">
-                        {{createTimeSort == '0' ? '预警时间从近到远' : createTimeSort == '1' ? '预警时间从远到近' : '筛选'}}
-                        <van-icon name="arrow-down" />
+                <view class="flex-between">
+                    <view class="screen-info">
+                        <view class="opt" @tap="showScreenTime">
+                            {{createTimeSort == '0' ? '预警时间从近到远' : createTimeSort == '1' ? '预警时间从远到近' : '筛选'}}
+                            <van-icon name="arrow-down" color="#bbb" />
+                        </view>
+
+                        <view class="opt" @tap="showTimePoup">
+                            时间范围
+                            <van-icon name="arrow-down" color="#bbb" />
+                        </view>
                     </view>
-                    <view class="opt">分类
-                        <van-icon name="arrow-down" />
+                    <view class="page-info">
+                        <text>本月：{{monthNum.count}} 条</text>
+                        <text class="split"> | </text>
+                        <text>总共{{monthNum.total}}条</text>
                     </view>
                 </view>
-                <view class="right-page">
-                    <text>本月：{{page.count}} 条</text>
-                    <text class="split"> | </text>
-                    <text>总共{{page.total}}条</text>
+
+                <view wx:if="{{beginTime && endTime}}" class="time-info">
+                    <text>{{beginTime}} 至 {{endTime}}</text>
+                    <van-icon class="icon" name="cross" color="#bbb" size="16" @tap="removeTime" />
                 </view>
 
                 <view wx:if="{{timeScreen}}" class="screen-time">
@@ -27,38 +37,61 @@
                 </view>
             </view>
         </view>
-        <view class="list-wrap">
-            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" data-id="{{item.yuJingId}}" @tap="toDetails">
+
+        <view wx:if="{{isBindDept && listData.length > 0}}" class="list-wrap {{beginTime && endTime ? 'top-h' : ''}}">
+            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.status == '0' ? 'not' : ''}}" data-id="{{item.yuJingId}}" @tap="toDetails">
                 <view class="content">
-                    <image src="{{item.picture}}" class="picture" />
+                    <image wx:if="{{item.sysFiles && item.sysFiles[0] && item.sysFiles[0].fileUrl}}" 
+                        src="{{item.sysFiles[0].fileUrl}}" mode="aspectFill" class="picture" />
+                    <image wx:else src="../assets/images/default.png" mode="aspectFill" class="picture" />
                     <view class="full">
-                        <view class="title">{{item.device.deviceName}}</view>
+                        <view class="title">{{item.monitorArea.monitorAreaName}}</view>
                         <view class="desc">{{item.description}}</view>
                         <text class="time"> {{item.createTime}}</text>
                     </view>
                 </view>
                 <view class="user-info">
                     <view class="name">{{item.createBy}}</view>
-                    <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
+                    <text class="state">{{item.status == '0' ? '未处理' : '已处理'}}</text>
                 </view>
             </view>
-             <view wx:if="{{listData.length == 0}}" class="no-data">
-                <text>无预警信息</text>
-            </view>
         </view>
+        <view wx:else class="no-data">
+            <text>无预警信息</text>
+        </view>
+
+        <van-popup show="{{ showDate }}" closeable bind:close="onClosePopup" custom-class="custom-popup">
+            <view class="date-wrap">
+                <picker class="first" mode="date" value="{{beginTime}}" header-text="开始时间" bindchange="changeBeginTime">
+                        {{beginTime ? beginTime : '开始时间'}}
+                        <van-icon name="arrow-down" color="#bbb" />
+                </picker>
+                <text>至</text>
+                <picker class="last" mode="date" value="{{endTime}}" header-text="结束时间" start="{{beginTime}}" bindchange="changeEndTime">
+                        {{endTime ? endTime : '结束时间'}}
+                        <van-icon name="arrow-down" color="#bbb" />
+                </picker>
+            </view>
+            <button class="allow" bindtap="tapTime">确定</button>
+        </van-popup>
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy'
     import * as api  from '../api/api'
+    import decode from '../utils/util.js';
     export default class Menu1 extends wepy.page {
         config = {
             navigationBarTitleText: '监测预警',
             usingComponents: {
                 "van-icon": "../components/vant/icon/index",
-                "van-nav-bar": "../components/vant/nav-bar/index"
-            }
+                "van-nav-bar": "../components/vant/nav-bar/index",
+                "van-popup": "../components/vant/popup/index"
+            },
+            // enablePullDownRefresh: true
         }
         data = {
             statusBarHeight: wepy.$instance.globalData.statusBarHeight,
@@ -73,26 +106,49 @@
                     label: '预警时间从远到近'
                 }
             ],
-            createTimeSort: '',
+            createTimeSort: '1',
+            beginTime: '',
+            endTime: '',
             listData: [],
+            monthNum: {
+                count: 0,
+                total: 0
+            },
             page: {
                 pageNum: 1,
                 pageSize: 10,
-                count: 0, // 本月条
-                total: 0  // 总共条
-            }
+                count: 0, 
+                total: 0  
+            },
+            showDate: false
         }
 
         onShow() {
+            this.isBindDept = wx.getStorageSync('isBindDept');
+            console.log(this.isBindDept)
+            this.$apply();
             this.getList('init');
+
+            if (this.isBindDept) {
+                wepy.$instance.queryUnread(3000)
+            }
+        }
+
+        onHide() {
+            if(this.isBindDept) {
+                wepy.$instance.clearQuery()
+            }
         }
         
         onLoad() {
-            if (wx.getStorageSync('isBindDept')) {
-                this.isBindDept = wx.getStorageSync('isBindDept');
-                this.$apply();
-            }
+            wepy.$instance.shareImage()
         }
+
+        //下拉刷新
+        // onPullDownRefresh() {
+        //     this.getList('init');
+        //     wx.stopPullDownRefresh();
+        // }
 
         // 上拉加载
         onReachBottom() {
@@ -104,6 +160,46 @@
         }
 
         methods = {
+            tapTime() {
+                if (this.beginTime == '') {
+                    wx.showToast({
+                      title: '请选择开始时间', //提示的内容,
+                      icon: 'none', //图标,
+                      duration: 1000, //延迟时间,
+                    });
+                    return;
+                }
+                if (this.endTime == '') {
+                    wx.showToast({
+                      title: '请选择结束时间', //提示的内容,
+                      icon: 'none', //图标,
+                      duration: 1000, //延迟时间,
+                    });
+                    return;
+                }
+                this.getList('init');
+                this.showDate = false;
+                this.$apply();
+            },
+            removeTime() {
+                this.beginTime = '';
+                this.endTime = '';
+                this.getList('init');
+            },
+            onClosePopup() {
+                this.showDate = false;
+                this.$apply();
+            },
+            showTimePoup() {
+                this.showDate = true;
+                this.$apply();
+            },
+            changeBeginTime(e) {
+                this.beginTime = e.detail.value;
+            },
+            changeEndTime(e) {
+                this.endTime = e.detail.value;
+            },
             showScreenTime() {
                 this.timeScreen = !this.timeScreen;
             },
@@ -126,26 +222,37 @@
         }
 
         async getList(reset) {
+            if (reset == 'init') {
+                this.page.total = 0;
+                this.page.pageNum = 1;
+                this.listData = [];
+            }
             let { pageNum, pageSize } = this.page;
+
             let params = {
                 pageNum: pageNum,
-                pageSize: pageSize
+                pageSize: pageSize,
+                beginTime: this.beginTime,
+                endTime: this.endTime,
+                createTimeSort: this.createTimeSort
             }
-            if (this.createTimeSort != '') {
-                params.createTimeSort = this.createTimeSort;
-            }
-            let res = await api.warnList(params);
+
+            let res = await api.appletsList(params);
             if (res.code == 200) {
-                if (res.yujings.length > 0) {
-                    if (reset == 'init') {
-                        this.listData = res.yujings;
-                    } else {
-                        this.listData = [...this.listData, ...res.yujings]
-                    }
-                }
-                const {count, total} = res.page;
+                const { rows, total} = res.tableInfo;
                 this.page.total = total;
-                this.page.count = count;
+
+                if (rows && rows.length > 0) {
+                    this.listData = [...this.listData, ...rows]
+                }
+                
+                this.listData.forEach(item => {
+                    if (item.createBy) {
+                        item.createBy = decode(item.createBy);
+                    }
+                });
+                this.monthNum.total = res.page.count || 0;
+                this.monthNum.count = res.page.total || 0;
                 this.$apply();
             }
         }
@@ -185,26 +292,25 @@
             top:44px;
             z-index: 1;
             width: 100%;
-            height: 80rpx;
+            height: 85rpx;
             background-color: #FAF7FA;
             .box-view {
-                padding: 0 20rpx 0 15rpx;
-                height: 70rpx;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                padding: 20rpx 15rpx;
                 background-color: #fff;
-                font-size: 24rpx;
+                font-size: 25rpx;
                 color: #333;
                 box-sizing: border-box;
                 position: relative;
-                .left-screen {
+                .screen-info {
                     display: flex;
+                    align-items: center;
                     .opt {
-                        padding: 0 30rpx;
+                        padding: 0 10rpx;
+
                     }
                 }
-                .right-page {
+                .page-info {
+                    text-align: right;
                     .split {
                         color: #ccc;
                         padding: 0 10rpx;
@@ -243,9 +349,28 @@
                     }
                 }
             }
+
+            .time-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-left: 15rpx;
+                
+                .icon {
+                    width: 50rpx;
+                    height: 50rpx;
+                }
+            }
+
+            &.time-h {
+                height: 130rpx;
+            }
         }
         .list-wrap {
-            padding-top: 80rpx;
+            padding-top: 85rpx;
+            &.top-h {
+                padding-top: 130rpx;
+            }
             .item {
                 display: flex;
                 padding: 30rpx 20rpx 30rpx 30rpx;
@@ -292,7 +417,7 @@
                     }
                 }
                 .user-info {
-                    text-align: center;
+                    text-align: right;
                     margin-left: 50rpx;
                     .name {
                         margin-bottom: 8rpx;
@@ -312,6 +437,22 @@
                         background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient( #52cc7a, #52cc7a);
                     }
                 }
+            }
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .date-wrap {
+            display: flex;
+            margin-top: 35rpx;
+            justify-content: center;
+            .first, .last {
+                width: 220rpx;
+                text-align: center;
+                color: #666;
             }
         }
     }

@@ -15,57 +15,50 @@
                     </view>
                 </view>
                 <view class="mark" bindtap="toUserUnit">
-                    <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
-                    <text wx:else class="no">未加入任何单位</text>
                     <view>
-                        <text wx:if="{{!userInfo.company}}" class="flag" catchtap="scanJoin">扫码加入</text>
+                        <view>所属单位</view>
+                        <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
+                        <text wx:else class="no">未加入任何单位</text>
+                    </view>
+                    
+                    <view class="text-right">
+                        <view>角色</view>
                         <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
+                        <view wx:if="{{!userInfo.company}}">
+                            <text class="flag" catchtap="scanJoin">扫码加入</text>
+                        </view>
                     </view>
                 </view>
             </view>
         </view>
-        <view wx:if="{{isBindDept}}" class="operate-cell">
-            <view class="cell" @tap="toLogs">
-                <image src="../assets/images/option.png" mode="aspectFit" />
+        <view class="operate-cell">
+            <view wx:if="{{isBindDept}}" class="cell" @tap="toLogs">
+                <van-icon class="icon" name="description" size="24" color="#38c099" />
                 <text>操作记录</text>
             </view>
-            <view class="cell">
-                <image src="../assets/images/location.png" mode="aspectFit" />
-                <text>监测点</text>
-            </view>
             <view class="cell" @tap="toSetting">
-                <image src="../assets/images/location.png" mode="aspectFit" />
+                <van-icon class="icon" name="setting-o" size="24" color="#38c099" />
                 <text>设置</text>
             </view>
         </view>
         <button class="logout" @tap="logoutHandle">退出登录</button>
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
     </view>
 </template>
 
 <script>
     import wepy from 'wepy'
     import * as api from '../api/api'
-    import {
-        setStore,
-        getStore,
-        connect
-    } from 'wepy-redux';
     import configStore from '../store'
+    import decode from '../utils/util.js';
 
-    const store = configStore()
-    setStore(store)
-
-    @connect({
-        //取数据
-        globalData(state) {
-            return state.user.globalData;
-        }
-    })
     export default class Menu2 extends wepy.page {
         config = {
             navigationBarTitleText: '我的',
             usingComponents: {
-                "van-nav-bar": "../components/vant/nav-bar/index"
+                "van-nav-bar": "../components/vant/nav-bar/index",
+                "van-icon": "../components/vant/icon/index",
             }
         }
         data = {
@@ -80,13 +73,30 @@
             }
         }
         onShow() {
+            this.isBindDept = wx.getStorageSync('isBindDept');
+            this.$apply();
             this.getUserInfo();
-        }
-        onLoad() {
-            if (wx.getStorageSync('isBindDept')) {
-                this.isBindDept = wx.getStorageSync('isBindDept');
-                this.$apply();
+
+            if (this.isBindDept) {
+                wepy.$instance.queryUnread(3000)
+            } else {
+                //清楚轮询
+                wepy.$instance.clearQuery()
+                // 移除底部未读信息
+                wepy.removeTabBarBadge({
+                  index: 1 //tabBar的哪一项，从左边算起,
+                });
             }
+        }
+
+        onHide() {
+            if (this.isBindDept) {
+                wepy.$instance.clearQuery()
+            }
+        }
+
+        onLoad() {
+            wepy.$instance.shareImage()
         }
         methods = {
             // 扫码加入
@@ -121,8 +131,30 @@
                 })
             },
             toSetting() {
-                wx.navigateTo({
-                    url: '/pages/setting'
+                // 判断用户是否开启订阅消息
+                let tempId = wepy.$instance.globalData.tmplId;
+                wx.getSetting({
+                    withSubscriptions: true,
+                    success: ((res) => {
+                        const { subscriptionsSetting } = res;
+                        if (!subscriptionsSetting) {
+                            wx.requestSubscribeMessage({
+                                tmplIds: tempId,
+                                success (res) { 
+                                    console.log(res)
+                                },
+                                fail (err) {
+                                    console.log(err)
+                                }
+                            })
+                        } else {
+                            wx.openSetting({
+                                success: (res) => {
+                                    console.log(res);
+                                }
+                            })
+                        }
+                    })
                 })
             },
             toLogs() {
@@ -165,18 +197,23 @@
             },
             // 退出登录
             logoutHandle() {
+                wepy.$instance.clearQuery()
                 this.userLogout();
             }
         }
         async bindDept(params) {
             let res = await api.bindDept(params);
             if (res.code == 200) {
-                this.getUserInfo();
+                this.isBindDept = true;
+                wx.setStorageSync('isBindDept', true);
+                this.getUserInfo(true);
                 wx.showToast({
                     title: res.msg,
                     icon: 'success',
                     duration: 1000
                 })
+                wepy.$instance.queryUnread(3000)
+                this.$apply();
             }
         }
         async userLogout() {
@@ -184,57 +221,57 @@
             if (res.code == 200) {
                 wx.removeStorageSync('token')
                 wx.removeStorageSync('isBindDept');
+                wx.removeStorageSync('globalData');
+                // wx.clearStorageSync();
                 wx.showToast({
                     title: res.msg,
                     icon: 'success',
                     duration: 1000
                 })
                 setTimeout(() => {
-                    wx.navigateTo({
+                    wx.redirectTo({
                         url: '/pages/login'
                     })
                 }, 1000)
             }
         }
 
-        async getUserInfo() {
-            // 如果没有数据，重新请求接口
-            if (!this.globalData.userId) {
-                let res = await api.getUserInfo();
-                if (res.code == 200) {
-                    this.globalData = res.user;
-                    store.dispatch({
-                        type: 'UPDATE_GLOBAL_DATA',
-                        globalData: res.user
-                    })
+        async getUserInfo(init) {
+            let res = await api.getUserInfo();
+            if (res.code == 200) {
+                const {
+                    avatar,
+                    nickName,
+                    phonenumber,
+                    sex,
+                    firstRoleName,
+                    userName,
+                    dept,
+                    userId,
+                    email,
+                    createTime,
+                    loginDate
+                } = res.user;
+
+                let phone = phonenumber ? phonenumber.replace(phonenumber.substring(3, 7), "****") : ''
+                this.userInfo = {
+                    avatar, // 头像
+                    sex, // 性别
+                    userName, // 用户名
+                    firstRoleName,
+                    phone, // 手机号
+                    userId,
+                    email,
+                    createTime,
+                    loginDate,
+                    company: dept && dept.deptName, // 扫码加入后的公司名称
+                    tel: phonenumber
                 }
-            } 
-
-            const {
-                avatar,
-                nickName,
-                phonenumber,
-                sex,
-                firstRoleName,
-                userName,
-                dept,
-                userId
-            } = this.globalData;
-
-            let phone = phonenumber ? phonenumber.replace(phonenumber.substring(3, 7), "****") : ''
-            this.userInfo = {
-                avatar, // 头像
-                nickName, // 昵称
-                sex, // 性别
-                userName, // 用户名
-                firstRoleName,
-                phone, // 手机号
-                userId,
-                company: dept && dept.deptName, // 扫码加入后的公司名称
-                tel: phonenumber
+                // 昵称
+                this.userInfo.nickName = decode(nickName)
+                wx.setStorageSync('globalData', res.user);
+                this.$apply();
             }
-            
-            this.$apply();
         }
     }
 </script>
@@ -242,7 +279,7 @@
 <style lang="less">
     .menu2-container {
         .head-wrap {
-            padding-bottom: 60rpx;
+            padding-bottom: 80rpx;
             position: relative;
             background-color: #FAF7FA;
             .bg {
@@ -255,8 +292,8 @@
                 left: 23rpx;
                 right: 23rpx;
                 z-index: 1;
-                height: 326rpx;
-                padding: 0 40rpx;
+                height: 335rpx;
+                padding: 0 40rpx 20rpx;
                 background-color: #e8f7f4;
                 box-shadow: 0rpx 0rpx 11rpx 1rpx rgba(204, 204, 204, 0.2);
                 border-radius: 6rpx;
@@ -265,7 +302,7 @@
                 display: flex;
                 align-items: center;
                 position: relative;
-                padding: 40rpx 0;
+                padding: 40rpx 0 30rpx;
                 line-height: 38rpx;
                 border-bottom: 1px solid rgba(56, 192, 153, 0.3);
                 color: #333;
@@ -300,16 +337,15 @@
                 display: flex;
                 justify-content: space-between;
                 padding: 20rpx 0 50rpx 20rpx;
-                font-size: 21rpx;
+                font-size: 22rpx;
                 color: #666;
                 line-height: 38rpx;
                 box-sizing: border-box;
-                .company {
+                .company, .role {
                     color: #333333;
-                    font-size: 24rpx;
+                    font-size: 26rpx;
                 }
-                .flag,
-                .role {
+                .flag {
                     display: inline-block;
                     margin-left: 15rpx;
                     padding: 0 20rpx;
@@ -321,9 +357,6 @@
                 }
                 .flag {
                     background-color: #52cc7a;
-                }
-                .role {
-                    background-image: linear-gradient(0deg, #ff8800 0%, #ffcf21 100%), linear-gradient(#52cc7a, #52cc7a);
                 }
                 .no {
                     position: relative;
@@ -352,11 +385,9 @@
                 padding: 28rpx 32rpx;
                 border-bottom: 1px solid #f7f7f7;
                 font-size: 28rpx;
-                image {
-                    width: 38rpx;
-                    height: 38rpx;
-                    vertical-align: middle;
-                    margin-right: 20rpx;
+                .icon {
+                  vertical-align: middle;
+                  margin-right: 20rpx;
                 }
                 &:after {
                     content: '\F00A';

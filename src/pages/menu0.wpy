@@ -1,94 +1,109 @@
 <template>
   <view class="menu0-container" style="padding-top: {{statusBarHeight + 44}}px">
     <van-nav-bar title="龙芯北斗地灾监控系统" fixed />
-    <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" scale="14" 
-      bindcontroltap="controltap" bindmarkertap="markertap" 
+    <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" scale="12" 
+      bindcallouttap="callouttap" 
       show-location
-      style="width: 100%; height: 588rpx; margin-top: {{statusBarHeight}}px"></map>
+      style="width: 100%; height: 450rpx; margin-top: {{statusBarHeight}}px"></map>
 
     <view wx:if="{{isBindDept}}" class="monitor-list">
       <repeat wx:for="{{mointorList}}" wx:key="index" wx:index="index" wx:for-item="item">
         <view class="item">
           <view class="head">
-            <text class="company">{{item.company}}</text>
+            <view class="left">
+              <van-icon class="icon v-middle" name="location-o" size="24" color="#38c099" />
+              <view class="company" data-item="{{item}}" @tap="toMonitorArea">{{item.monitorAreaName}}</view>
+              <text wx:if="{{item.unprocessedQty > 0}}" class="msg-num">({{item.unprocessedQty}})</text>
+            </view>
             <view>
-              <button @tap="toVideo">视频监控</button>
-              <button @tap="toReport">上报预警</button>
+              <button @tap="toReport" data-area-id="{{item.monitorAreaId}}">上报预警</button>
             </view>
           </view>
           <view class="content">
-            <view class="row" @tap="toSurface">
+            <view wx:if="{{item.biaoMianWeiYiDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="1" @tap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/surface.png" />
                 <text>表面位移</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <view>X位移</view>
-                  <view>{{item.surface.x}}</view>
+                  <view class="c">X位移</view>
+                  <view>{{item.biaoMianWeiYiDto.x}}</view>
                 </view>
                 <view class="data">
-                  <view>Y位移</view>
-                  <view>{{item.surface.y}}</view>
+                  <view class="c">Y位移</view>
+                  <view>{{item.biaoMianWeiYiDto.y}}</view>
                 </view>
                 <view class="data">
-                  <view>H位移</view>
-                  <view>{{item.surface.h}}</view>
+                  <view class="c">H位移</view>
+                  <view>{{item.biaoMianWeiYiDto.h}}</view>
                 </view>
                 <van-icon name="arrow" color="#ccc" />
               </view>
             </view>
-            <view class="row" @tap="toDeep">
+            <view wx:if="{{item.shenBuWeiYiDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="2" @tap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/deep.png" />
                 <text>深部位移</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <view>温度</view>
-                  <view>{{item.deep.num1}}</view>
+                  <view class="c">温度</view>
+                  <view>{{item.shenBuWeiYiDto.tempValue}}</view>
                 </view>
                 <view class="data">
-                  <view>倾斜度</view>
-                  <view>{{item.deep.num2}}</view>
+                  <view class="c">倾斜度</view>
+                  <view>{{item.shenBuWeiYiDto.tiltValue}}</view>
                 </view>
                 <view class="data">
-                  <view>应变频率</view>
-                  <view>{{item.deep.num3}}</view>
+                  <view class="c">应变频率</view>
+                  <view>{{item.shenBuWeiYiDto.strainFrequency}}</view>
                 </view>
                 <view class="data">
-                  <view>补偿频率</view>
-                  <view>{{item.deep.num4}}</view>
+                  <view class="c">补偿频率</view>
+                  <view>{{item.shenBuWeiYiDto.compensateFrequency}}</view>
                 </view>
                 <van-icon name="arrow" color="#ccc" />
               </view>
             </view>
-            <view class="row" @tap="toRainfall">
+            <view wx:if="{{item.jiangYuLiangDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="4" @tap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/rainfall.png" />
                 <text>降雨量</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <text>日均：</text>
-                  <text>{{item.rainfall.num1}}</text>ml /
-                  <text>周均：</text>
-                  <text>{{item.rainfall.num2}}</text>ml
+                  <text class="c">日均：</text>
+                  <text>{{item.jiangYuLiangDto.riJun}}</text>ml /
+                  <text class="c">周均：</text>
+                  <text>{{item.jiangYuLiangDto.zhouJun}}</text>ml
                 </view>
                 <van-icon name="arrow" color="#ccc" />
               </view>
             </view>
-            <view class="row" @tap="toHumiture">
+            <view wx:if="{{item.wenShiDuDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="3" @tap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/humiture.png" />
                 <text>温湿度</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <text>温度：</text>
-                  <text>{{item.humiture.num1}}℃</text> /
-                  <text>湿度：</text>
-                  <text>{{item.humiture.num2}}</text>
+                  <text class="c">温度：</text>
+                  <text>{{item.wenShiDuDto.tempValue}}℃</text> /
+                  <text class="c">湿度：</text>
+                  <text>{{item.wenShiDuDto.humidityValue}}</text>
+                </view>
+                <van-icon name="arrow" color="#ccc" />
+              </view>
+            </view>
+            <view wx:if="{{item.hasMonitorDevice > 0}}" class="row" data-area-id="{{item.monitorAreaId}}" @tap="toMonitorDevice">
+              <view class="left">
+                <van-icon class="v-middle" name="browsing-history" size="45rpx" color="#38c099"  />
+                <text>视频监控</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>{{item.hasMonitorDevice}}</text><text class="c"> 台</text>
                 </view>
                 <van-icon name="arrow" color="#ccc" />
               </view>
@@ -97,11 +112,14 @@
         </view>
       </repeat>
     </view>
+    <canvas class="canvas-share" canvas-id="canvas"></canvas>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import * as api  from '../api/api'
+
   export default class Menu0 extends wepy.page {
     config = {
       navigationBarTitleText: '龙芯北斗地灾监控系统',
@@ -114,105 +132,113 @@
     data = {
       statusBarHeight: wepy.$instance.globalData.statusBarHeight,
       isBindDept: false,
-      mointorList: [{
-          id: 0,
-          company: '永定区抚市溪联南板',
-          surface: {
-            x: 0,
-            y: 1,
-            h: 2
-          },
-          deep: {
-            num1: 0,
-            num2: 1,
-            num3: 2,
-            num4: 3
-          },
-          rainfall: {
-            num1: 0,
-            num2: 1,
-          },
-          humiture: {
-            num1: 0,
-            num2: 1,
-            num3: 2,
-            num4: 3
-          }
-        },
-        {
-          id: 1,
-          company: '永定区抚市溪联南板',
-          surface: {
-            x: 0,
-            y: 1,
-            h: 2
-          },
-          rainfall: {
-            num1: 0,
-            num2: 1,
-            num3: 2,
-            num4: 3
-          }
-        }
-      ],
-      latitude: 22.15792,
-      longitude: 113.564344,
-      markers: [{
-        id: 0,
-        latitude: 22.15792,
-        longitude: 113.564344
-      }, {
-        id: 1,
-        latitude: 22.164866,
-        longitude: 113.570039
-      }],
+      mointorList: [],
+      latitude: 25,
+      longitude: 117,
+      markers: [],
     }
 
     onLoad() {
-      if (wx.getStorageSync('isBindDept')) {
+      wepy.$instance.shareImage()
+    }
+
+    onShow() {
         this.isBindDept = wx.getStorageSync('isBindDept');
-        this.$apply();
+        this.markers = [];
+        if(this.isBindDept) {
+          this.getMointorData();
+          wepy.$instance.queryUnread(3000)
+          this.$apply();
+        } else {
+          // 移除底部未读信息
+          wepy.removeTabBarBadge({
+            index: 1 //tabBar的哪一项，从左边算起,
+          });
+        }
+    }
+
+    onHide() {
+      if (this.isBindDept) {
+        wepy.$instance.clearQuery()
       }
     }
 
     methods = {
-      toReport() {
+      toReport(e) {
+        let areaId = e.currentTarget.dataset.areaId;
         wx.navigateTo({
-            url: '/pages/reportInfo'
+            url: '/pages/reportInfo?areaId=' + areaId
         })
       },
-      toSurface() {
+      toMonitorType(e) {
+        const { areaId, type } = e.currentTarget.dataset;
         wx.navigateTo({
-            url: '/pages/surface'
+            url: `/pages/monitorType?type=${type}&areaId=${areaId}`
         })
       },
-      toHumiture() {
-        wx.navigateTo({
-            url: '/pages/humiture'
-        })
+      toMonitorArea(e) {
+        let data = e.currentTarget.dataset.item;
+        this.linkArea(data.monitorAreaId);
       },
-      toRainfall() {
+      toMonitorDevice(e) {
+        let areaId = e.currentTarget.dataset.areaId;
         wx.navigateTo({
-            url: '/pages/rainfall'
-        })
-      },
-      toDeep() {
-        wx.navigateTo({
-            url: '/pages/deep'
-        })
-      },
-      toVideo() {
-        wx.navigateTo({
-          url: '/pages/videoMonitor'
+          url: '/pages/monitorDevice?areaId=' + areaId
         })
       }
     }
 
-    markertap(e) {
-      console.log(e.markerId)
+    linkArea(monitorAreaId) {
+        wx.navigateTo({
+            url: '/pages/monitorArea?areaId=' + monitorAreaId
+        })
     }
-    controltap(e) {
-      console.log(e.controlId)
+
+    async getMointorData() {
+        let globalData = wx.getStorageSync('globalData');
+        let {
+          userId
+        } = globalData;
+        // 根据用户查询监测区域的数据
+        let params = {
+          userId,
+        }
+        let res = await api.getAreaByUser(params);
+        if (res.code == 200) {
+            this.mointorList = res.data;
+            this.markers = [];
+            if (res.data && res.data.length > 0) {
+              this.longitude = res.data[0].lng;
+              this.latitude = res.data[0].lat;
+              res.data.forEach(item => {
+                this.markers.push({
+                  id: item.monitorAreaId,
+                  longitude: item.lng,
+                  latitude: item.lat,
+                  callout: {
+                    content: `${item.monitorAreaName || ''}\n(北纬 ${item.lat}, 东经 ${item.lng})`,
+                    color: '#fff',
+                    fontSize: 14,
+                    borderRadius: 4,
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    bgColor: '#52cc7a',
+                    textAlign: "center",
+                    padding: 5,
+                    anchorY: -25,
+                    display: "ALWAYS",
+                  }
+                })
+              });
+            }
+            this.$apply();
+        }
+    }
+
+    callouttap(e) {
+      let index = e.markerId - 1;
+      let monitorAreaId = this.mointorList[index].monitorAreaId;
+      this.linkArea(monitorAreaId);
     }
   }
 
@@ -226,8 +252,12 @@
       z-index: 1;
     }
 
+    .v-middle {
+      vertical-align: middle;
+    }
+
     .monitor-list {
-      margin-top: 588rpx;
+      margin-top: 450rpx;
       background-color: #f1f1f1;
       padding: 23rpx;
 
@@ -240,14 +270,29 @@
           align-items: center;
           margin-bottom: 15rpx;
 
+          .left{
+            flex: 1;
+            display: flex;
+            align-items: center;
+          }
+
           .company {
-            font-size: 28rpx;
+            max-width: 420rpx;
+            padding: 10rpx 0;
+            font-size: 32rpx;
             color: #333;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+
+          .msg-num {
+            color: red;
           }
 
           button {
             display: inline-block;
-            padding: 12rpx 20rpx;
+            padding: 15rpx 20rpx;
             margin: 0 0 0 15rpx;
             line-height: 1.2;
             background-color: #52cc7a;
@@ -304,6 +349,10 @@
               color: #333;
               line-height: 38rpx;
               text-align: center;
+
+              .c {
+                color: #999;
+              }
             }
           }
         }

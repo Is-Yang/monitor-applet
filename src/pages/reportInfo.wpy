@@ -3,22 +3,24 @@
         <van-nav-bar title="{{navTitle}}" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
         <view wx:if="{{!readOnly}}" style="padding-top: {{statusBarHeight}}px">
             <view class="report-form">
-                <view class="cell link">
-                    <text>地点</text>
-                    <view class="right-txt">
-                        <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="address">
-                            <text class="val">{{siteRange[siteIndex].address}}</text>
-                        </picker>
+                <picker bindchange="onChangeSite" value="{{siteIndex}}" range="{{siteRange}}" range-key="monitorAreaName">
+                    <view class="cell link">
+                        <text>地点</text>
+                        <view class="right-txt">
+                            <text class="val">{{siteRange[siteIndex].monitorAreaName}}</text>
+                        </view>
                     </view>
-                </view>
-                <view class="cell link">
-                    <text>等级</text>
-                    <view class="right-txt">
-                        <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
-                            <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
-                        </picker>
+                </picker>
+
+                <picker bindchange="onChangeLevel" value="{{levelIndex}}" range="{{levelRange}}" range-key="yuJingLevelName">
+                    <view class="cell link">
+                        <text>等级</text>
+                        <view class="right-txt">
+                                <text class="val">{{levelRange[levelIndex].yuJingLevelName}}</text>
+                        </view>
                     </view>
-                </view>
+                </picker>
+
                 <view class="cell">
                     <text>说明</text>
                     <view>
@@ -26,17 +28,17 @@
                         <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
                     </view>
                 </view>
-                <view class="cell">
+                <!-- <view class="cell">
                     <text>时间</text>
                     <view class="right-txt">{{from.createTime}}</view>
-                </view>
+                </view> -->
                 <view class="cell link" @tap="toDeptUser">
                     <text>相关人员</text>
                     <view class="right-txt" wx:if="{{relationUser.length == 0}}">
                         请选择
                     </view>
-                    <view class="right-txt" wx:if="{{relationUser.length > 0}}">
-                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                    <view class="right-txt line-clamp-2" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}<text wx:if="{{index != (relationUser.length - 1) }}">, </text></text>
                     </view>
                 </view>
                 <view class="cell link" @tap="uploadImage">
@@ -62,7 +64,8 @@
                 <view class="cell">
                     <text>地点</text>
                     <view class="right-txt">
-                       {{deviceAddress}}
+                       <view>{{monitorAreaName}}</view>
+                       <view>{{monitorAddress}}</view>
                     </view>
                 </view>
                 <view class="cell">
@@ -72,10 +75,21 @@
                     </view>
                 </view>
                 <view class="cell">
+                    <text>类型</text>
+                    <view class="right-txt">
+                        {{type == 0 ? '自动预警' : type == 1 ? '手工录入' : '--'}}
+                    </view>
+                </view>
+                <view class="cell">
+                    <text>状态</text>
+                    <view class="right-txt">
+                        {{status == '0' ? '未处理' : '已处理'}}
+                    </view>
+                </view>
+                <view class="cell">
                     <text>说明</text>
                     <view>
                         <textarea value="{{from.description}}" disabled maxlength="200" @input="inputDesc" />
-                        <view class="tips">请尽可能准确的描述您看到的灾害信息，最多可输入200字符</view>
                     </view>
                 </view>
                 <view class="cell">
@@ -84,23 +98,33 @@
                 </view>
                 <view class="cell">
                     <text>相关人员</text>
-                    <view class="right-txt" wx:if="{{relationUser.length > 0}}">
-                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}</text>
+                    <view class="right-txt line-clamp-2" wx:if="{{relationUser.length > 0}}">
+                        <text wx:for="{{relationUser}}" wx:for-item="item" wx:key="index">{{item.nickName}}<text wx:if="{{index != (relationUser.length - 1) }}">, </text></text>
                     </view>
                     <view class="right-txt" wx:else>--</view>
                 </view>
-                <view class="cell">
-                    <text>拍照如下</text>
+                <view class="cell {{hasMonitorDevice ? 'link' : ''}}" @tap="toMonitorDevice">
+                    <text>现场照片</text>
+                    <view wx:if="{{hasMonitorDevice}}" class="right-txt" style="margin-right: 45rpx;">查看监控</view>
                 </view>
 
-                <view class="show-picture">
+                <view wx:if="{{uploadList.length > 0}}" class="show-picture">
                     <view wx:for="{{ uploadList }}" wx:key="index" class="item-image">
-                        <icon class='icon-remove' @tap="removeImage" data-index="{{index}}" type="clear" size="20" color="red" />
                         <image class='image' @tap="showImage" data-index="{{index}}" src='{{item || item.fileUrl}}' mode="aspectFill"/>
                     </view>
                 </view>
+
+                <view class="cell link" @tap="toReportLogs">
+                    <text>操作日志</text>
+                    <view class="right-txt" style="margin-right: 45rpx;">查看日志</view>
+                </view>
             </view>
         </view>
+
+        <!-- 本单位的管理员 或 创建当前预警人员更改 -->
+        <button wx:if="{{status == '0' && (isAdmin || isCreate)}}" class="submit" @tap="changeStatus">完成处理</button>
+
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
     </view>
 </template>
 
@@ -108,6 +132,7 @@
     import wepy from 'wepy'
     import moment from 'moment'
     import * as api from '../api/api'
+    import decode from '../utils/util.js';
     export default class ReportInfo extends wepy.page {
         config = {
             navigationBarTitleText: '预警上报',
@@ -128,49 +153,100 @@
             relationUser: [],  // 相关人员
             selectUserIds: [], // 相关人员id
             sysFileIds: [], // 图片上传id
+            hasMonitorDevice: false,  // 是否有监控设备
             from: {
                 description: '',
                 createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
             },
-            deviceAddress: '',
+            monitorAddress: '',
+            monitorAreaName: '',
             yuJingLevelName: '',
-            isBindDept: false
-        }
-
-        onShow() {
-            let pages = getCurrentPages()
-            let currPage = pages[pages.length - 1]  // 当前页
-            if (currPage.relationUser && currPage.relationUser.length > 0) {
-                this.relationUser = currPage.relationUser;
-                this.selectUserIds = currPage.selectUserIds;
-                this.$apply();
-            }
+            type: null,
+            status: '',
+            isBindDept: false,
+            isCreate: false,
+            areaId: '',
+            monitorAreaId: '',
+            isAdmin: false,  // 是否本单位管理员
         }
 
         onLoad(options) {
-            if (wx.getStorageSync('isBindDept')) {
-                this.isBindDept = wx.getStorageSync('isBindDept');
-                this.$apply();
+            wepy.$instance.shareImage()
+
+            // 初始化时，默认相关人员为自己
+            const {nickName, userId} = wx.getStorageSync('globalData');
+            this.relationUser.push({
+                nickName: decode(nickName),
+                userId
+            })
+            this.selectUserIds.push(userId);
+
+            if (options.id || options.areaId) {
+                Promise.all([this.getMonitorOptions(), this.getWarnOptions()]).then((res) => {
+                    // 获取预警详情
+                    if(options.id) {
+                        this.navTitle = '预警详情';
+                        this.from.id = options.id;
+                        this.getWarningInfo(options.id);
+                    }
+                    // 从首页上报预警，选中相应的地点
+                    if(options.areaId) {
+                        this.areaId = options.areaId;
+                        this.getSiteIndexById(this.areaId);
+                        this.$apply();
+                    }
+                });
+            } else {
+                this.getMonitorOptions()
+                this.getWarnOptions()
             }
 
-            this.getDeviceOptions()
-            this.getWarnOptions()
 
-            if(options.id) {
-                this.navTitle = '预警详情';
-                this.from.id = options.id;
-                this.getWarningInfo(this.from.id);
-                this.$apply();
+        }
+
+        onShow() {
+            // 是否绑定部门
+            this.isBindDept = wx.getStorageSync('isBindDept');
+
+            // 获取像当前页面所传递的参数
+            let pages = getCurrentPages()
+            let currPage = pages[pages.length - 1]
+            if (currPage.relationUser && currPage.relationUser.length > 0) {
+                // 所选相关人员信息
+                this.relationUser = [];
+                // 所选相关人员id
+                this.selectUserIds = [];
+
+                this.relationUser = currPage.relationUser;
+
+                this.relationUser.forEach((item) => {
+                    // 选中的相关人员id
+                    this.selectUserIds.push(item.userId);
+                });
             }
+            
+            this.$apply();
         }
 
         methods = {
+            toMonitorDevice() {
+                if(this.hasMonitorDevice) {
+                    wx.navigateTo({
+                        url: '/pages/monitorDevice?areaId=' + this.monitorAreaId
+                    })
+                }
+            },
+            toReportLogs() {
+                wx.navigateTo({
+                    url: '/pages/package/reportLogs?yujingId=' + this.from.id
+                })
+            },
             submitFrom() {
-                let deviceId = this.siteRange[this.siteIndex].deviceId;
+                let monitorAreaId = this.siteRange[this.siteIndex].monitorAreaId;
                 let yuJingLevelId = this.levelRange[this.levelIndex].yuJingLevelId;
                 const { description, createTime } = this.from;
 
-                if (!deviceId) {
+                if (!monitorAreaId) {
                     wx.showToast({
                         title: '请选择地点',
                         icon: 'none',
@@ -181,7 +257,7 @@
 
                 let params = {
                     description: description,
-                    deviceId: deviceId,
+                    monitorAreaId: monitorAreaId,
                     yuJingLevelId: yuJingLevelId,
                     createTime: createTime,
                     relationUserIds: this.selectUserIds,
@@ -195,6 +271,10 @@
                 } else {   // 新增
                     this.addWarning(JSON.stringify(params));
                 }
+            },
+            // 改变状态
+            changeStatus(){
+                this.changeProcessed();
             },
             toDeptUser() {
                 wx.navigateTo({
@@ -214,9 +294,16 @@
                 this.levelIndex = e.detail.value;
             },
             onClickLeft() {
-                wx.navigateBack({
-                    delta: 1
-                });
+            let pages = getCurrentPages();
+                if (pages.length == 1) {
+                    wx.switchTab({
+                        url: '/pages/menu1'
+                    })
+                } else {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }
             },
             uploadImage() {
                 let that = this;
@@ -254,6 +341,12 @@
             }
         }
 
+        // 根据id获取下拉框index
+        getSiteIndexById(areaId) {
+            let findAreaId = this.siteRange.findIndex(item => item.monitorAreaId == areaId);
+            this.siteIndex = (findAreaId > -1) ? findAreaId : 0;
+        }
+
         handleUploadApi(files) {
             let that = this;
             let token = wx.getStorageSync('token');
@@ -289,13 +382,18 @@
             let res = await api.getWarningInfo({yuJingId: id});
             if (res.code == 200) {
                 this.readOnly = res.readOnly;
-                const { createTime, yuJingLevelId, deviceId, sysFiles, sysFileIds, description, relationUsers, relationUserIds, device, yuJingLevel } = res.yujing;
+                const { createTime, yuJingLevelId, monitorAreaId, sysFiles, sysFileIds, 
+                    description, relationUsers, relationUserIds, monitorArea, yuJingLevel, 
+                    type, status, createById, hasMonitorDevice } = res.yujing;
                 this.from.createTime = createTime;
                 this.from.description = description;
                 this.levelIndex = this.levelRange.findIndex(item => item.yuJingLevelId == yuJingLevelId);
-                let deviceInfo = this.siteRange.findIndex(item => item.deviceId == deviceId);
-                this.siteIndex = (deviceInfo > -1) ? deviceInfo : 0;
-                this.relationUser = relationUsers;
+
+                this.monitorAreaId = monitorAreaId;
+
+                this.getSiteIndexById(monitorAreaId);
+
+                this.relationUser = this.decodeNickName(relationUsers, 'nickName');
                 this.selectUserIds = relationUserIds;
                 this.uploadList = [];
                 sysFiles.forEach((item) => {
@@ -303,32 +401,37 @@
                 })
                 this.sysFileIds = sysFileIds;
 
-                this.deviceAddress = device.address;
+                this.monitorAddress = monitorArea.address;
+                this.monitorAreaName = monitorArea.monitorAreaName;
                 this.yuJingLevelName = yuJingLevel.yuJingLevelName;
+                this.type = type;
+                this.status = status;
+
+                let globalData = wx.getStorageSync('globalData');
+                // 如果当前预警详情用户id创建的,与用户id一致，则可更改状态
+                if (createById == (globalData && globalData.userId)) {
+                    this.isCreate = true;
+                }
+                this.isAdmin = globalData.firstRoleName == '单位管理员' ? true : false;
+
+                this.hasMonitorDevice = hasMonitorDevice > 0 ? true : false;
                 this.$apply();
             }
         }
 
+        // 相关人员昵称编码
+        decodeNickName(data, key) {
+            data.forEach(item => {
+                if(item[key]) {
+                    item[key] = decode(item[key]);
+                }
+            })
+            return data;
+        }
+
         async updateWarning(params) {
             let res = await api.updateWarning(params);
-            if(res.code == 200) {
-                 wx.showToast({
-                    title: res.msg,
-                    icon: 'success',
-                    duration: 1500
-                });
-                setTimeout(function () {
-                    wx.navigateBack({
-                        delta: 1
-                    });
-                }, 1000);
-            } else {
-                wx.showToast({
-                    title: res.msg,
-                    icon: 'none',
-                    duration: 1500
-                });
-            }
+            this.handleMessage(res);
         }
 
         async addWarning(params) {
@@ -361,15 +464,61 @@
             }
         }
 
-        async getDeviceOptions() {
-            let res = await api.deviceOptions();
+        async getMonitorOptions() {
+            let res = await api.monitorAreaOptions();
             if(res.code == 200) {
                 this.siteRange = res.data;
                 this.siteRange.unshift({
-                    address: '请选择',
-                    deviceId: undefined
+                    monitorAreaName: '请选择',
+                    monitorAreaId: undefined
                 })
                 this.$apply();
+            }
+        }
+
+        async changeProcessed() {
+            let params = {
+                yuJingId: this.from.id,
+            }
+            let res = await api.changeProcessed(params);
+            this.handleMessage(res);
+        }
+
+        handleMessage(res) {
+            if(res.code == 200) {
+                 wx.showToast({
+                    title: res.msg,
+                    icon: 'success',
+                    duration: 1500
+                });
+                setTimeout(function () {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                }, 1000);
+            } else {
+                wx.showToast({
+                    title: res.msg,
+                    icon: 'none',
+                    duration: 1500
+                });
+            }
+        }
+
+        
+        onShareAppMessage() {
+            let that = this;
+            // 预警详情只读时分享
+            if (this.readOnly) {
+                let shareInfo = {}
+                let image = this.uploadList[0];
+                // [预警级别]+预警监测区域
+                shareInfo.title = `[${this.yuJingLevelName}] ${this.monitorAreaName}`
+                shareInfo.path = '/pages/reportInfo?id=' + this.from.id;
+                shareInfo.imageUrl = image ? image : '/assets/images/logoShare.png'
+                return shareInfo;
+            } else {
+                return wepy.$instance.sharePage();
             }
         }
     }
@@ -388,20 +537,27 @@
                 display: flex;
                 justify-content: space-between;
                 padding: 28rpx 32rpx;
-                border-bottom: 1px solid #f7f7f7;
-                font-size: 26rpx;
-                color: #333;
+                border-top: 1px solid #f7f7f7;
+                font-size: 28rpx;
+                color: #999999;
                 box-sizing: border-box;
                 background-color: #fff;
                 .right-txt {
+                    flex: 1;
                     text-align: right;
-                    font-size: 26rpx;
-                    color: #999999;
-                    margin-right: 45rpx;
+                    color: #333;
+                    margin: 0 45rpx 0 15rpx;
 
                     text {
                         margin-left: 12rpx;
                     }
+                }
+                .line-clamp-2 {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
                 }
                 &.link {
                     position: relative;
@@ -424,7 +580,7 @@
                     height: 255rpx;
                     padding: 12rpx;
                     background-color: #ffffff;
-                    border:1rpx solid #eeeeee;
+                    border:1rpx solid #ddd;
                     color: #999999;
                     box-sizing: border-box;
                     font-size: 26rpx;
@@ -432,7 +588,7 @@
                 .tips {
                     margin-top: 15rpx;
                     color: #999;
-                    font-size: 19rpx;
+                    font-size: 21rpx;
                     text-align: right;
                 }
                 .icon-camera {
@@ -441,10 +597,14 @@
                     margin-left: 15rpx;
                     vertical-align: text-bottom;
                 }
+
+                &:first-child {
+                    border-top: none;
+                }
             }
 
             .show-picture {
-                padding: 28rpx 60rpx 28rpx 32rpx;
+                padding: 0 60rpx 28rpx 32rpx;
                 display: flex;
                 height: 150rpx;
 
@@ -475,6 +635,11 @@
             color: #fff;
             border-radius: 25px;
             font-size: 28rpx;
+
+            .has{
+                pointer-events: none;
+                background-color: #e6e6e6;
+            }
         }
 
         .readOnly {

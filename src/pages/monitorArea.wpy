@@ -1,0 +1,255 @@
+<template>
+    <view class="monitor-area-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="{{title}}" left-arrow left-text="返回" fixed custom-class="nav-reset" bind:click-left="onClickLeft" />
+
+        <view class="monitor-info margin-nav">
+            <image class="left-image"/>
+            <view class="right-full">
+                <view class="row">
+                    <text>监测区域：</text>
+                    <view>{{monitorData.areaInfo && monitorData.areaInfo.monitorAreaName}}</view>
+                </view>
+                <view class="row">
+                    <text>负责人：</text>
+                    <view>{{monitorData.areaInfo && monitorData.areaInfo.person}}</view>
+                </view>
+                <view class="row">
+                    <text>简介：</text>
+                    <view>--</view>
+                </view>
+            </view>
+        </view>
+
+        <view class="common-monitor-wrap">
+            <view wx:if="{{monitorData.biaoMianWeiYi}}" class="monitor-item">
+                <view class="head">
+                    <text>表面位移</text>
+                    <text>共{{monitorData.biaoMianWeiYi.total}}个设备</text>
+                </view>
+                <view wx:for="{{monitorData.biaoMianWeiYi.list}}" wx:key="index" wx:index="index" wx:for-item="item" class="panel-wrap">
+                    <view class="panel-title">
+                        <text>{{item.name}}</text>
+                        <text class="more" data-device-id="{{item.id}}" data-type="1" @tap="handleMoreData">更多</text>
+                    </view>
+                    <view class="panel-body">
+                        <view class="item">
+                            <view>X位移(m)</view>
+                            <view>{{filter.isHasValue(item['x'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>Y位移(m)</view>
+                            <view>{{filter.isHasValue(item['y'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>H位移(m)</view>
+                            <view>{{filter.isHasValue(item['h'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>2D位移(m)</view>
+                            <view>{{filter.isHasValue(item['2d'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>3D位移(m)</view>
+                            <view>{{filter.isHasValue(item['3d'])}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+            <view wx:if="{{monitorData.shenBuWeiYi}}" class="monitor-item">
+                <view class="head">
+                    <text>深部位移</text>
+                    <text>共{{monitorData.shenBuWeiYi.total}}个设备</text>
+                </view>
+                <view wx:for="{{monitorData.shenBuWeiYi.list}}" wx:key="index" wx:index="index" wx:for-item="item" class="panel-wrap">
+                    <view class="panel-title">
+                        <text>{{item.name}}</text>
+                        <text class="more" data-device-id="{{item.id}}" data-type="2" @tap="handleMoreData">更多</text>
+                    </view>
+                    <view class="panel-body">
+                        <view class="item">
+                            <view>温度</view>
+                            <view>{{filter.isHasValue(item['tempValue'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>倾斜角（度）</view>
+                            <view>{{filter.isHasValue(item['tiltValue'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>偏移值（mm）</view>
+                            <view>{{filter.isHasValue(item['moveValue'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>应变频率</view>
+                            <view>{{filter.isHasValue(item['strainFrequency'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>补偿频率</view>
+                            <view>{{filter.isHasValue(item['compensateFrequency'])}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+            <view wx:if="{{monitorData.jiangYuLiang}}" class="monitor-item">
+                <view class="head">
+                    <text>降雨量</text>
+                    <text>共{{monitorData.jiangYuLiang.total}}个设备</text>
+                </view>
+                <view wx:for="{{monitorData.jiangYuLiang.list}}" wx:key="index" wx:index="index" wx:for-item="item" class="panel-wrap">
+                    <view class="panel-title">
+                        <text>{{item.name}}</text>
+                        <text class="more" data-device-id="{{item.id}}" data-type="4" @tap="handleMoreData">更多</text>
+                    </view>
+                    <view class="panel-body">
+                        <view class="item">
+                            <view>降雨量（mm）</view>
+                            <view>{{filter.isHasValue(item['dayValue'])}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+            <view wx:if="{{monitorData.wenShiDu}}" class="monitor-item">
+                <view class="head">
+                    <text>温湿度</text>
+                    <text>共{{monitorData.wenShiDu.total}}个设备</text>
+                </view>
+                <view wx:for="{{monitorData.wenShiDu.list}}" wx:key="index" wx:index="index" wx:for-item="item" class="panel-wrap">
+                    <view class="panel-title">
+                        <text>{{item.name}}</text>
+                        <text class="more" data-device-id="{{item.id}}" data-type="3" @tap="handleMoreData">更多</text>
+                    </view>
+                    <view class="panel-body">
+                        <view class="item">
+                            <view>温度（℃）</view>
+                            <view>{{filter.isHasValue(item['tempValue'])}}</view>
+                        </view>
+                        <view class="item">
+                            <view>湿度</view>
+                            <view>{{filter.isHasValue(item['humidityValue'])}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <wxs src="../utils/filter.wxs" module="filter" />
+        <canvas class="canvas-share" canvas-id="canvas"></canvas>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { getDeviceListByAreaId } from '../api/api'
+export default class monitorArea extends wepy.page {
+    config = {
+        navigationBarTitleText: '监测区域',
+        usingComponents: {
+            "van-nav-bar": "../components/vant/nav-bar/index"
+        }
+    }
+
+    data = {
+        statusBarHeight: wepy.$instance.globalData.statusBarHeight,
+        title: '',
+        areaId: '',
+        monitorData: {}
+    }
+
+    onLoad(options) {
+        wepy.$instance.shareImage()
+
+        this.areaId = options.areaId;
+        this.$apply();
+    }
+
+    onShow() {
+        this.initData();
+    }
+
+    methods = {
+        onClickLeft() {
+            let pages = getCurrentPages();
+            if (pages.length == 1) {
+                wx.switchTab({
+                    url: '/pages/menu0'
+                })
+            } else {
+                wx.navigateBack({
+                    delta: 1
+                });
+            }
+        },
+        handleMoreData(e) {
+            const { deviceId, type } = e.currentTarget.dataset;
+            wx.navigateTo({
+                url: `/pages/package/monitorDetails?areaId=${this.areaId}&type=${type}&deviceId=${deviceId}`
+            });
+        }
+    }
+
+    async initData() {
+        let params = {
+            areaId: this.areaId
+        }
+        let res = await getDeviceListByAreaId(params);
+        if (res.code == 200) {
+            let data = res.data;
+            if (data) {
+                this.monitorData = data;
+                this.title = data.areaInfo && data.areaInfo.monitorAreaName;
+                this.$apply();
+            }
+            
+        }
+    }
+}
+</script>
+
+<style lang="less">
+page {
+    background-color: #FAF7FA;
+}
+.monitor-area-container {
+    .monitor-info {
+        padding: 28rpx;
+        display: flex;
+        justify-content: space-between;
+
+        .left-image {
+            width: 150rpx;
+            height: 150rpx;
+            background-color: #fff;
+        }
+
+        .right-full {
+            flex: 1;
+            font-size: 30rpx;
+
+            .row {
+                display: flex;
+                margin-bottom: 5rpx;
+                font-size: 30rpx;
+                color: #333;
+                text {
+                    width: 180rpx;
+                    display: inline-block;
+                    text-align: right;
+                    color: #666;
+                }
+
+                view {
+                    flex: 1;
+                    display: -webkit-box;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    word-break: break-all;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                }
+            }
+        }
+    }
+}
+
+</style>

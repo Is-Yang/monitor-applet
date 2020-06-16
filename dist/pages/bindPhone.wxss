@@ -1,0 +1,50 @@
+.bind-phone-container .phone-wrap {
+  margin-top: 44px;
+  padding: 100rpx 40rpx 0 40rpx;
+}
+.bind-phone-container .phone-wrap .title {
+  font-size: 42rpx;
+  line-height: 38rpx;
+  padding: 10px;
+}
+.bind-phone-container .phone-wrap .tel {
+  padding: 0 10px;
+  font-size: 36rpx;
+  margin-bottom: 30rpx;
+  line-height: 38rpx;
+  font-weight: bold;
+  color: #38c099;
+}
+.bind-phone-container .phone-wrap .txtColor {
+  font-size: 21rpx;
+}
+.bind-phone-container .phone-wrap .van-field__button {
+  height: 54rpx;
+  line-height: 40rpx;
+}
+.bind-phone-container .phone-wrap .get-code {
+  width: 164rpx;
+  height: 54rpx;
+  line-height: 54rpx;
+  background-color: #e1e1e1;
+  border-radius: 2px;
+  color: #41c297;
+  font-size: 21rpx;
+  border: none;
+}
+.bind-phone-container .login-btn {
+  width: 586rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  margin-top: 83rpx;
+  color: #ffffff;
+  pointer-events: none;
+  background-color: #e6e6e6;
+  font-size: 28rpx;
+  font-weight: bold;
+  border-radius: 25px;
+}
+.bind-phone-container .login-btn.has {
+  background-image: linear-gradient(0deg, #38c099 0%, #59c89a 50%, #cfe49d 100%), linear-gradient(#e6e6e6, #e6e6e6);
+  pointer-events: all;
+}

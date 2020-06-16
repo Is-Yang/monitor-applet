@@ -1,0 +1,6 @@
+
+    <view class="monitor-type-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="{{title}}" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

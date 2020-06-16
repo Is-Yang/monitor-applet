@@ -15,28 +15,33 @@
                     </view>
                 </view>
                 <view class="mark" bindtap="toUserUnit">
-                    <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
-                    <text wx:else class="no">未加入任何单位</text>
                     <view>
-                        <text wx:if="{{!userInfo.company}}" class="flag" catchtap="scanJoin">扫码加入</text>
+                        <view>所属单位</view>
+                        <text wx:if="{{userInfo.company}}" class="company">{{userInfo.company}}</text>
+                        <text wx:else class="no">未加入任何单位</text>
+                    </view>
+                    
+                    <view class="text-right">
+                        <view>角色</view>
                         <text wx:if="{{userInfo.firstRoleName != ''}}" class="role">{{userInfo.firstRoleName}}</text>
+                        <view wx:if="{{!userInfo.company}}">
+                            <text class="flag" catchtap="scanJoin">扫码加入</text>
+                        </view>
                     </view>
                 </view>
             </view>
         </view>
-        <view wx:if="{{isBindDept}}" class="operate-cell">
-            <view class="cell" bindtap="toLogs">
-                <image src="../assets/images/option.png" mode="aspectFit"/>
+        <view class="operate-cell">
+            <view wx:if="{{isBindDept}}" class="cell" bindtap="toLogs">
+                <van-icon class="icon" name="description" size="24" color="#38c099"/>
                 <text>操作记录</text>
             </view>
-            <view class="cell">
-                <image src="../assets/images/location.png" mode="aspectFit"/>
-                <text>监测点</text>
-            </view>
             <view class="cell" bindtap="toSetting">
-                <image src="../assets/images/location.png" mode="aspectFit"/>
+                <van-icon class="icon" name="setting-o" size="24" color="#38c099"/>
                 <text>设置</text>
             </view>
         </view>
         <button class="logout" bindtap="logoutHandle">退出登录</button>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
     </view>

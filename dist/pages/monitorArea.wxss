@@ -1,0 +1,38 @@
+page {
+  background-color: #FAF7FA;
+}
+.monitor-area-container .monitor-info {
+  padding: 28rpx;
+  display: flex;
+  justify-content: space-between;
+}
+.monitor-area-container .monitor-info .left-image {
+  width: 150rpx;
+  height: 150rpx;
+  background-color: #fff;
+}
+.monitor-area-container .monitor-info .right-full {
+  flex: 1;
+  font-size: 30rpx;
+}
+.monitor-area-container .monitor-info .right-full .row {
+  display: flex;
+  margin-bottom: 5rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+.monitor-area-container .monitor-info .right-full .row text {
+  width: 180rpx;
+  display: inline-block;
+  text-align: right;
+  color: #666;
+}
+.monitor-area-container .monitor-info .right-full .row view {
+  flex: 1;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

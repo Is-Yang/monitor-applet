@@ -2,98 +2,134 @@
     <view class="user-unit-container">
         <van-nav-bar title="我的单位" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
         <view class="head-wrap" style="height: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}">
-            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '324rpx' : '280rpx'}}"/>
+            <image src="../assets/images/my_bg.png" class="bg" style="height: {{statusBarHeight == 44 ? '344rpx' : '300rpx'}}"/>
             <view class="user-wrap">
-                <view class="mark">
-                    <view>{{userInfo.dept}}</view>
-                    <view  wx:if="{{userInfo.firstRoleName}}" class="flag">{{userInfo.firstRoleName}}</view>
+                <view class="dept">{{userInfo.dept}}</view>
+                <view class="display-flex">
+                    <view class="mark">
+                        <view>{{userInfo.nickName}} ({{ userInfo.userName || '--' }})</view>
+                        <view  wx:if="{{userInfo.firstRoleName}}">{{userInfo.firstRoleName}}</view>
+                    </view>
+                    <image src="{{userInfo.deptQrCode}}" mode="aspectFill" bindtap="showQrCode"/>
                 </view>
-                <image src="{{userInfo.avatar}}" mode="aspectFill"/>
             </view>
         </view>
-        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}"/>
-        <view class="panel-wrap">
-            <view class="title">用户列表</view>
-            <van-collapse value="{{ activeNames }}" bindchange="onChangeColl">
-                <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
-                    <van-collapse-item name="{{index}}">
-                        <view slot="title">
-                            <image src="../assets/images/user.png" mode="aspectFit" class="icon"/>
-                            <text class="nickname">{{ item.nickname}}</text>
-                            <text class="tel">{{ item.phone }}</text>
+        <view style="padding-top: {{statusBarHeight == 44 ? '360rpx' : '320rpx'}}; padding-bottom: 80rpx;">
+            <view class="panel-wrap">
+                <view class="title">单位信息</view>
+                <view class="operate-cell">
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="contact" size="24" color="#38c099"/>
+                            <text>负责人</text>
                         </view>
-                        <view slot="value">
-                            <text class="num">监测点{{item.num}}/{{item.total}}</text>
+                        <view class="right-txt" style="margin-right: 0;">
+                            <view>{{userInfo.deptLeader}}</view>
                         </view>
-                        <view class="operate-cell">
-                            <view class="cell">
-                                <view>
-                                    <image src="../assets/images/phone.png" mode="aspectFit"/>
-                                    <text>手机号</text>
-                                </view>
-                                <text class="right-txt">{{ item.phone }}</text>
+                    </view>
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="phone-o" size="24" color="#38c099"/>
+                            <text>联系方式</text>
+                        </view>
+                        <view class="right-txt" style="margin-right: 0;">
+                            <view>{{userInfo.deptContact}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="panel-wrap">
+                <view class="title">用户列表</view>
+                <van-collapse value="{{ activeNames }}"  bind:change="onChangeColl">
+                    <block  wx:for="{{userList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                        <van-collapse-item name="{{index}}">
+                            <view slot="title">
+                                <van-icon class="icon" name="contact" size="24" color="#38c099"/>
+                                <text class="nickname">{{ item.nickname }}</text>
+                                <text class="tel">({{ item.userName }})</text>
                             </view>
-                            <view wx:if="{{isOper}}" class="cell link" bindtap="toRole" data-id="{{ item.id }}" data-roles="{{item.roleIds}}">
-                                <view>
-                                    <image src="../assets/images/role.png" mode="aspectFit"/>
-                                    <text>角色</text>
-                                </view>
-                                <view class="right-txt" wx:if="{{item.role.length == 0}}">
-                                    请选择
-                                </view>
-                                <view class="right-txt" wx:else>
-                                    {{item.role}}
-                                    <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
-                                </view>
+                            <view slot="value">
+                                <text class="num">监测区域{{item.num}}/{{item.total}}</text>
                             </view>
-                            <view wx:if="{{!isOper}}" class="cell">
-                                <view>
-                                    <image src="../assets/images/role.png" mode="aspectFit"/>
-                                    <text>角色</text>
-                                </view>
-                                <text class="right-txt">{{ item.role }}</text>
-                            </view>
-                            <block wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                            <view class="operate-cell">
                                 <view class="cell">
                                     <view>
-                                        <image src="../assets/images/location.png" mode="aspectFit"/>
-                                        <text>{{site.name}}</text>
+                                        <van-icon class="icon" name="phone-o" size="24" color="#38c099"/>
+                                        <text>手机号</text>
                                     </view>
-                                    <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
+                                    <text class="right-txt">{{ item.phone }}</text>
                                 </view>
-                            </block>
+                                <view wx:if="{{isOper}}" class="cell link" bindtap="toRole" data-id="{{ item.id }}" data-roles="{{item.role}}">
+                                    <view>
+                                        <van-icon class="icon" name="manager-o" size="24" color="#38c099"/>
+                                        <text>角色</text>
+                                    </view>
+                                    <view class="right-txt" wx:if="{{item.role == ''}}">
+                                        请选择
+                                    </view>
+                                    <view class="right-txt" wx:else>
+                                        {{item.role}}
+                                        <!-- <text wx:for="{{item.role}}" wx:for-item="item" wx:key="index">{{item.roleName}}</text> -->
+                                    </view>
+                                </view>
+                                <view wx:if="{{!isOper}}" class="cell">
+                                    <view>
+                                        <van-icon class="icon" name="manager-o" size="24" color="#38c099"/>
+                                        <text>角色</text>
+                                    </view>
+                                    <text class="right-txt">{{ item.role }}</text>
+                                </view>
+                                <block wx:for="{{ item.site }}" wx:key="i" wx:index="i" wx:for-item="site">
+                                    <view class="cell">
+                                        <view>
+                                            <van-icon class="icon" name="location-o" size="24" color="#38c099"/>
+                                            <text>{{site.name}}</text>
+                                        </view>
+                                        <switch disabled="{{!isOper}}" style="opacity: {{isOper ? '1' : '0.5'}}" checked="{{ site.check == 0 ? false : true }}" data-site="{{site}}" bindchange="onChangeSite"/>
+                                    </view>
+                                </block>
+                            </view>
+                        </van-collapse-item>
+                    </block>
+                </van-collapse>
+                <view wx:if="{{userPage.total > userList.length}}" class="more" bindtap="getMoreUserList"><van-icon name="arrow-down"/></view>
+            </view>
+            <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
+                <view class="title">上级单位</view>
+                <view class="operate-cell">
+                    <view class="cell">
+                        <view>
+                            <van-icon class="icon" name="label-o" size="24" color="#38c099"/>
+                            <text>{{userInfo.firstDept}}</text>
                         </view>
-                    </van-collapse-item>
-                </block>
-            </van-collapse>
-            <view wx:if="{{userPage.total > userList.length}}" class="more" bindtap="getMoreUserList"><van-icon name="arrow-down"/></view>
-        </view>
-        <view wx:if="{{userInfo.firstDept}}" class="panel-wrap">
-            <view class="title">上级单位</view>
-            <view class="operate-cell">
-                <view class="cell">
-                    <view>
-                        <image src="../assets/images/write.png" mode="aspectFit"/>
-                        <text>{{userInfo.firstDept}}</text>
                     </view>
                 </view>
             </view>
-        </view>
-        <view class="panel-wrap">
-            <view class="title">监测点</view>
-            <view class="operate-cell">
-                <block wx:for="{{deviceList}}" wx:key="index" wx:index="index" wx:for-item="item">
-                    <view class="cell link">
-                        <view>
-                            <image src="../assets/images/location.png" mode="aspectFit"/>
-                            <text>{{item.deviceName}}</text>
+            <view wx:if="{{monitorList.length > 0}}" class="panel-wrap">
+                <view class="title">监测区域</view>
+                <view class="operate-cell">
+                    <block wx:for="{{monitorList}}" wx:key="index" wx:index="index" wx:for-item="item">
+                        <view class="cell link" data-title="{{item.monitorAreaName}}" bindtap="toMonitorSite">
+                            <view>
+                                <van-icon class="icon" name="location-o" size="24" color="#38c099"/>
+                                <text>{{item.monitorAreaName}}</text>
+                            </view>
+                            <view class="right-txt">
+                                <view>经度：{{item.lng}}，纬度：{{item.lat}}</view>
+                            </view>
                         </view>
-                        <view class="right-txt font21">
-                            <view>{{item.deptName}}</view>
-                            <view>负责人：{{item.person}}</view>
-                        </view>
-                    </view>
-                 </block>
+                    </block>
+                </view>
             </view>
         </view>
+
+        <button class="btn-bottom" bindtap="outUnit">退出单位</button>
+
+        <van-popup show="{{ previewQrcode }}" closeable="closeable" bind:close="onClosePopup" custom-class="popup-qrcode">
+            <view class="title">单位二维码</view>
+            <view class="dept">{{userInfo.dept}}</view>
+            <image class="qr" src="{{userInfo.deptQrCode}}"/>
+        </van-popup>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
     </view>

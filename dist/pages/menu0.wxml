@@ -1,91 +1,106 @@
 
   <view class="menu0-container" style="padding-top: {{statusBarHeight + 44}}px">
     <van-nav-bar title="龙芯北斗地灾监控系统" fixed="fixed"/>
-    <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" scale="14" bindcontroltap="controltap" bindmarkertap="markertap" show-location="show-location" style="width: 100%; height: 588rpx; margin-top: {{statusBarHeight}}px"/>
+    <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" scale="12" bindcallouttap="callouttap" show-location="show-location" style="width: 100%; height: 450rpx; margin-top: {{statusBarHeight}}px"/>
 
     <view  wx:if="{{isBindDept}}" class="monitor-list">
       <block wx:for="{{mointorList}}" wx:key="index" wx:index="index" wx:for-item="item">
         <view class="item">
           <view class="head">
-            <text class="company">{{item.company}}</text>
+            <view class="left">
+              <van-icon class="icon v-middle" name="location-o" size="24" color="#38c099"/>
+              <view class="company" data-item="{{item}}" bindtap="toMonitorArea">{{item.monitorAreaName}}</view>
+              <text wx:if="{{item.unprocessedQty > 0}}" class="msg-num">({{item.unprocessedQty}})</text>
+            </view>
             <view>
-              <button bindtap="toVideo">视频监控</button>
-              <button bindtap="toReport">上报预警</button>
+              <button bindtap="toReport" data-area-id="{{item.monitorAreaId}}">上报预警</button>
             </view>
           </view>
           <view class="content">
-            <view class="row" bindtap="toSurface">
+            <view wx:if="{{item.biaoMianWeiYiDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="1" bindtap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/surface.png"/>
                 <text>表面位移</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <view>X位移</view>
-                  <view>{{item.surface.x}}</view>
+                  <view class="c">X位移</view>
+                  <view>{{item.biaoMianWeiYiDto.x}}</view>
                 </view>
                 <view class="data">
-                  <view>Y位移</view>
-                  <view>{{item.surface.y}}</view>
+                  <view class="c">Y位移</view>
+                  <view>{{item.biaoMianWeiYiDto.y}}</view>
                 </view>
                 <view class="data">
-                  <view>H位移</view>
-                  <view>{{item.surface.h}}</view>
+                  <view class="c">H位移</view>
+                  <view>{{item.biaoMianWeiYiDto.h}}</view>
                 </view>
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row" bindtap="toDeep">
+            <view wx:if="{{item.shenBuWeiYiDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="2" bindtap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/deep.png"/>
                 <text>深部位移</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <view>温度</view>
-                  <view>{{item.deep.num1}}</view>
+                  <view class="c">温度</view>
+                  <view>{{item.shenBuWeiYiDto.tempValue}}</view>
                 </view>
                 <view class="data">
-                  <view>倾斜度</view>
-                  <view>{{item.deep.num2}}</view>
+                  <view class="c">倾斜度</view>
+                  <view>{{item.shenBuWeiYiDto.tiltValue}}</view>
                 </view>
                 <view class="data">
-                  <view>应变频率</view>
-                  <view>{{item.deep.num3}}</view>
+                  <view class="c">应变频率</view>
+                  <view>{{item.shenBuWeiYiDto.strainFrequency}}</view>
                 </view>
                 <view class="data">
-                  <view>补偿频率</view>
-                  <view>{{item.deep.num4}}</view>
+                  <view class="c">补偿频率</view>
+                  <view>{{item.shenBuWeiYiDto.compensateFrequency}}</view>
                 </view>
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row" bindtap="toRainfall">
+            <view wx:if="{{item.jiangYuLiangDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="4" bindtap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/rainfall.png"/>
                 <text>降雨量</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <text>日均：</text>
-                  <text>{{item.rainfall.num1}}</text>ml /
-                  <text>周均：</text>
-                  <text>{{item.rainfall.num2}}</text>ml
+                  <text class="c">日均：</text>
+                  <text>{{item.jiangYuLiangDto.riJun}}</text>ml /
+                  <text class="c">周均：</text>
+                  <text>{{item.jiangYuLiangDto.zhouJun}}</text>ml
                 </view>
                 <van-icon name="arrow" color="#ccc"/>
               </view>
             </view>
-            <view class="row" bindtap="toHumiture">
+            <view wx:if="{{item.wenShiDuDto}}" class="row" data-area-id="{{item.monitorAreaId}}" data-type="3" bindtap="toMonitorType">
               <view class="left">
                 <image src="../assets/images/humiture.png"/>
                 <text>温湿度</text>
               </view>
               <view class="right">
                 <view class="data">
-                  <text>温度：</text>
-                  <text>{{item.humiture.num1}}℃</text> /
-                  <text>湿度：</text>
-                  <text>{{item.humiture.num2}}</text>
+                  <text class="c">温度：</text>
+                  <text>{{item.wenShiDuDto.tempValue}}℃</text> /
+                  <text class="c">湿度：</text>
+                  <text>{{item.wenShiDuDto.humidityValue}}</text>
+                </view>
+                <van-icon name="arrow" color="#ccc"/>
+              </view>
+            </view>
+            <view wx:if="{{item.hasMonitorDevice > 0}}" class="row" data-area-id="{{item.monitorAreaId}}" bindtap="toMonitorDevice">
+              <view class="left">
+                <van-icon class="v-middle" name="browsing-history" size="45rpx" color="#38c099"/>
+                <text>视频监控</text>
+              </view>
+              <view class="right">
+                <view class="data">
+                  <text>{{item.hasMonitorDevice}}</text><text class="c"> 台</text>
                 </view>
                 <van-icon name="arrow" color="#ccc"/>
               </view>
@@ -94,4 +109,5 @@
         </view>
       </block>
     </view>
+    <canvas class="canvas-share" canvas-id="canvas"/>
   </view>

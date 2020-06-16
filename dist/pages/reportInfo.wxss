@@ -1,0 +1,110 @@
+.report-info-container .nav-reset.van-nav-bar {
+  background-image: linear-gradient(0deg, #38c099 0%, #009788 100%), linear-gradient(#ededed, #ededed);
+}
+.report-info-container .report-form {
+  margin-top: 44px;
+}
+.report-info-container .report-form .cell {
+  display: flex;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  border-top: 1px solid #f7f7f7;
+  font-size: 28rpx;
+  color: #999999;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+.report-info-container .report-form .cell .right-txt {
+  flex: 1;
+  text-align: right;
+  color: #333;
+  margin: 0 45rpx 0 15rpx;
+}
+.report-info-container .report-form .cell .right-txt text {
+  margin-left: 12rpx;
+}
+.report-info-container .report-form .cell .line-clamp-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.report-info-container .report-form .cell.link {
+  position: relative;
+}
+.report-info-container .report-form .cell.link:after {
+  content: '\F00A';
+  position: absolute;
+  top: 50%;
+  right: 32rpx;
+  transform: translateY(-50%);
+  font-family: 'vant-icon';
+  color: #969799;
+  font-size: 30rpx;
+}
+.report-info-container .report-form .cell.link:active {
+  background-color: #f2f3f5;
+}
+.report-info-container .report-form .cell textarea {
+  width: 589rpx;
+  height: 255rpx;
+  padding: 12rpx;
+  background-color: #ffffff;
+  border: 1rpx solid #ddd;
+  color: #999999;
+  box-sizing: border-box;
+  font-size: 26rpx;
+}
+.report-info-container .report-form .cell .tips {
+  margin-top: 15rpx;
+  color: #999;
+  font-size: 21rpx;
+  text-align: right;
+}
+.report-info-container .report-form .cell .icon-camera {
+  width: 32rpx;
+  height: 32rpx;
+  margin-left: 15rpx;
+  vertical-align: text-bottom;
+}
+.report-info-container .report-form .cell:first-child {
+  border-top: none;
+}
+.report-info-container .report-form .show-picture {
+  padding: 0 60rpx 28rpx 32rpx;
+  display: flex;
+  height: 150rpx;
+}
+.report-info-container .report-form .show-picture .item-image {
+  position: relative;
+  margin: 0 20rpx 0 0;
+}
+.report-info-container .report-form .show-picture .item-image .icon-remove {
+  position: absolute;
+  right: -5rpx;
+  top: -5rpx;
+  z-index: 5;
+}
+.report-info-container .report-form .show-picture .image {
+  width: 211rpx;
+  height: 141rpx;
+  background-color: #cccccc;
+}
+.report-info-container .submit {
+  margin: 50rpx auto 0;
+  width: 335rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  background-image: linear-gradient(0deg, #009788 0%, #38c099 100%), linear-gradient(#e6e6e6, #e6e6e6);
+  color: #fff;
+  border-radius: 25px;
+  font-size: 28rpx;
+}
+.report-info-container .submit .has {
+  pointer-events: none;
+  background-color: #e6e6e6;
+}
+.report-info-container .readOnly .report-form .cell .right-txt {
+  margin-right: 0;
+}

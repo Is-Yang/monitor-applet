@@ -1,0 +1,23 @@
+
+    <view class="bind-phone-container" style="padding-top: {{ statusBarHeight}}px">
+        <van-nav-bar title="" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+    
+        <view class="phone-wrap">
+            <view class="title">验证码已发送至手机</view>
+            <view class="tel">+86 <text>{{phone}}</text></view>
+
+            <van-field value="{{ code }}" placeholder="请输入手机验证码" bindinput="onCodeInput" clearable="clearable" use-button-slot="use-button-slot">
+                <button  wx:if="{{ timer == 0 }}" slot="button" class="get-code" bindtap="getSendCode">获取验证码</button>
+                <text  wx:else slot="button" class="txtColor">{{timer}}s后重试</text>
+            </van-field>
+
+            <button wx:if="{{code == ''}}" round="round" block="block" class="login-btn">继续</button>
+            <button wx:if="{{code != ''}}" round="round" block="block" class="login-btn has" bindtap="tapLogin">继续</button>
+        </view>
+
+        <van-popup show="{{ showMessage }}" closeable="closeable"  bind:close="onCloseMessagePopup" custom-class="custom-popup">
+            <image src="../assets/images/logo.png"/>
+            <view>龙芯北斗地灾监控系统 需要得到您的授权才能推送预警提示信息，是否马上去授权？</view>
+            <button class="allow" bindtap="onAuthMesg">去授权</button>
+        </van-popup>
+    </view>

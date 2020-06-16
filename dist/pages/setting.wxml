@@ -1,0 +1,14 @@
+
+    <view class="setting-container common-operate-wraper">
+        <van-nav-bar title="设置" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <view class="operate-cell" style="padding-top: {{statusBarHeight}}px">
+            <view class="cell">
+                <view>
+                    <van-icon class="icon" name="envelop-o" size="24" color="#38c099"/>
+                    <text>接收小程序通知</text>
+                </view>
+                <switch checked="{{ mainSwitch }}" data-site="" bindchange="onChangeAccept"/>
+            </view>
+        </view>
+    </view>

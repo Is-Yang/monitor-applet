@@ -1,0 +1,4 @@
+
+    <view class="rainfall-container">
+        <van-nav-bar title="降雨量" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+    </view>

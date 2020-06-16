@@ -21,7 +21,7 @@ export default handleActions(
         },
         // 全局信息
         globalData: {
-
+            
         }
     }
 )

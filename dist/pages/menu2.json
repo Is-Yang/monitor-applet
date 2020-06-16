@@ -1,1 +1,1 @@
-{"navigationBarTitleText":"我的","usingComponents":{"van-nav-bar":"../components/vant/nav-bar/index"}}
+{"navigationBarTitleText":"我的","usingComponents":{"van-nav-bar":"../components/vant/nav-bar/index","van-icon":"../components/vant/icon/index"}}

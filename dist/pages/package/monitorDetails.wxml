@@ -1,0 +1,88 @@
+
+    <view class="monitor-type-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="{{title}}" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <view class="common-monitor-wrap margin-nav">
+            <view class="area-site">
+                <view class="row">
+                    <text>监测区域：</text>
+                    {{monitorData.areaInfo && monitorData.areaInfo.monitorAreaName}}
+                </view>
+                <view class="row">
+                    <text>位置：</text>
+                    北纬 {{monitorData.areaInfo && monitorData.areaInfo.lat}}, 东经 {{monitorData.areaInfo && monitorData.areaInfo.lng}}
+                </view>
+            </view>
+            <view  wx:for="{{monitorData.list}}" wx:key="index" wx:index="index" wx:for-item="item" class="panel-wrap">
+                <view class="panel-title">
+                    <text>{{item.time}}</text>
+                </view>
+                <view wx:if="{{type == '1'}}" class="panel-body">
+                    <view class="item">
+                        <view>X位移(m)</view>
+                        <view>{{filter.isHasValue(item['x'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>Y位移(m)</view>
+                        <view>{{filter.isHasValue(item['y'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>H位移(m)</view>
+                        <view>{{filter.isHasValue(item['h'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>2D位移(m)</view>
+                        <view>{{filter.isHasValue(item['2d'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>3D位移(m)</view>
+                        <view>{{filter.isHasValue(item['3d'])}}</view>
+                    </view>
+                </view>
+
+                <view wx:if="{{type == '2'}}" class="panel-body">
+                    <view class="item">
+                        <view>温度</view>
+                        <view>{{filter.isHasValue(item['tempValue'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>倾斜角（度）</view>
+                        <view>{{filter.isHasValue(item['tiltValue'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>偏移值（mm）</view>
+                        <view>{{filter.isHasValue(item['moveValue'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>应变频率</view>
+                        <view>{{filter.isHasValue(item['strainFrequency'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>补偿频率</view>
+                        <view>{{filter.isHasValue(item['compensateFrequency'])}}</view>
+                    </view>
+                </view>
+
+                <view wx:if="{{type == '4'}}" class="panel-body">
+                    <view class="item">
+                        <view>降雨量（mm）</view>
+                        <view>{{filter.isHasValue(item['dayValue'])}}</view>
+                    </view>
+                </view>
+
+                <view wx:if="{{type == '3'}}" class="panel-body">
+                    <view class="item">
+                        <view>温度（℃）</view>
+                        <view>{{filter.isHasValue(item['tempValue'])}}</view>
+                    </view>
+                    <view class="item">
+                        <view>湿度</view>
+                        <view>{{filter.isHasValue(item['humidityValue'])}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <wxs src="../../utils/filter.wxs" module="filter"/>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
+    </view>

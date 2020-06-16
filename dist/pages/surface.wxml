@@ -1,0 +1,45 @@
+
+    <view class="surface-container" style="padding-top: {{statusBarHeight}}px">
+        <van-nav-bar title="表面位移" left-arrow="left-arrow" left-text="返回" fixed="fixed" custom-class="nav-reset"  bind:click-left="onClickLeft"/>
+
+        <view class="common-wrap margin-nav">
+            <view class="area-site">
+                <view class="row">
+                    <text>监测区域：</text>
+                    永定县南板村滑坡体
+                </view>
+                <view class="row">
+                    <text>位置：</text>
+                    北纬，496550.067 东经
+                </view>
+            </view>
+            <view class="panel-wrap">
+                <view class="panel-title">
+                    <text>标题</text>
+                    <text class="more" bindtap="handleMoreData">更多</text>
+                </view>
+                <view class="panel-body">
+                    <view class="item">
+                        <view>X位移(m)</view>
+                        <view>xxx</view>
+                    </view>
+                    <view class="item">
+                        <view>Y位移(m)</view>
+                        <view>xxx</view>
+                    </view>
+                    <view class="item">
+                        <view>H位移(m)</view>
+                        <view>xxx</view>
+                    </view>
+                    <view class="item">
+                        <view>2D位移(m)</view>
+                        <view>xxx</view>
+                    </view>
+                    <view class="item">
+                        <view>3D位移(m)</view>
+                        <view>xxx</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>

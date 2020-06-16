@@ -1,25 +1,35 @@
 
     <view class="menu1-container" style="padding-top: {{statusBarHeight + 44}}px">
-        <van-nav-bar title="监测预警" fixed="fixed" custom-class="nav-reset">
-            <view  wx:if="{{isBindDept}}" slot="left" bindtap="toReport">
+        <van-nav-bar  wx:if="{{isBindDept}}" title="监测预警" fixed="fixed" custom-class="nav-reset"  bind:click-left="toReport">
+            <view slot="left">
                 上报预警
             </view>
         </van-nav-bar>
-        <view  wx:if="{{isBindDept}}" class="screen-page-wrap" style="margin-top: {{statusBarHeight}}px">
+        <van-nav-bar  wx:if="{{!isBindDept}}" title="监测预警" fixed="fixed"/>
+        <view wx:if="{{isBindDept}}" class="screen-page-wrap {{beginTime && endTime ? 'time-h' : ''}}" style="margin-top: {{statusBarHeight}}px;">
             <view class="box-view">
-                <view class="left-screen">
-                    <view class="opt" bindtap="showScreenTime">
-                        {{createTimeSort == '0' ? '预警时间从近到远' : createTimeSort == '1' ? '预警时间从远到近' : '筛选'}}
-                        <van-icon name="arrow-down"/>
+                <view class="flex-between">
+                    <view class="screen-info">
+                        <view class="opt" bindtap="showScreenTime">
+                            {{createTimeSort == '0' ? '预警时间从近到远' : createTimeSort == '1' ? '预警时间从远到近' : '筛选'}}
+                            <van-icon name="arrow-down" color="#bbb"/>
+                        </view>
+
+                        <view class="opt" bindtap="showTimePoup">
+                            时间范围
+                            <van-icon name="arrow-down" color="#bbb"/>
+                        </view>
                     </view>
-                    <view class="opt">分类
-                        <van-icon name="arrow-down"/>
+                    <view class="page-info">
+                        <text>本月：{{monthNum.count}} 条</text>
+                        <text class="split"> | </text>
+                        <text>总共{{monthNum.total}}条</text>
                     </view>
                 </view>
-                <view class="right-page">
-                    <text>本月：{{page.count}} 条</text>
-                    <text class="split"> | </text>
-                    <text>总共{{page.total}}条</text>
+
+                <view wx:if="{{beginTime && endTime}}" class="time-info">
+                    <text>{{beginTime}} 至 {{endTime}}</text>
+                    <van-icon class="icon" name="cross" color="#bbb" size="16" bindtap="removeTime"/>
                 </view>
 
                 <view wx:if="{{timeScreen}}" class="screen-time">
@@ -27,23 +37,42 @@
                 </view>
             </view>
         </view>
-        <view class="list-wrap">
-            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.state == 0 ? 'not' : ''}}" data-id="{{item.yuJingId}}" bindtap="toDetails">
+
+        <view wx:if="{{isBindDept && listData.length > 0}}" class="list-wrap {{beginTime && endTime ? 'top-h' : ''}}">
+            <view wx:for="{{listData}}" wx:key="index" wx:index="index" wx:for-item="item" class="item {{item.status == '0' ? 'not' : ''}}" data-id="{{item.yuJingId}}" bindtap="toDetails">
                 <view class="content">
-                    <image src="{{item.picture}}" class="picture"/>
+                    <image wx:if="{{item.sysFiles && item.sysFiles[0] && item.sysFiles[0].fileUrl}}" src="{{item.sysFiles[0].fileUrl}}" mode="aspectFill" class="picture"/>
+                    <image wx:else src="../assets/images/default.png" mode="aspectFill" class="picture"/>
                     <view class="full">
-                        <view class="title">{{item.device.deviceName}}</view>
+                        <view class="title">{{item.monitorArea.monitorAreaName}}</view>
                         <view class="desc">{{item.description}}</view>
                         <text class="time"> {{item.createTime}}</text>
                     </view>
                 </view>
                 <view class="user-info">
                     <view class="name">{{item.createBy}}</view>
-                    <text class="state">{{item.state == 0 ? '未处理' : '已处理'}}</text>
+                    <text class="state">{{item.status == '0' ? '未处理' : '已处理'}}</text>
                 </view>
             </view>
-             <view wx:if="{{listData.length == 0}}" class="no-data">
-                <text>无预警信息</text>
-            </view>
         </view>
+        <view wx:else class="no-data">
+            <text>无预警信息</text>
+        </view>
+
+        <van-popup show="{{ showDate }}" closeable="closeable"  bind:close="onClosePopup" custom-class="custom-popup">
+            <view class="date-wrap">
+                <picker class="first" mode="date" value="{{beginTime}}" header-text="开始时间" bindchange="changeBeginTime">
+                        {{beginTime ? beginTime : '开始时间'}}
+                        <van-icon name="arrow-down" color="#bbb"/>
+                </picker>
+                <text>至</text>
+                <picker class="last" mode="date" value="{{endTime}}" header-text="结束时间" start="{{beginTime}}" bindchange="changeEndTime">
+                        {{endTime ? endTime : '结束时间'}}
+                        <van-icon name="arrow-down" color="#bbb"/>
+                </picker>
+            </view>
+            <button class="allow" bindtap="tapTime">确定</button>
+        </van-popup>
+
+        <canvas class="canvas-share" canvas-id="canvas"/>
     </view>
